@@ -45,5 +45,5 @@ jobs:
             --configuration=ci
       - name: End to End Tests
         run: |
-          npx playwright install
+          npx playwright install --with-deps
           npm run e2e -- --browser=all

@@ -4,7 +4,7 @@
 set -ex
 
 npx pretty-quick --staged
-npm run test:all
-npx playwright install
-npm run e2e
-npm run e2e -- --browser=webkit
+npx nx workspace-lint
+npx nx affected --targets=lint,build,test --configuration=ci
+npx playwright install --with-deps
+npm run e2e -- --browser=all
