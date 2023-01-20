@@ -1,0 +1,82 @@
+{
+  "name": "e2e",
+  "projectType": "application",
+  "generators": {},
+  "sourceRoot": "apps/e2e/src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/apps/e2e",
+        "index": "apps/e2e/src/index.html",
+        "main": "apps/e2e/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/e2e/tsconfig.app.json",
+        "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
+        "styles": ["apps/e2e/src/styles.css"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "e2e:build:production"
+        },
+        "development": {
+          "browserTarget": "e2e:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "e2e:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "polyfills": ["zone.js", "zone.js/testing"],
+        "tsConfig": "apps/e2e/tsconfig.spec.json",
+        "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
+        "styles": ["apps/e2e/src/styles.css"],
+        "scripts": []
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/e2e/**/*.ts", "apps/e2e/**/*.html"]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+<h1>Keyboard Sort Example</h1>
+<p>This example integrates the keyboard sort with CDK drag and drop sorting.</p>
+
+<div>
+  <input type="text" autofocus />
+</div>
+
+<ul
+  cdkDropList
+  (cdkDropListDropped)="drop($event)"
+  kbdSortList
+  cdkDropListOrientation="horizontal"
+  kbdSortListOrientation="horizontal"
+  [cdkDropListData]="items"
+  [kbdSortListData]="items">
+  <li *ngFor="let item of items" cdkDrag cdkDragLockAxis="x" kbdSortItem>
+    {{ item }}
+  </li>
+</ul>

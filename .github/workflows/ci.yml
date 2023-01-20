@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  node_version: 18
+jobs:
+  build:
+    name: Build and Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install
+        run: npm ci
+        env:
+          npm_config_loglevel: warn
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - name: Set NX SHAs
+        uses: nrwl/nx-set-shas@v3
+      - name: Lint, Build, Test
+        run: |
+          npx nx workspace-lint
+          npx nx affected \
+            --base="${{ env.NX_BASE }}" \
+            --head="${{ env.NX_HEAD }}" \
+            --targets=lint,build,test \
+            --parallel=2 \
+            --configuration=ci \
+            --configuration=production

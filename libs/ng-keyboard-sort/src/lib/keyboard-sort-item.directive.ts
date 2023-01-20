@@ -1,0 +1,267 @@
+import {
+  AfterViewInit,
+  ApplicationRef,
+  ChangeDetectorRef,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  Host,
+  Inject,
+  Input,
+  OnDestroy,
+  QueryList,
+  Renderer2,
+  SkipSelf,
+} from '@angular/core';
+import { filter, fromEvent, Subscription, take } from 'rxjs';
+import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
+import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
+import { Platform } from '@angular/cdk/platform';
+import { DOCUMENT } from '@angular/common';
+
+@Directive({
+  selector: '[kbdSortItem]',
+  exportAs: 'kbdSortItem',
+  standalone: true,
+  host: {
+    '[attr.tabindex]': 'tabindex',
+    '[class.kbd-sort-item]': 'true',
+    '[class.kbd-sort-item-disabled]': 'kbdSortItemDisabled',
+    '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled',
+  },
+})
+export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
+  @ContentChildren(KeyboardSortHandleDirective)
+  public handles: QueryList<KeyboardSortHandleDirective> | undefined;
+
+  @Input()
+  public activated = false;
+
+  public tabindex: '0' | undefined = '0';
+
+  @Input()
+  public kbdSortItemDisabled = false;
+
+  #list: KeyboardSortListDirective | undefined;
+  #subscriptions = new Subscription();
+  #events = new Subscription();
+  #appRef: ApplicationRef;
+  #changeDetectorRef: ChangeDetectorRef;
+  #doc: Document;
+  #platform: Platform;
+  #renderer: Renderer2;
+
+  constructor(
+    readonly renderer: Renderer2,
+    @SkipSelf() readonly changeDetectorRef: ChangeDetectorRef,
+    public readonly elementRef: ElementRef<HTMLElement>,
+    readonly appRef: ApplicationRef,
+    readonly platform: Platform,
+    @Inject(DOCUMENT) readonly document: Document
+  ) {
+    this.#renderer = renderer;
+    this.#appRef = appRef;
+    this.#changeDetectorRef = changeDetectorRef;
+    this.#platform = platform;
+    this.#doc = document;
+  }
+
+  public ngAfterViewInit(): void {
+    this.onNextStable(() => {
+      this.updateEvents();
+      this.#subscriptions.add(
+        this.handles?.changes.subscribe(() => {
+          this.updateEvents();
+        })
+      );
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.#subscriptions.unsubscribe();
+  }
+
+  public connectToList(list: KeyboardSortListDirective): void {
+    this.#list = list;
+  }
+
+  public toggleActivated() {
+    if (this.activated) {
+      this.deactivate();
+    } else {
+      this.activate();
+    }
+  }
+
+  public activate() {
+    if (!this.activated && !this.kbdSortItemDisabled) {
+      this.#list?.clearActivated();
+      this.activated = true;
+      this.#renderer.addClass(
+        this.elementRef.nativeElement,
+        'kbd-sort-item-activated'
+      );
+      this.#changeDetectorRef.detectChanges();
+      this.focusOnHandle();
+    }
+  }
+
+  public deactivate() {
+    if (this.activated) {
+      this.activated = false;
+      this.#renderer.removeClass(
+        this.elementRef.nativeElement,
+        'kbd-sort-item-activated'
+      );
+      this.#changeDetectorRef.detectChanges();
+    }
+  }
+
+  public moveUp(): boolean {
+    if (!this.#list) {
+      return false;
+    }
+    if (this.activated && !this.kbdSortItemDisabled) {
+      return this.#list.moveItemUp(this);
+    }
+    return false;
+  }
+
+  public moveDown(): boolean {
+    if (!this.#list) {
+      return false;
+    }
+    if (this.activated && !this.kbdSortItemDisabled) {
+      return this.#list.moveItemDown(this);
+    }
+    return false;
+  }
+
+  public focusOnHandle() {
+    this.onNextStable(() => {
+      if (this.#platform.isBrowser) {
+        setTimeout(() => {
+          if (this.tabindex === '0') {
+            this.elementRef.nativeElement.focus();
+          } else {
+            if (
+              !this.handles?.some((handle) =>
+                handle.elementRef.nativeElement.matches(':focus-within')
+              )
+            ) {
+              this.handles?.first.elementRef.nativeElement.focus();
+            }
+          }
+        });
+      }
+    });
+  }
+
+  private handleEvents(elementRef: ElementRef<HTMLElement>): void {
+    this.#events.add(
+      fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keydown')
+        .pipe(
+          filter((event) => {
+            return event.key === 'Enter' || event.key === ' ';
+          })
+        )
+        .subscribe((event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.toggleActivated();
+        })
+    );
+    this.#events.add(
+      fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keyup')
+        .pipe(filter((event) => event.key === 'Tab'))
+        .subscribe(() => {
+          this.activate();
+        })
+    );
+    this.#events.add(
+      fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keydown')
+        .pipe(
+          filter((event) => {
+            return !this.kbdSortItemDisabled && event.key.startsWith('Arrow');
+          })
+        )
+        .subscribe((event) => {
+          if (this.#list?.kbdSortListOrientation === 'vertical') {
+            if (event.key === 'ArrowUp') {
+              event.preventDefault();
+              if (this.activated) {
+                this.moveUp();
+              } else {
+                this.#list.activatePreviousItem(this);
+              }
+            } else if (event.key === 'ArrowDown') {
+              event.preventDefault();
+              if (this.activated) {
+                this.moveDown();
+              } else {
+                this.#list.activateNextItem(this);
+              }
+            }
+          } else if (this.#list?.kbdSortListOrientation === 'horizontal') {
+            if (event.key === 'ArrowLeft') {
+              event.preventDefault();
+              if (this.activated) {
+                this.moveUp();
+              } else {
+                this.#list.activatePreviousItem(this);
+              }
+            } else if (event.key === 'ArrowRight') {
+              event.preventDefault();
+              if (this.activated) {
+                this.moveDown();
+              } else {
+                this.#list.activateNextItem(this);
+              }
+            }
+          }
+        })
+    );
+    if (this.#platform.isBrowser) {
+      this.#events.add(
+        fromEvent(elementRef.nativeElement, 'blur').subscribe(() => {
+          setTimeout(() => {
+            if (
+              this.activated &&
+              this.#doc.activeElement &&
+              !this.elementRef.nativeElement.contains(this.#doc.activeElement)
+            ) {
+              this.deactivate();
+            }
+          });
+        })
+      );
+    }
+  }
+
+  private updateEvents() {
+    this.#events.unsubscribe();
+    this.#events = new Subscription();
+    if (this.handles?.length) {
+      this.tabindex = undefined;
+      this.handles.forEach((handle) => {
+        this.handleEvents(handle.elementRef);
+      });
+    } else {
+      this.tabindex = '0';
+      this.handleEvents(this.elementRef);
+    }
+  }
+
+  private onNextStable(cb: () => void): void {
+    this.#subscriptions.add(
+      this.#appRef.isStable
+        .pipe(
+          filter((isStable) => isStable),
+          take(1)
+        )
+        .subscribe(() => {
+          cb();
+        })
+    );
+  }
+}

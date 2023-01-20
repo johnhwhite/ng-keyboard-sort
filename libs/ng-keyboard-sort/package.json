@@ -1,0 +1,12 @@
+{
+  "name": "ng-keyboard-sort",
+  "version": "1.0.0-beta.0",
+  "peerDependencies": {
+    "@angular/cdk": "^15.0.0",
+    "@angular/common": "^15.0.0",
+    "@angular/core": "^15.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -ex
+
+npx pretty-quick --staged
+npm run test:all
+npx playwright install
+npm run e2e
+npm run e2e -- --browser=webkit

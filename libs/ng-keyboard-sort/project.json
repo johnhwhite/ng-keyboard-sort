@@ -1,0 +1,39 @@
+{
+  "name": "ng-keyboard-sort",
+  "projectType": "library",
+  "sourceRoot": "libs/ng-keyboard-sort/src",
+  "prefix": "kbd-sort",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "options": {
+        "project": "libs/ng-keyboard-sort/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/ng-keyboard-sort/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/ng-keyboard-sort/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "tsConfig": "libs/ng-keyboard-sort/tsconfig.spec.json",
+        "polyfills": ["zone.js", "zone.js/testing"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/ng-keyboard-sort/**/*.ts",
+          "libs/ng-keyboard-sort/**/*.html"
+        ]
+      }
+    }
+  }
+}

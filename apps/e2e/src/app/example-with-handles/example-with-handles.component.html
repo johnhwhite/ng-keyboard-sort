@@ -1,0 +1,33 @@
+<h1>Keyboard Sort Example With Handles</h1>
+<p>
+  This example integrates the keyboard sort with CDK drag and drop sorting and
+  uses a handle element.
+</p>
+
+<div>
+  <input type="text" autofocus />
+</div>
+
+<ul
+  cdkDropList
+  (cdkDropListDropped)="drop($event)"
+  kbdSortList
+  cdkDropListOrientation="vertical"
+  kbdSortListOrientation="vertical"
+  [cdkDropListData]="items"
+  [kbdSortListData]="items">
+  <li *ngFor="let item of items" cdkDrag cdkDragLockAxis="x" kbdSortItem>
+    <div class="handle" kbdSortHandle>{{ item }}</div>
+    <div class="placeholder">
+      <img
+        src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+        alt="Shiba Inu"
+        style="
+          width: 100px;
+          height: 100px;
+          object-fit: cover;
+          object-position: center;
+        " />
+    </div>
+  </li>
+</ul>
