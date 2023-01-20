@@ -70,6 +70,12 @@
         "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
         "styles": ["apps/e2e/src/styles.css"],
         "scripts": []
+      },
+      "configurations": {
+        "ci": {
+          "browsers": "ChromeHeadless",
+          "watch": false
+        }
       }
     },
     "lint": {

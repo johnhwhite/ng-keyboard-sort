@@ -5,7 +5,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
-import { KeyboardSortItemDirective } from 'ng-keyboard-sort';
+import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
 
 describe('ListDirective', () => {

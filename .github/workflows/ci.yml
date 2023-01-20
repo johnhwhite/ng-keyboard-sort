@@ -42,5 +42,8 @@ jobs:
             --head="${{ env.NX_HEAD }}" \
             --targets=lint,build,test \
             --parallel=2 \
-            --configuration=ci \
-            --configuration=production
+            --configuration=ci
+      - name: End to End Tests
+        run: |
+          npx playwright install --with-deps
+          npm run e2e -- --browser=all
