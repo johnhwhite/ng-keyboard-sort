@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { KeyboardSortListDirective } from 'ng-keyboard-sort';
+import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 
 @Component({
   standalone: true,

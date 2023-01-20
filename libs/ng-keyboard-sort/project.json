@@ -24,6 +24,12 @@
       "options": {
         "tsConfig": "libs/ng-keyboard-sort/tsconfig.spec.json",
         "polyfills": ["zone.js", "zone.js/testing"]
+      },
+      "configurations": {
+        "ci": {
+          "browsers": "ChromeHeadless",
+          "watch": false
+        }
       }
     },
     "lint": {

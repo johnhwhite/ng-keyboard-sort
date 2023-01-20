@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { KeyboardSortHandleDirective } from 'ng-keyboard-sort';
+import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 
 @Component({
   standalone: true,

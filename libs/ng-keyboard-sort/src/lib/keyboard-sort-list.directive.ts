@@ -6,14 +6,12 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  Host,
   HostListener,
   Inject,
   Input,
   OnDestroy,
   Output,
   QueryList,
-  SkipSelf,
 } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';

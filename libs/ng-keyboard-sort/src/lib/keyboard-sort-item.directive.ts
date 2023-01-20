@@ -5,7 +5,6 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
-  Host,
   Inject,
   Input,
   OnDestroy,
