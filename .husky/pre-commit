@@ -5,6 +5,7 @@ set -ex
 
 npx pretty-quick --staged
 npx nx workspace-lint
+npx nx format:check
 npx nx affected --targets=lint,build,test --configuration=ci
 npx playwright install --with-deps
 npm run e2e -- --browser=all
