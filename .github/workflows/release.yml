@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  node_version: 18
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v2
+        id: release
+        with:
+          release-type: node
+          package-name: ng-keyboard-sort
+          path: libs/ng-keyboard-sort
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        if: steps.release.outputs.releases_created
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+        if: steps.release.outputs.releases_created
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ hashFiles('**/package-lock.json') }}
+        if: steps.release.outputs.releases_created
+      - name: Install
+        run: npm ci
+        if: steps.release.outputs.releases_created && steps.cache-node-modules.outputs.cache-hit != 'true'
+      - name: Publish to NPM
+        if: steps.release.outputs.releases_created
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: |
+          echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
+          cd dist/ng-keyboard-sort
+          npm publish --tag next --access public

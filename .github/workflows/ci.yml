@@ -29,14 +29,13 @@ jobs:
           key: ${{ runner.os }}-node-${{ env.node_version }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: npm ci
-        env:
-          npm_config_loglevel: warn
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Set NX SHAs
         uses: nrwl/nx-set-shas@v3
       - name: Lint, Build, Test
         run: |
           npx nx workspace-lint
+          npx nx format:check
           npx nx affected \
             --base="${{ env.NX_BASE }}" \
             --head="${{ env.NX_HEAD }}" \
