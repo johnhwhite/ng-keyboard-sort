@@ -95,7 +95,8 @@
         "commands": [
           "npx playwright install --with-deps",
           "npx playwright test -c apps/e2e/playwright.config.ts --browser=all"
-        ]
+        ],
+        "parallel": false
       }
     }
   },
