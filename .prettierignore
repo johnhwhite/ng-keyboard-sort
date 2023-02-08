@@ -42,4 +42,4 @@ testem.log
 Thumbs.db
 
 # Release please handles changelog
-/CHANGELOG.md
+CHANGELOG.md
