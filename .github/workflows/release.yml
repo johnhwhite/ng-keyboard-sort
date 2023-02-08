@@ -59,4 +59,5 @@ jobs:
         run: |
           echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
           cd dist/ng-keyboard-sort
-          npm publish --tag next --access public
+          set -x
+          npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
