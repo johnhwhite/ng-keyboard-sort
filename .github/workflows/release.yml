@@ -18,6 +18,7 @@ jobs:
         with:
           release-type: node
           default-branch: '${{ github.ref_name }}'
+          changelog-notes-type: 'github'
           package-name: ng-keyboard-sort
           path: libs/ng-keyboard-sort
           token: ${{ secrets.GH_TOKEN }}
