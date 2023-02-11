@@ -44,5 +44,7 @@ jobs:
             --configuration=ci
       - name: End to End Tests
         run: |
-          npx playwright install --with-deps
-          npm run e2e -- --browser=all
+          npx nx affected \
+            --base="${{ env.NX_BASE }}" \
+            --head="${{ env.NX_HEAD }}" \
+            --targets=e2e

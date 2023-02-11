@@ -83,6 +83,22 @@
       "options": {
         "lintFilePatterns": ["apps/e2e/**/*.ts", "apps/e2e/**/*.html"]
       }
+    },
+    "e2e": {
+      "dependsOn": [
+        { "target": "build", "projects": "dependencies" },
+        { "target": "build", "projects": "self" }
+      ],
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "commands": [
+          "npx playwright install --with-deps",
+          "npx playwright test -c apps/e2e/playwright.config.ts --browser=all"
+        ],
+        "parallel": false
+      }
     }
-  }
+  },
+  "implicitDependencies": ["ng-keyboard-sort"]
 }

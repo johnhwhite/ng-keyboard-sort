@@ -9,7 +9,7 @@
     "test": "nx test ng-keyboard-sort --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:e2e": "nx test e2e --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:all": "nx affected:test --all --browsers=ChromeHeadless --code-coverage --watch=false",
-    "e2e": "playwright test -c apps/e2e/playwright.config.ts",
+    "e2e": "nx run-many --target=e2e --all",
     "lint": "nx run-many --target=lint --all --parallel",
     "commit": "cz",
     "prepare": "husky install"
