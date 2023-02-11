@@ -1,6 +1,7 @@
 name: Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,10 +13,11 @@ jobs:
     name: Release Please
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3.1.2
+      - uses: google-github-actions/release-please-action@v3
         id: release
         with:
           release-type: node
+          default-branch: '${{ github.ref_name }}'
           package-name: ng-keyboard-sort
           path: libs/ng-keyboard-sort
           token: ${{ secrets.GH_TOKEN }}
@@ -35,25 +37,25 @@ jobs:
             ]
       - name: Checkout
         uses: actions/checkout@v3
-        if: steps.release.outputs.release_created
+        if: ${{ steps.release.outputs.release_created }}
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           registry-url: 'https://registry.npmjs.org'
-        if: steps.release.outputs.release_created
+        if: ${{ steps.release.outputs.release_created }}
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ env.node_version }}-${{ hashFiles('**/package-lock.json') }}
-        if: steps.release.outputs.release_created
+        if: ${{ steps.release.outputs.release_created }}
       - name: Install
         run: npm ci
-        if: steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
       - name: Publish to NPM
-        if: steps.release.outputs.release_created
+        if: ${{ steps.release.outputs.release_created }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: |
