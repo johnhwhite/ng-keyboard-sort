@@ -1,18 +1,26 @@
 {
   "name": "ng-keyboard-sort",
+  "description": "Angular keyboard sort directive",
   "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnhwhite/ng-keyboard-sort.git",
+    "directory": "packages/ng-keyboard-sort"
+  },
   "scripts": {
     "ng": "ng",
-    "start": "nx serve",
-    "build": "nx build",
-    "watch": "nx build --watch --configuration development",
+    "start": "nx s e2e",
+    "build": "nx run-many --target=build --all",
+    "watch": "nx build ng-keyboard-sort --watch --configuration development",
     "test": "nx test ng-keyboard-sort --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:e2e": "nx test e2e --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:all": "nx affected:test --all --browsers=ChromeHeadless --code-coverage --watch=false",
     "e2e": "nx run-many --target=e2e --all",
     "lint": "nx run-many --target=lint --all --parallel",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "is-ci || husky install"
   },
   "dependencies": {
     "@angular/cdk": "^15.1.3",
@@ -30,6 +38,7 @@
     "@angular-eslint/eslint-plugin": "15.2.0",
     "@angular-eslint/eslint-plugin-template": "15.2.0",
     "@angular-eslint/template-parser": "15.2.0",
+    "@angular/compiler-cli": "^15.1.3",
     "@angular/localize": "^15.1.3",
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-angular": "^17.4.2",
@@ -47,6 +56,7 @@
     "eslint-config-prettier": "8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
+    "is-ci": "^3.0.1",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.1",
     "karma-chrome-launcher": "~3.1.1",
@@ -62,6 +72,7 @@
     "prettier": "^2.8.3",
     "prettier-eslint": "^15.0.1",
     "pretty-quick": "^3.1.3",
+    "turbo": "^1.7.4",
     "typescript": "~4.9.5"
   },
   "config": {
