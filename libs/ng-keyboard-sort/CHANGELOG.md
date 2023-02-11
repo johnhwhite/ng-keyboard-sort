@@ -1,5 +1,13 @@
 # Changelog
 
+## What's Changed
+* chore: update readme by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/11
+* docs: links to open project in stackblitz by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/13
+* chore: update stackblitz config by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/14
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.1...v1.0.2
+
 ### [1.0.1](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.0...v1.0.1) (2023-02-08)
 
 
