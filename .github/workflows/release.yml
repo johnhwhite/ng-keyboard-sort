@@ -20,6 +20,10 @@ jobs:
           default-branch: '${{ github.ref_name }}'
           changelog-notes-type: 'github'
           package-name: ng-keyboard-sort
+          extra-files: >
+            [
+              { "type": "json", "path": "libs/ng-keyboard-sort/package.json", "jsonpath": "$.version" }
+            ]
           token: ${{ secrets.GH_TOKEN }}
           changelog-types: >
             [
