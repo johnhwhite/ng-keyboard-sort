@@ -4,6 +4,7 @@ import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortService } from '../keyboard-sort.service';
 import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-active.directive';
+import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
 
 @Component({
   standalone: true,
@@ -12,6 +13,7 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
     KeyboardSortItemDirective,
     KeyboardSortHandleDirective,
     KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
   ],
   providers: [KeyboardSortService],
   template: `
@@ -20,6 +22,9 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
       <span>Item 1</span>
       <span *kbdSortKeyboardSortItemIfActive class="example-active"
         >Active</span
+      >
+      <span *kbdSortKeyboardSortItemIfFocused class="example-focus"
+        >Focused</span
       >
     </div>
   `,

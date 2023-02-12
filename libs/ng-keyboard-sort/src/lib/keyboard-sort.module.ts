@@ -4,6 +4,7 @@ import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortItemIfActiveDirective } from './keyboard-sort-item-if-active.directive';
+import { KeyboardSortItemIfFocusedDirective } from './keyboard-sort-item-if-focused.directive';
 
 @NgModule({
   imports: [
@@ -12,6 +13,7 @@ import { KeyboardSortItemIfActiveDirective } from './keyboard-sort-item-if-activ
     KeyboardSortItemDirective,
     KeyboardSortHandleDirective,
     KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
   ],
   exports: [
     KeyboardSortListDirective,
