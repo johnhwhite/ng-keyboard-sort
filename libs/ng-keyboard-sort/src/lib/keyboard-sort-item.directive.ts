@@ -5,9 +5,11 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  EventEmitter,
   Inject,
   Input,
   OnDestroy,
+  Output,
   QueryList,
   Renderer2,
   SkipSelf,
@@ -17,6 +19,8 @@ import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT } from '@angular/common';
+import { KeyboardSortService } from './keyboard-sort.service';
+import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Directive({
   selector: '[kbdSortItem]',
@@ -28,20 +32,44 @@ import { DOCUMENT } from '@angular/common';
     '[class.kbd-sort-item-disabled]': 'kbdSortItemDisabled',
     '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled',
   },
+  providers: [
+    {
+      provide: KeyboardSortItemService,
+      useFactory: () => new KeyboardSortItemService(),
+    },
+  ],
 })
 export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   @ContentChildren(KeyboardSortHandleDirective)
   public handles: QueryList<KeyboardSortHandleDirective> | undefined;
 
   @Input()
-  public activated = false;
+  public get activated(): boolean {
+    return this.#activated;
+  }
+  public set activated(value: boolean) {
+    this.#activated = value;
+    this.kbdSortItemActivated.emit(value);
+  }
 
   public tabindex: '0' | undefined = '0';
 
   @Input()
-  public kbdSortItemDisabled = false;
+  public get kbdSortItemDisabled(): boolean {
+    return this.#kbdSortItemDisabled;
+  }
+  public set kbdSortItemDisabled(value: boolean) {
+    if (value && this.activated) {
+      this.activated = false;
+    }
+    this.#kbdSortItemDisabled = value;
+    this.kbdSortItemActivated.emit(!value);
+  }
 
-  #list: KeyboardSortListDirective | undefined;
+  @Output()
+  public kbdSortItemActivated = new EventEmitter<boolean>();
+
+  readonly #list: KeyboardSortListDirective | undefined;
   #subscriptions = new Subscription();
   #events = new Subscription();
   #appRef: ApplicationRef;
@@ -49,6 +77,8 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   #doc: Document;
   #platform: Platform;
   #renderer: Renderer2;
+  #kbdSortItemDisabled = false;
+  #activated = false;
 
   constructor(
     readonly renderer: Renderer2,
@@ -56,13 +86,17 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     public readonly elementRef: ElementRef<HTMLElement>,
     readonly appRef: ApplicationRef,
     readonly platform: Platform,
-    @Inject(DOCUMENT) readonly document: Document
+    @Inject(DOCUMENT) readonly document: Document,
+    readonly keyboardSortService: KeyboardSortService,
+    readonly keyboardSortItemService: KeyboardSortItemService
   ) {
     this.#renderer = renderer;
     this.#appRef = appRef;
     this.#changeDetectorRef = changeDetectorRef;
     this.#platform = platform;
     this.#doc = document;
+    this.#list = keyboardSortService.list;
+    keyboardSortItemService.item = this;
   }
 
   public ngAfterViewInit(): void {
@@ -78,10 +112,6 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.#subscriptions.unsubscribe();
-  }
-
-  public connectToList(list: KeyboardSortListDirective): void {
-    this.#list = list;
   }
 
   public toggleActivated() {
@@ -102,6 +132,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
       );
       this.#changeDetectorRef.detectChanges();
       this.focusOnHandle();
+      this.kbdSortItemActivated.emit(true);
     }
   }
 

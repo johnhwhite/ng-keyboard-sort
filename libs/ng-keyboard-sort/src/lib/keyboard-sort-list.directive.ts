@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ApplicationRef,
   ChangeDetectorRef,
   ContentChildren,
@@ -18,13 +17,20 @@ import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { filter, Subscription, take } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { KeyboardSortEvent } from './keyboard-sort-event';
+import { KeyboardSortService } from './keyboard-sort.service';
 
 @Directive({
   selector: '[kbdSortList]',
   exportAs: 'kbdSortList',
   standalone: true,
+  providers: [
+    {
+      provide: KeyboardSortService,
+      useFactory: () => new KeyboardSortService(),
+    },
+  ],
 })
-export class KeyboardSortListDirective implements AfterViewInit, OnDestroy {
+export class KeyboardSortListDirective implements OnDestroy {
   @ContentChildren(KeyboardSortItemDirective, { descendants: false })
   public items: QueryList<KeyboardSortItemDirective> | undefined;
 
@@ -32,10 +38,19 @@ export class KeyboardSortListDirective implements AfterViewInit, OnDestroy {
   public kbdSortListOrientation: 'horizontal' | 'vertical' = 'horizontal';
 
   @Input()
-  public kbdSortListDisabled = false;
+  public get kbdSortListDisabled(): boolean {
+    return this.#kbdSortListDisabled;
+  }
+  public set kbdSortListDisabled(value: boolean) {
+    this.#kbdSortListDisabled = value;
+    this.kbdSortEnabled.emit(!value);
+  }
 
   @Input()
   public kbdSortListData: unknown[] | undefined = [];
+
+  @Output()
+  public kbdSortEnabled = new EventEmitter<boolean>();
 
   @Output()
   public kdbSortEnd = new EventEmitter<KeyboardSortEvent>();
@@ -45,32 +60,20 @@ export class KeyboardSortListDirective implements AfterViewInit, OnDestroy {
   #doc: Document;
   #elementRef: ElementRef;
   #subscriptions = new Subscription();
+  #kbdSortListDisabled = false;
 
   constructor(
     readonly changeDetectorRef: ChangeDetectorRef,
     readonly appRef: ApplicationRef,
     readonly elementRef: ElementRef,
-    @Inject(DOCUMENT) readonly document: Document
+    @Inject(DOCUMENT) readonly document: Document,
+    readonly keyboardSortService: KeyboardSortService
   ) {
     this.#changeDetectorRef = changeDetectorRef;
     this.#appRef = appRef;
     this.#elementRef = elementRef;
     this.#doc = document;
-  }
-
-  public ngAfterViewInit(): void {
-    this.onNextStable(() => {
-      this.items?.forEach((item) => {
-        item.connectToList(this);
-      });
-      this.#subscriptions.add(
-        this.items?.changes.subscribe(() => {
-          this.items?.forEach((item) => {
-            item.connectToList(this);
-          });
-        })
-      );
-    });
+    keyboardSortService.list = this;
   }
 
   public ngOnDestroy(): void {
