@@ -129,5 +129,11 @@ describe('ItemDirective', () => {
     expect(component.item).toBeTruthy();
     expect(component.item?.moveDown()).toBeFalse();
     expect(component.item?.moveUp()).toBeFalse();
+    expect(component.item).toBeTruthy();
+    if (component.item) {
+      component.item.activate();
+      component.item.kbdSortItemDisabled = true;
+    }
+    expect(component.item?.isDisabled()).toBeTrue();
   });
 });

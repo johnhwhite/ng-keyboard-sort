@@ -7,6 +7,7 @@ import {
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
+import { KeyboardSortService } from './keyboard-sort.service';
 
 describe('ListDirective', () => {
   let component: KeyboardSortListFixtureComponent;
@@ -20,6 +21,7 @@ describe('ListDirective', () => {
   ) {
     TestBed.configureTestingModule({
       imports: [KeyboardSortListFixtureComponent],
+      providers: [KeyboardSortService],
     });
 
     fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
@@ -29,7 +31,6 @@ describe('ListDirective', () => {
     component.items?.forEach((item) => {
       item.ngAfterViewInit();
     });
-    component.list?.ngAfterViewInit();
     fixture.detectChanges();
   }
 
@@ -64,6 +65,14 @@ describe('ListDirective', () => {
     expect(getItem(0).elementRef.nativeElement.textContent).toBe('Item 2');
     expect(getItem(1).elementRef.nativeElement.textContent).toBe('Item 1');
     expect(getItem(2).elementRef.nativeElement.textContent).toBe('Item 3');
+    component.list?.deactivateAll();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(getItem(0).activated).toBeFalse();
+    if (component.list) {
+      component.list.kbdSortListDisabled = true;
+    }
+    expect(getItem(0).isDisabled()).toBeTrue();
   });
 
   ['horizontal', 'vertical'].forEach((direction) => {
