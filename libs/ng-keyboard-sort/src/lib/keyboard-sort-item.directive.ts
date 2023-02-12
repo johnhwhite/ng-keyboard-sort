@@ -48,8 +48,19 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     return this.#activated;
   }
   public set activated(value: boolean) {
+    if (value && this.focused) {
+      this.focused = false;
+    }
     this.#activated = value;
     this.kbdSortItemActivated.emit(value);
+  }
+
+  public get focused(): boolean {
+    return this.#focused;
+  }
+  public set focused(value: boolean) {
+    this.#focused = value;
+    this.kbdSortItemFocused.emit(value);
   }
 
   public tabindex: '0' | undefined = '0';
@@ -69,6 +80,9 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   @Output()
   public kbdSortItemActivated = new EventEmitter<boolean>();
 
+  @Output()
+  public kbdSortItemFocused = new EventEmitter<boolean>();
+
   readonly #list: KeyboardSortListDirective | undefined;
   #subscriptions = new Subscription();
   #events = new Subscription();
@@ -79,6 +93,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   #renderer: Renderer2;
   #kbdSortItemDisabled = false;
   #activated = false;
+  #focused = false;
 
   constructor(
     readonly renderer: Renderer2,
@@ -117,6 +132,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   public toggleActivated() {
     if (this.activated) {
       this.deactivate();
+      this.focused = true;
     } else {
       this.activate();
     }
@@ -175,6 +191,9 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   }
 
   public focusOnHandle() {
+    if (!this.activated) {
+      this.focused = true;
+    }
     this.onNextStable(() => {
       if (this.#platform.isBrowser) {
         setTimeout(() => {
@@ -263,11 +282,13 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
         fromEvent(elementRef.nativeElement, 'blur').subscribe(() => {
           setTimeout(() => {
             if (
-              this.activated &&
               this.#doc.activeElement &&
               !this.elementRef.nativeElement.contains(this.#doc.activeElement)
             ) {
-              this.deactivate();
+              if (this.activated) {
+                this.deactivate();
+              }
+              this.kbdSortItemFocused.emit(false);
             }
           });
         })

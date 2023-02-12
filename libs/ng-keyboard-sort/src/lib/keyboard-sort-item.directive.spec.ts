@@ -29,11 +29,19 @@ describe('ItemDirective', () => {
     expect(component).toBeTruthy();
     const sortItem = (fixture.nativeElement as HTMLElement)
       .firstChild as HTMLElement;
-    expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalse();
+    expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.example-active')).toBeFalsy();
     sortItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeTrue();
+    expect(fixture.nativeElement.querySelector('.example-active')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.example-focus')).toBeFalsy();
+    sortItem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.example-active')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.example-focus')).toBeTruthy();
   });
 
   it('should use handles', async () => {
@@ -111,14 +119,17 @@ describe('ItemDirective', () => {
       new KeyboardEvent('keydown', { key: 'Enter' })
     );
     expect(item?.activated).toBeTrue();
+    expect(item?.focused).toBeFalse();
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keydown', { key: ' ' })
     );
     expect(item?.activated).toBeFalse();
+    expect(item?.focused).toBeTrue();
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keyup', { key: 'Tab' })
     );
     expect(item?.activated).toBeTrue();
+    expect(item?.focused).toBeFalse();
     tick();
     expect(item?.elementRef.nativeElement.matches(':focus-within')).toBeTrue();
   }));
