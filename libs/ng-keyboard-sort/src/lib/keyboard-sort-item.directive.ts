@@ -93,7 +93,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   }
 
   public activate() {
-    if (!this.activated && !this.kbdSortItemDisabled) {
+    if (!this.activated && !this.isDisabled()) {
       this.#list?.clearActivated();
       this.activated = true;
       this.#renderer.addClass(
@@ -116,11 +116,18 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     }
   }
 
+  public isDisabled(): boolean {
+    if (this.kbdSortItemDisabled) {
+      return true;
+    }
+    return !!this.#list?.kbdSortListDisabled;
+  }
+
   public moveUp(): boolean {
     if (!this.#list) {
       return false;
     }
-    if (this.activated && !this.kbdSortItemDisabled) {
+    if (this.activated && !this.isDisabled()) {
       return this.#list.moveItemUp(this);
     }
     return false;
@@ -130,7 +137,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     if (!this.#list) {
       return false;
     }
-    if (this.activated && !this.kbdSortItemDisabled) {
+    if (this.activated && !this.isDisabled()) {
       return this.#list.moveItemDown(this);
     }
     return false;
@@ -181,7 +188,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
       fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keydown')
         .pipe(
           filter((event) => {
-            return !this.kbdSortItemDisabled && event.key.startsWith('Arrow');
+            return !this.isDisabled() && event.key.startsWith('Arrow');
           })
         )
         .subscribe((event) => {
