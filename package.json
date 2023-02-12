@@ -1,13 +1,13 @@
 {
   "name": "ng-keyboard-sort",
   "description": "Angular keyboard sort directive",
-  "version": "1.0.2",
+  "version": "0.0.0",
   "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/johnhwhite/ng-keyboard-sort.git",
-    "directory": "packages/ng-keyboard-sort"
+    "directory": "libs/ng-keyboard-sort"
   },
   "scripts": {
     "ng": "ng",

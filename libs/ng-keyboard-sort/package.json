@@ -6,15 +6,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/johnhwhite/ng-keyboard-sort.git",
-    "directory": "projects/ng-keyboard-sort"
+    "directory": "libs/ng-keyboard-sort"
   },
   "peerDependencies": {
     "@angular/cdk": "^15.0.0",
     "@angular/common": "^15.0.0",
     "@angular/core": "^15.0.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.0"
   },
   "keywords": [
     "angular",
