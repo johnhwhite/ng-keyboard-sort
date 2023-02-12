@@ -8,6 +8,17 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.1...v1.0.2
 
+## What's Changed
+* fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
+* feat: add if-active directive by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/17
+* feat: add if-focused directive by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/18
+* chore: update release config by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/19
+* chore: update release config with packages by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/21
+* chore: update package settings by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/23
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0
+
 ### [1.0.1](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.0...v1.0.1) (2023-02-08)
 
 
