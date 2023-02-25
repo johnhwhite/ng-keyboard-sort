@@ -18,10 +18,8 @@ jobs:
         with:
           release-type: node
           default-branch: '${{ github.ref_name }}'
-          extra-files: >
-            [
-              { "type": "json", "path": "libs/ng-keyboard-sort/package.json", "jsonpath": "$.version" }
-            ]
+          changelog-notes-type: 'github'
+          package-name: ng-keyboard-sort
           token: ${{ secrets.GH_TOKEN }}
           changelog-types: >
             [
@@ -56,6 +54,9 @@ jobs:
       - name: Install
         run: npm ci
         if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
+      - name: Build
+        run: npm run build:package
+        if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
       - name: Publish to NPM
         if: ${{ steps.release.outputs.release_created }}
         env:
@@ -64,5 +65,6 @@ jobs:
           echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
           cd dist/ng-keyboard-sort
           set -x
+          npm version ${{ steps.release.outputs.version }}
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
           npm publish --access public --tag "latest"

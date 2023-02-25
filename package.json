@@ -1,7 +1,7 @@
 {
   "name": "ng-keyboard-sort",
   "description": "Angular keyboard sort directive",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "private": true,
   "repository": {
@@ -13,6 +13,7 @@
     "ng": "ng",
     "start": "nx s e2e",
     "build": "nx run-many --target=build --all",
+    "build:package": "nx run ng-keyboard-sort:build:production",
     "watch": "nx build ng-keyboard-sort --watch --configuration development",
     "test": "nx test ng-keyboard-sort --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:e2e": "nx test e2e --browsers=ChromeHeadless --code-coverage --watch=false",
