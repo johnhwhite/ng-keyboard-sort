@@ -9,6 +9,12 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.1.0...v1.1.1
 
+## What's Changed
+* ci: add tag on release by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/29
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.1.1...v1.1.2
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
