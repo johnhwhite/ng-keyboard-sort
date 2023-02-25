@@ -1,14 +1,7 @@
 # Changelog
 
-## What's Changed
-* chore: update readme by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/11
-* docs: links to open project in stackblitz by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/13
-* chore: update stackblitz config by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/14
+## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
-
-**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.1...v1.0.2
-
-## What's Changed
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
 * feat: add if-active directive by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/17
 * feat: add if-focused directive by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/18
@@ -16,16 +9,17 @@
 * chore: update release config with packages by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/21
 * chore: update package settings by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/23
 
+## [1.0.2](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.1...v1.0.2) (2023-02-11)
 
-**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0
+* chore: update readme by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/11
+* docs: links to open project in stackblitz by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/13
+* chore: update stackblitz config by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/14
 
 ### [1.0.1](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.0...v1.0.1) (2023-02-08)
-
 
 ### Continuous Integration
 
 * fix workflow ([109bc85](https://www.github.com/johnhwhite/ng-keyboard-sort/commit/109bc859ef4ea863465a038eb92c8d0c63b06983))
-
 
 ### Miscellaneous Chores
 

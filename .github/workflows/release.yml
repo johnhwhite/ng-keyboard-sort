@@ -18,9 +18,10 @@ jobs:
         with:
           release-type: node
           default-branch: '${{ github.ref_name }}'
-          changelog-notes-type: 'github'
-          package-name: ng-keyboard-sort
-          path: libs/ng-keyboard-sort
+          extra-files: >
+            [
+              { "type": "json", "path": "libs/ng-keyboard-sort/package.json", "jsonpath": "$.version" }
+            ]
           token: ${{ secrets.GH_TOKEN }}
           changelog-types: >
             [
@@ -64,3 +65,4 @@ jobs:
           cd dist/ng-keyboard-sort
           set -x
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
+          npm publish --access public --tag "latest"
