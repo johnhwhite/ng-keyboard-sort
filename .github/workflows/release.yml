@@ -67,4 +67,4 @@ jobs:
           set -x
           npm version ${{ steps.release.outputs.version }}
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
-          npm publish --access public --tag "latest"
+          npm dist-tag add "$(jq -r .name package.json)@${{ steps.release.outputs.version }}" latest
