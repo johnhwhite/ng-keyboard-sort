@@ -15,6 +15,13 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.1.1...v1.1.2
 
+## What's Changed
+* feat: emit drop event by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/31
+* build: remove deprecated workspace lint by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/33
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v1.1.2...v1.2.0
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
