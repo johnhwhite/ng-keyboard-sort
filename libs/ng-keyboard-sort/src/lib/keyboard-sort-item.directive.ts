@@ -52,6 +52,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
       this.focused = false;
     }
     this.#activated = value;
+    this.#list?.capturePreviousIndex(this);
     this.kbdSortItemActivated.emit(value);
   }
 
@@ -117,6 +118,9 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   public ngAfterViewInit(): void {
     this.onNextStable(() => {
       this.updateEvents();
+      if (this.activated) {
+        this.activated = true;
+      }
       this.#subscriptions.add(
         this.handles?.changes.subscribe(() => {
           this.updateEvents();
@@ -154,6 +158,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
 
   public deactivate() {
     if (this.activated) {
+      this.#list?.dropItem(this);
       this.activated = false;
       this.#renderer.removeClass(
         this.elementRef.nativeElement,

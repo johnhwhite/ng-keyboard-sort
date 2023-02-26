@@ -18,6 +18,7 @@ import { filter, Subscription, take } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { KeyboardSortEvent } from './keyboard-sort-event';
 import { KeyboardSortService } from './keyboard-sort.service';
+import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
 
 @Directive({
   selector: '[kbdSortList]',
@@ -53,6 +54,9 @@ export class KeyboardSortListDirective implements OnDestroy {
   public kbdSortEnabled = new EventEmitter<boolean>();
 
   @Output()
+  public kdbSortDrop = new EventEmitter<KeyboardSortEventDrop>();
+
+  @Output()
   public kdbSortEnd = new EventEmitter<KeyboardSortEvent>();
 
   #appRef: ApplicationRef;
@@ -61,6 +65,8 @@ export class KeyboardSortListDirective implements OnDestroy {
   #elementRef: ElementRef;
   #subscriptions = new Subscription();
   #kbdSortListDisabled = false;
+  #previousIndex: number | undefined;
+  #currentIndex: number | undefined;
 
   constructor(
     readonly changeDetectorRef: ChangeDetectorRef,
@@ -86,17 +92,20 @@ export class KeyboardSortListDirective implements OnDestroy {
       this.#doc.activeElement &&
       !this.#elementRef.nativeElement.contains(this.#doc.activeElement)
     ) {
-      this.items?.forEach((item) => {
-        item.deactivate();
-      });
-      this.kdbSortEnd.emit({
-        list: this,
-      });
+      this.deactivateAll();
     }
   }
 
   @HostListener('document:keydown.Escape')
   public deactivateAll(): void {
+    if (this.#previousIndex !== undefined && this.#currentIndex !== undefined) {
+      this.kdbSortDrop.emit({
+        previousIndex: this.#previousIndex,
+        currentIndex: this.#currentIndex,
+      });
+      this.#previousIndex = undefined;
+      this.#currentIndex = undefined;
+    }
     this.items?.forEach((item) => {
       item.deactivate();
     });
@@ -141,6 +150,10 @@ export class KeyboardSortListDirective implements OnDestroy {
       const currentPosition = items.indexOf(item);
       if (currentPosition > 0) {
         const moveToIndex = currentPosition - 1;
+        if (!this.#previousIndex) {
+          this.#previousIndex = currentPosition;
+        }
+        this.#currentIndex = moveToIndex;
         if (this.kbdSortListData) {
           moveItemInArray(this.kbdSortListData, currentPosition, moveToIndex);
           this.#changeDetectorRef.detectChanges();
@@ -160,6 +173,10 @@ export class KeyboardSortListDirective implements OnDestroy {
       const currentPosition = items.indexOf(item);
       if (currentPosition > -1 && currentPosition < items.length - 1) {
         const moveToIndex = currentPosition + 1;
+        if (!this.#previousIndex) {
+          this.#previousIndex = currentPosition;
+        }
+        this.#currentIndex = moveToIndex;
         if (this.kbdSortListData) {
           moveItemInArray(this.kbdSortListData, currentPosition, moveToIndex);
           this.#changeDetectorRef.detectChanges();
@@ -183,6 +200,26 @@ export class KeyboardSortListDirective implements OnDestroy {
         }
       }
     });
+  }
+
+  public dropItem(item: KeyboardSortItemDirective): void {
+    if (
+      item.activated &&
+      this.#previousIndex !== undefined &&
+      this.#currentIndex !== undefined &&
+      this.#previousIndex !== this.#currentIndex
+    ) {
+      this.kdbSortDrop.emit({
+        previousIndex: this.#previousIndex,
+        currentIndex: this.#currentIndex,
+      });
+    }
+  }
+
+  public capturePreviousIndex(item: KeyboardSortItemDirective): void {
+    if (item.activated) {
+      this.#previousIndex = this.items?.toArray().indexOf(item);
+    }
   }
 
   private onNextStable(cb: () => void): void {
