@@ -148,6 +148,8 @@ describe('ListDirective', () => {
         setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
+        const dropSpy = jasmine.createSpy('dropSpy');
+        component.list?.kdbSortDrop.subscribe(dropSpy);
         expect(component.list).toBeTruthy();
         const lastItem = getItem(2);
         expect(lastItem).toBeTruthy();
@@ -156,6 +158,11 @@ describe('ListDirective', () => {
         fixture.detectChanges();
         tick();
         expect(component.data).toEqual(['Item 1', 'Item 3', 'Item 2']);
+        expect(dropSpy).toHaveBeenCalledTimes(1);
+        expect(dropSpy).toHaveBeenCalledWith({
+          previousIndex: 2,
+          currentIndex: 1,
+        });
       }));
 
       it(`should move item down in ${direction} direction`, fakeAsync(() => {
