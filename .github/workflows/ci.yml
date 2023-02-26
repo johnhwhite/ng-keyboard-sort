@@ -34,7 +34,6 @@ jobs:
         uses: nrwl/nx-set-shas@v3
       - name: Lint, Build, Test
         run: |
-          npx nx workspace-lint
           npx nx format:check
           npx nx affected \
             --base="${{ env.NX_BASE }}" \
