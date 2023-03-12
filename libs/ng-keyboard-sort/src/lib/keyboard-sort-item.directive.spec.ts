@@ -104,8 +104,10 @@ describe('ItemDirective', () => {
     const item = component.item;
     expect(item).toBeTruthy();
     expect(item?.activated).toBeFalse();
-    item!.focused = true;
-    item?.activate();
+    if (item) {
+      item.focused = true;
+      item.activate();
+    }
     expect(item?.focused).toBeFalse();
     expect(item?.activated).toBeTrue();
     item?.deactivate();
