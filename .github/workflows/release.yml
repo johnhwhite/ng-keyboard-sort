@@ -72,10 +72,11 @@ jobs:
       - name: Publish to GitHub Packages
         if: ${{ steps.release.outputs.release_created }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GH_TOKEN}}
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
         run: |
-          echo 'https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > ~/.npmrc
+          echo '//npm.pkg.github.com/:_authToken=${GH_TOKEN}' > ~/.npmrc
           cd dist/ng-keyboard-sort
           set -x
+          npm pkg set "publishConfig.registry=https://npm.pkg.github.com"
           npm publish
           npm logout
