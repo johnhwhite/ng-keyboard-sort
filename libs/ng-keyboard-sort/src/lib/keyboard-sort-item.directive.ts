@@ -6,6 +6,7 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
+  HostListener,
   Inject,
   Input,
   OnDestroy,
@@ -14,7 +15,7 @@ import {
   Renderer2,
   SkipSelf,
 } from '@angular/core';
-import { filter, fromEvent, Subscription, take } from 'rxjs';
+import { filter, fromEvent, merge, Observable, Subscription, take } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { Platform } from '@angular/cdk/platform';
@@ -62,9 +63,10 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   public set focused(value: boolean) {
     this.#focused = value;
     this.kbdSortItemFocused.emit(value);
+    this.#changeDetectorRef.markForCheck();
   }
 
-  public tabindex: '0' | undefined = '0';
+  public tabindex: '0' | '-1' = '-1';
 
   @Input()
   public get kbdSortItemDisabled(): boolean {
@@ -76,6 +78,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     }
     this.#kbdSortItemDisabled = value;
     this.kbdSortItemActivated.emit(!value);
+    this.#changeDetectorRef.markForCheck();
   }
 
   @Output()
@@ -131,6 +134,16 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.#subscriptions.unsubscribe();
+  }
+
+  @HostListener('focus')
+  public onFocus(): void {
+    if (!this.activated) {
+      this.focused = true;
+    }
+    if (this.handles?.first?.elementRef.nativeElement.parentElement) {
+      this.handles.first.elementRef.nativeElement.focus();
+    }
   }
 
   public toggleActivated() {
@@ -202,17 +215,18 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     this.onNextStable(() => {
       if (this.#platform.isBrowser) {
         setTimeout(() => {
-          if (this.tabindex === '0') {
-            this.elementRef.nativeElement.focus();
-          } else {
+          if (this.handles?.first) {
             if (
               !this.handles?.some((handle) =>
                 handle.elementRef.nativeElement.matches(':focus-within')
               )
             ) {
-              this.handles?.first.elementRef.nativeElement.focus();
+              this.handles?.first?.elementRef.nativeElement.focus();
             }
+          } else {
+            this.elementRef.nativeElement.focus();
           }
+          this.#list?.focusItem(this);
         });
       }
     });
@@ -233,14 +247,15 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
         })
     );
     this.#events.add(
-      fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keyup')
-        .pipe(filter((event) => event.key === 'Tab'))
-        .subscribe(() => {
-          this.activate();
-        })
-    );
-    this.#events.add(
-      fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keydown')
+      merge(
+        fromEvent<KeyboardEvent>(elementRef.nativeElement, 'keydown'),
+        this.#list?.elementRef.nativeElement
+          ? fromEvent<KeyboardEvent>(
+              this.#list?.elementRef.nativeElement,
+              'keydown'
+            ).pipe(filter(() => this.focused))
+          : new Observable<KeyboardEvent>()
+      )
         .pipe(
           filter((event) => {
             return !this.isDisabled() && event.key.startsWith('Arrow');
@@ -250,6 +265,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
           if (this.#list?.kbdSortListOrientation === 'vertical') {
             if (event.key === 'ArrowUp') {
               event.preventDefault();
+              event.stopPropagation();
               if (this.activated) {
                 this.moveUp();
               } else {
@@ -257,6 +273,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
               }
             } else if (event.key === 'ArrowDown') {
               event.preventDefault();
+              event.stopPropagation();
               if (this.activated) {
                 this.moveDown();
               } else {
@@ -266,6 +283,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
           } else if (this.#list?.kbdSortListOrientation === 'horizontal') {
             if (event.key === 'ArrowLeft') {
               event.preventDefault();
+              event.stopPropagation();
               if (this.activated) {
                 this.moveUp();
               } else {
@@ -273,6 +291,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
               }
             } else if (event.key === 'ArrowRight') {
               event.preventDefault();
+              event.stopPropagation();
               if (this.activated) {
                 this.moveDown();
               } else {
@@ -294,6 +313,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
                 this.deactivate();
               }
               this.kbdSortItemFocused.emit(false);
+              this.#list?.clearActivated();
             }
           });
         })
@@ -304,13 +324,13 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   private updateEvents() {
     this.#events.unsubscribe();
     this.#events = new Subscription();
+    this.tabindex =
+      this.#list?.items?.toArray().indexOf(this) !== 0 ? '-1' : '0';
     if (this.handles?.length) {
-      this.tabindex = undefined;
-      this.handles.forEach((handle) => {
+      this.handles?.forEach((handle) => {
         this.handleEvents(handle.elementRef);
       });
     } else {
-      this.tabindex = '0';
       this.handleEvents(this.elementRef);
     }
   }

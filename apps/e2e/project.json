@@ -1,5 +1,6 @@
 {
   "name": "e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "generators": {},
   "sourceRoot": "apps/e2e/src",
@@ -14,7 +15,10 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/e2e/tsconfig.app.json",
         "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
-        "styles": ["apps/e2e/src/styles.css"],
+        "styles": [
+          "apps/e2e/src/styles.css",
+          "node_modules/@angular/cdk/_index.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -68,7 +72,10 @@
         "polyfills": ["zone.js", "zone.js/testing"],
         "tsConfig": "apps/e2e/tsconfig.spec.json",
         "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
-        "styles": ["apps/e2e/src/styles.css"],
+        "styles": [
+          "apps/e2e/src/styles.css",
+          "node_modules/@angular/cdk/_index.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -86,8 +93,14 @@
     },
     "e2e": {
       "dependsOn": [
-        { "target": "build", "projects": "dependencies" },
-        { "target": "build", "projects": "self" }
+        {
+          "target": "build",
+          "projects": "dependencies"
+        },
+        {
+          "target": "build",
+          "projects": "self"
+        }
       ],
       "executor": "nx:run-commands",
       "outputs": [],

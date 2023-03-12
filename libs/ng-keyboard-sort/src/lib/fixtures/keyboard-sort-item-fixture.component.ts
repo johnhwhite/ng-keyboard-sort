@@ -17,7 +17,7 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
   ],
   providers: [KeyboardSortService],
   template: `
-    <div kbdSortItem [kbdSortItemDisabled]="disabled" #item>
+    <div kbdSortItem [kbdSortItemDisabled]="disabled" #item id="example-item">
       <div *ngIf="showHandle" kbdSortHandle class="example-handle">Handle</div>
       <span>Item 1</span>
       <span *kbdSortKeyboardSortItemIfActive class="example-active"

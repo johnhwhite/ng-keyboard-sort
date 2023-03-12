@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('test', async ({ page }) => {
   await page.goto('http://localhost:4200/example-with-handles');
@@ -7,6 +7,9 @@ test('test', async ({ page }) => {
   await page.press('input', 'Tab');
   await expect(page.locator('li:first-child .handle')).toBeFocused();
   await expect(page.locator('li:first-child')).toContainText('Item 1');
+  await page.locator('li:first-child .handle').dispatchEvent('keydown', {
+    key: 'Enter',
+  });
   await expect(page.locator('li:first-child')).toHaveClass(
     /\bkbd-sort-item-activated\b/
   );

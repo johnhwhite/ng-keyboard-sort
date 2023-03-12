@@ -54,7 +54,9 @@ describe('ListDirective', () => {
     setupTest();
     expect(component.items?.length).toBe(3);
     expect(getItem(0)).toBeTruthy();
-    expect(getItem(0).elementRef.nativeElement.textContent).toBe('Item 1');
+    expect(getItem(0).elementRef.nativeElement.textContent?.trim()).toBe(
+      'Item 1'
+    );
     getItem(0).activate();
     expect(getItem(0).moveDown()).toBeTrue();
     getItem(1).deactivate();
@@ -62,9 +64,15 @@ describe('ListDirective', () => {
     expect(getItem(1).moveUp()).toBeFalse();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(0).elementRef.nativeElement.textContent).toBe('Item 2');
-    expect(getItem(1).elementRef.nativeElement.textContent).toBe('Item 1');
-    expect(getItem(2).elementRef.nativeElement.textContent).toBe('Item 3');
+    expect(getItem(0).elementRef.nativeElement.textContent?.trim()).toBe(
+      'Item 2'
+    );
+    expect(getItem(1).elementRef.nativeElement.textContent?.trim()).toBe(
+      'Item 1'
+    );
+    expect(getItem(2).elementRef.nativeElement.textContent?.trim()).toBe(
+      'Item 3'
+    );
     component.list?.deactivateAll();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -127,13 +135,8 @@ describe('ListDirective', () => {
         expect(
           getItem(1).elementRef.nativeElement.matches(':focus-within')
         ).toBeTrue();
-        const secondItem = (fixture.nativeElement as HTMLElement).querySelector(
-          'li:nth-child(2)'
-        );
-        expect(secondItem).toBeTruthy();
-        secondItem?.dispatchEvent(
-          new KeyboardEvent('keydown', { key: arrows[1] })
-        );
+        const list = (fixture.nativeElement as HTMLElement).querySelector('ul');
+        list?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[1] }));
         fixture.detectChanges();
         tick();
         expect(
@@ -187,7 +190,7 @@ describe('ListDirective', () => {
           'li'
         );
         expect(element).toBeTruthy();
-        expect(element?.textContent).toBe('Item 1');
+        expect(element?.textContent?.trim()).toBe('Item 1');
         expect(element).toHaveClass('kbd-sort-item');
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
@@ -214,7 +217,7 @@ describe('ListDirective', () => {
           'li:nth-child(2)'
         );
         expect(element).toBeTruthy();
-        expect(element?.textContent).toBe('Item 2');
+        expect(element?.textContent?.trim()).toBe('Item 2');
         expect(element).toHaveClass('kbd-sort-item');
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
@@ -241,7 +244,7 @@ describe('ListDirective', () => {
           'li:nth-child(2)'
         );
         expect(element).toBeTruthy();
-        expect(element?.textContent).toBe('Item 2');
+        expect(element?.textContent?.trim()).toBe('Item 2');
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
         tick();
@@ -269,7 +272,7 @@ describe('ListDirective', () => {
           'li:nth-child(3)'
         );
         expect(element).toBeTruthy();
-        expect(element?.textContent).toBe('Item 3');
+        expect(element?.textContent?.trim()).toBe('Item 3');
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
         tick();
@@ -285,6 +288,7 @@ describe('ListDirective', () => {
           fixture.nativeElement as HTMLElement
         ).querySelector('li:nth-child(2)');
         expect(activeElement).toHaveClass('kbd-sort-item-activated');
+        expect(element?.textContent?.trim()).toBe('Item 3  Active');
       }));
     });
   });
