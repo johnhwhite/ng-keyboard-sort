@@ -40,3 +40,7 @@ Deselect the item.
 ### Arrow Keys
 
 Move the selected item up or down (vertical) or left or right (horizontal).
+
+## TODO
+
+- [ ] Move keyboard event listener to wrapper element.

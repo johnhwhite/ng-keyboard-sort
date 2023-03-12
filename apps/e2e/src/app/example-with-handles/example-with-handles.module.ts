@@ -1,11 +1,18 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   CdkDrag,
   CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import { KeyboardSortModule } from 'ng-keyboard-sort';
+import {
+  KeyboardSortHandleDirective,
+  KeyboardSortItemDirective,
+  KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemIfFocusedDirective,
+  KeyboardSortListDirective,
+  KeyboardSortModule,
+} from 'ng-keyboard-sort';
 
 import { ExampleWithHandlesRoutingModule } from './example-with-handles-routing.module';
 import { ExampleWithHandlesComponent } from './example-with-handles.component';
@@ -19,6 +26,12 @@ import { ExampleWithHandlesComponent } from './example-with-handles.component';
     CdkDropList,
     KeyboardSortModule,
     CdkDragPlaceholder,
+    NgOptimizedImage,
+    KeyboardSortListDirective,
+    KeyboardSortHandleDirective,
+    KeyboardSortItemDirective,
+    KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
   ],
 })
 export class ExampleWithHandlesModule {}

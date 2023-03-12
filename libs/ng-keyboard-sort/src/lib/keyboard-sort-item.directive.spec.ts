@@ -74,32 +74,39 @@ describe('ItemDirective', () => {
     const handleElement =
       fixture.nativeElement.querySelector('.example-handle');
     expect(handleElement).toBeTruthy();
-    expect(handleElement.getAttribute('tabindex')).toBe('0');
-    expect(component.item?.tabindex).toBeUndefined();
+    expect(handleElement.getAttribute('tabindex')).toBe('-1');
+    expect(component.item?.tabindex).toBe('-1');
     component.showHandle = false;
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.tabindex).toBe('0');
+    expect(component.item?.tabindex).toBe('-1');
   });
 
-  it('should focus on handle', fakeAsync(() => {
+  it('should focus on handle', async () => {
     setupTest({ showHandle: true });
     expect(component).toBeTruthy();
     const handleElement = fixture.nativeElement.querySelector(
       '.example-handle'
     ) as HTMLElement;
     expect(handleElement).toBeTruthy();
+    fixture.componentInstance.item?.elementRef.nativeElement.focus();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.item?.focused).toBeTrue();
     component.item?.activate();
     fixture.detectChanges();
-    tick();
+    await fixture.whenStable();
     expect(handleElement.matches(':focus-within')).toBeTrue();
-  }));
+  });
 
   it('should change focus', () => {
     setupTest();
     const item = component.item;
     expect(item).toBeTruthy();
+    expect(item?.activated).toBeFalse();
+    item!.focused = true;
     item?.activate();
+    expect(item?.focused).toBeFalse();
     expect(item?.activated).toBeTrue();
     item?.deactivate();
     expect(item?.activated).toBeFalse();
@@ -128,8 +135,8 @@ describe('ItemDirective', () => {
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keyup', { key: 'Tab' })
     );
-    expect(item?.activated).toBeTrue();
-    expect(item?.focused).toBeFalse();
+    expect(item?.activated).toBeFalse();
+    expect(item?.focused).toBeTrue();
     tick();
     expect(item?.elementRef.nativeElement.matches(':focus-within')).toBeTrue();
   }));
