@@ -41,6 +41,12 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.1...v2.0.2
 
+## What's Changed
+* ci: update publish config by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/41
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.2...v2.0.3
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
