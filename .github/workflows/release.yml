@@ -62,9 +62,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: |
-          echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
+          echo '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}' > ~/.npmrc
           cd dist/ng-keyboard-sort
           set -x
           npm version ${{ steps.release.outputs.version }}
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
           npm dist-tag add "$(jq -r .name package.json)@${{ steps.release.outputs.version }}" latest
+      - name: Publish to GitHub Packages
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GH_TOKEN}}
+        run: |
+          echo 'https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > ~/.npmrc
+          cd dist/ng-keyboard-sort
+          set -x
+          npm publish
