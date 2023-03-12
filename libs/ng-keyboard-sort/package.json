@@ -11,7 +11,8 @@
   "peerDependencies": {
     "@angular/cdk": "^15.0.0",
     "@angular/common": "^15.0.0",
-    "@angular/core": "^15.0.0"
+    "@angular/core": "^15.0.0",
+    "rxjs": "^7.0.0"
   },
   "keywords": [
     "angular",
