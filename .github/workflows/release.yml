@@ -68,6 +68,7 @@ jobs:
           npm version ${{ steps.release.outputs.version }}
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
           npm dist-tag add "$(jq -r .name package.json)@${{ steps.release.outputs.version }}" latest
+          npm logout
       - name: Publish to GitHub Packages
         if: ${{ steps.release.outputs.release_created }}
         env:
@@ -77,3 +78,4 @@ jobs:
           cd dist/ng-keyboard-sort
           set -x
           npm publish
+          npm logout
