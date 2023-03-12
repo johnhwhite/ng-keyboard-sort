@@ -35,6 +35,12 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.0...v2.0.1
 
+## What's Changed
+* ci: log out of registry after publish by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/39
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.1...v2.0.2
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
