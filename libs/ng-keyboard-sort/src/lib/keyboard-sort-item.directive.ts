@@ -325,7 +325,10 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
     this.#events.unsubscribe();
     this.#events = new Subscription();
     this.tabindex =
-      this.#list?.items?.toArray().indexOf(this) !== 0 ? '-1' : '0';
+      this.#list?.kbdSortListDisabled ||
+      this.#list?.items?.toArray().indexOf(this) !== 0
+        ? '-1'
+        : '0';
     if (this.handles?.length) {
       this.handles?.forEach((handle) => {
         this.handleEvents(handle.elementRef);

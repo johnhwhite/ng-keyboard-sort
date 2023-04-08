@@ -18,7 +18,8 @@ import { KeyboardSortItemIfActiveDirective } from 'ng-keyboard-sort';
     <ul
       kbdSortList
       [kbdSortListData]="data"
-      [kbdSortListOrientation]="direction">
+      [kbdSortListOrientation]="direction"
+      [kbdSortListDisabled]="disabled">
       <li
         *ngFor="let item of data; index as i"
         kbdSortItem
@@ -40,4 +41,6 @@ export class KeyboardSortListFixtureComponent {
   public data: string[] | undefined = ['Item 1', 'Item 2', 'Item 3'];
 
   public direction: 'horizontal' | 'vertical' = 'horizontal';
+
+  public disabled = false;
 }
