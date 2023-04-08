@@ -59,26 +59,24 @@ jobs:
         if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
       - name: Publish to NPM
         if: ${{ steps.release.outputs.release_created }}
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: |
           cd dist/ng-keyboard-sort
-          npm config set '//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}'
+          npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
           set -x
-          npm version ${{ steps.release.outputs.version }}
+          npm whoami --registry https://registry.npmjs.org
+          npm pkg set 'version=${{ steps.release.outputs.version }}'
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
           npm logout
           npm config delete '//registry.npmjs.org/:_authToken'
       - name: Publish to GitHub Packages
         if: ${{ steps.release.outputs.release_created }}
-        env:
-          GH_TOKEN: ${{secrets.GH_TOKEN}}
         run: |
           cd dist/ng-keyboard-sort
           npm config set '@${{ github.repository_owner }}:registry=https://npm.pkg.github.com'
-          npm config set '//npm.pkg.github.com/:_authToken=${GH_TOKEN}'
+          npm config set '//npm.pkg.github.com/:_authToken=${{secrets.GH_TOKEN}}'
           set -x
-          npm version ${{ steps.release.outputs.version }}
+          npm whoami --registry https://npm.pkg.github.com
+          npm pkg set 'version=${{ steps.release.outputs.version }}'
           npm pkg set "name=@${{ github.repository_owner }}/ng-keyboard-sort"
           npm pkg set "publishConfig.registry=https://npm.pkg.github.com"
           npm publish
