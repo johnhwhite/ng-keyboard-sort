@@ -67,7 +67,6 @@ jobs:
           set -x
           npm version ${{ steps.release.outputs.version }}
           npm publish --access public --tag "v${{ steps.release.outputs.major }}-lts"
-          npm dist-tag add "$(jq -r .name package.json)@${{ steps.release.outputs.version }}" latest
           npm logout
       - name: Publish to GitHub Packages
         if: ${{ steps.release.outputs.release_created }}
@@ -75,8 +74,11 @@ jobs:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
         run: |
           echo '//npm.pkg.github.com/:_authToken=${GH_TOKEN}' > ~/.npmrc
+          echo '@${{ github.repository_owner }}:registry=https://npm.pkg.github.com' >> ~/.npmrc
           cd dist/ng-keyboard-sort
           set -x
+          npm version ${{ steps.release.outputs.version }}
+          npm pkg set "name=@${{ github.repository_owner }}/ng-keyboard-sort"
           npm pkg set "publishConfig.registry=https://npm.pkg.github.com"
           npm publish
           npm logout

@@ -109,7 +109,7 @@ export class KeyboardSortListDirective implements OnDestroy {
     this.items?.forEach((item, index) => {
       item.deactivate();
       item.focused = false;
-      item.tabindex = index === 0 ? '0' : '-1';
+      item.tabindex = this.kbdSortListDisabled || index !== 0 ? '-1' : '0';
     });
     this.#changeDetectorRef.detectChanges();
     this.kdbSortEnd.emit({
@@ -149,8 +149,8 @@ export class KeyboardSortListDirective implements OnDestroy {
 
   public focusItem(item: KeyboardSortItemDirective): void {
     this.items?.forEach((i) => {
-      i.tabindex = i === item ? '0' : '-1';
-      i.focused = i === item && !item.activated;
+      i.tabindex = this.kbdSortListDisabled || i !== item ? '-1' : '0';
+      i.focused = !this.kbdSortListDisabled && i === item && !item.activated;
     });
     this.#changeDetectorRef.detectChanges();
   }

@@ -50,6 +50,23 @@ describe('ListDirective', () => {
     expect(item?.activated).toBeFalse();
   });
 
+  it('should disable', () => {
+    setupTest({
+      disabled: true,
+    });
+    const list = component.list;
+    const item = component.items?.first;
+    expect(item).toBeTruthy();
+    list?.activateItem(item as KeyboardSortItemDirective);
+    expect(item?.activated).toBeFalse();
+    expect(
+      fixture.nativeElement.querySelectorAll('[tabindex="-1"]').length
+    ).toBe(3);
+    expect(
+      fixture.nativeElement.querySelectorAll('[tabindex="0"]').length
+    ).toBe(0);
+  });
+
   it('should move items', async () => {
     setupTest();
     expect(component.items?.length).toBe(3);
