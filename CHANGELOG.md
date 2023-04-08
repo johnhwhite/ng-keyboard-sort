@@ -53,6 +53,12 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.3...v2.0.4
 
+## What's Changed
+* feat: support wasd keys by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/46
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.0.4...v2.1.0
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
