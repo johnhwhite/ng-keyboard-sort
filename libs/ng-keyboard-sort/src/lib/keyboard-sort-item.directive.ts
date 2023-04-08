@@ -23,6 +23,13 @@ import { DOCUMENT } from '@angular/common';
 import { KeyboardSortService } from './keyboard-sort.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
+const directionalKeys = {
+  up: ['ArrowUp', 'W', 'w'],
+  down: ['ArrowDown', 'S', 's'],
+  left: ['ArrowLeft', 'A', 'a'],
+  right: ['ArrowRight', 'D', 'd'],
+};
+
 @Directive({
   selector: '[kbdSortItem]',
   exportAs: 'kbdSortItem',
@@ -258,46 +265,63 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
       )
         .pipe(
           filter((event) => {
-            return !this.isDisabled() && event.key.startsWith('Arrow');
+            return (
+              !this.isDisabled() &&
+              [
+                ...directionalKeys.up,
+                ...directionalKeys.down,
+                ...directionalKeys.left,
+                ...directionalKeys.right,
+              ].includes(event.key)
+            );
           })
         )
         .subscribe((event) => {
-          if (this.#list?.kbdSortListOrientation === 'vertical') {
-            if (event.key === 'ArrowUp') {
-              event.preventDefault();
-              event.stopPropagation();
-              if (this.activated) {
-                this.moveUp();
-              } else {
-                this.#list.activatePreviousItem(this);
-              }
-            } else if (event.key === 'ArrowDown') {
-              event.preventDefault();
-              event.stopPropagation();
-              if (this.activated) {
-                this.moveDown();
-              } else {
-                this.#list.activateNextItem(this);
-              }
+          event.preventDefault();
+          event.stopPropagation();
+
+          const directionalCommands = {
+            moveUp:
+              this.#list?.kbdSortListOrientation === 'vertical'
+                ? directionalKeys.up
+                : directionalKeys.left,
+            moveDown:
+              this.#list?.kbdSortListOrientation === 'vertical'
+                ? directionalKeys.down
+                : directionalKeys.right,
+            pickUp:
+              this.#list?.kbdSortListOrientation === 'vertical'
+                ? directionalKeys.left
+                : directionalKeys.up,
+            putDown:
+              this.#list?.kbdSortListOrientation === 'vertical'
+                ? directionalKeys.right
+                : directionalKeys.down,
+          };
+
+          if (directionalCommands.moveUp.includes(event.key)) {
+            if (this.activated) {
+              this.moveUp();
+            } else {
+              this.#list?.activatePreviousItem(this);
             }
-          } else if (this.#list?.kbdSortListOrientation === 'horizontal') {
-            if (event.key === 'ArrowLeft') {
-              event.preventDefault();
-              event.stopPropagation();
-              if (this.activated) {
-                this.moveUp();
-              } else {
-                this.#list.activatePreviousItem(this);
-              }
-            } else if (event.key === 'ArrowRight') {
-              event.preventDefault();
-              event.stopPropagation();
-              if (this.activated) {
-                this.moveDown();
-              } else {
-                this.#list.activateNextItem(this);
-              }
+          } else if (directionalCommands.moveDown.includes(event.key)) {
+            if (this.activated) {
+              this.moveDown();
+            } else {
+              this.#list?.activateNextItem(this);
             }
+          } else if (
+            !this.activated &&
+            directionalCommands.pickUp.includes(event.key)
+          ) {
+            this.activate();
+          } else if (
+            this.activated &&
+            directionalCommands.putDown.includes(event.key)
+          ) {
+            this.deactivate();
+            this.focused = true;
           }
         })
     );

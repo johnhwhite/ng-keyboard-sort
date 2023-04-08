@@ -135,6 +135,16 @@ describe('ItemDirective', () => {
     expect(item?.activated).toBeFalse();
     expect(item?.focused).toBeTrue();
     item?.elementRef.nativeElement.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowUp' })
+    );
+    expect(item?.activated).toBeTrue();
+    expect(item?.focused).toBeFalse();
+    item?.elementRef.nativeElement.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown' })
+    );
+    expect(item?.activated).toBeFalse();
+    expect(item?.focused).toBeTrue();
+    item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keyup', { key: 'Tab' })
     );
     expect(item?.activated).toBeFalse();
