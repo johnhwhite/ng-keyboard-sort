@@ -37,6 +37,6 @@ jobs:
             ]
       - name: Publish
         if: ${{ steps.release.outputs.release_created }}
-        run: gh workflow run publish.yml --ref main
+        run: gh workflow run 53740030 -R johnhwhite/ng-keyboard-sort --ref main
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
