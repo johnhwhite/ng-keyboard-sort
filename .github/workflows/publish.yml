@@ -38,6 +38,7 @@ jobs:
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --access public --tag "v${MAJOR_VERSION}-lts"
+          npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
           npm config delete '//registry.npmjs.org/:_authToken'
       - name: Publish to GitHub Packages
         run: |
