@@ -19,7 +19,9 @@ jobs:
           fetch-depth: 0
       - name: Yaml Lint
         run: |
-          yamllint --strict -d '{extends: default, rules: {line-length: {max: 120}}}' $(git ls-files '*.yaml' '*.yml')
+          yamllint --strict -f github \
+            -d '{extends: default, rules: {document-start: disable, line-length: {max: 120}, truthy: disable}}' \
+            $(git ls-files '*.yaml' '*.yml')
       - name: Setup node
         uses: actions/setup-node@v3
         with:
