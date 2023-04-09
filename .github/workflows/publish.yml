@@ -36,10 +36,8 @@ jobs:
           cd dist/ng-keyboard-sort
           npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
           set -x
-          npm whoami --registry https://registry.npmjs.org
           npm pkg set "version=${VERSION}"
           npm publish --access public --tag "v${MAJOR_VERSION}-lts"
-          npm logout
           npm config delete '//registry.npmjs.org/:_authToken'
       - name: Publish to GitHub Packages
         run: |
@@ -48,11 +46,9 @@ jobs:
           npm config set '@${{ github.repository_owner }}:registry=https://npm.pkg.github.com'
           npm config set '//npm.pkg.github.com/:_authToken=${{secrets.GH_TOKEN}}'
           set -x
-          npm whoami --registry https://npm.pkg.github.com
           npm pkg set "version=${VERSION}"
           npm pkg set "name=@${{ github.repository_owner }}/ng-keyboard-sort"
           npm pkg set "publishConfig.registry=https://npm.pkg.github.com"
           npm publish
-          npm logout
           npm config delete '@${{ github.repository_owner }}:registry'
           npm config delete '//npm.pkg.github.com/:_authToken'
