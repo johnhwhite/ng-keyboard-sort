@@ -6,3 +6,17 @@
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/fork/github/johnhwhite/ng-keyboard-sort?file=apps%2Fe2e%2Fsrc%2Fapp%2Fexample%2Fexample.component.html)
 
 Library to add keyboard commands for elements that also use CDK drag and drop sorting. This library intends to provide parity for picking up an element with the keyboard, moving it up and down the list, and dropping it in place.
+
+## Install
+
+```bash
+npm install ng-keyboard-sort
+```
+
+## Demo
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/fork/github/johnhwhite/ng-keyboard-sort?file=apps%2Fe2e%2Fsrc%2Fapp%2Fexample%2Fexample.component.html)
+
+## GitHub
+
+[johnhwhite/ng-keyboard-sort](https://github.com/johnhwhite/ng-keyboard-sort)
