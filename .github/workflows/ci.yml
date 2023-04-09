@@ -8,6 +8,7 @@ on:
 
 env:
   node_version: 18
+  node_cache: ${{ runner.os }}-node-18
 jobs:
   build:
     name: Build and Run Tests
@@ -26,7 +27,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ env.node_cache }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install
         run: npm ci
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
