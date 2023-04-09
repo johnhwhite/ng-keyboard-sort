@@ -13,7 +13,7 @@
     "ng": "ng",
     "start": "nx s e2e",
     "build": "nx run-many --target=build --all",
-    "build:package": "nx run ng-keyboard-sort:build:production",
+    "build:package": "nx run ng-keyboard-sort:build:production --skip-nx-cache",
     "watch": "nx build ng-keyboard-sort --watch --configuration development",
     "test": "nx test ng-keyboard-sort --browsers=ChromeHeadless --code-coverage --watch=false",
     "test:e2e": "nx test e2e --browsers=ChromeHeadless --code-coverage --watch=false",
