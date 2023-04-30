@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
-import { KeyboardSortItemIfActiveDirective } from 'ng-keyboard-sort';
+import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-active.directive';
 
 @Component({
   standalone: true,
