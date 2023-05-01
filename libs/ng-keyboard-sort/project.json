@@ -6,7 +6,7 @@
   "prefix": "kbd-sort",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:package",
+      "executor": "@nx/angular:package",
       "options": {
         "project": "libs/ng-keyboard-sort/ng-package.json"
       },
@@ -34,7 +34,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/ng-keyboard-sort/**/*.ts",
