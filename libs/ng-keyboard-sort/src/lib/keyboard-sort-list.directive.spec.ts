@@ -307,6 +307,15 @@ describe('ListDirective', () => {
         expect(activeElement).toHaveClass('kbd-sort-item-activated');
         expect(element?.textContent?.trim()).toBe('Item 3  Active');
       }));
+
+      it(`should activate the last item`, async () => {
+        component.activateLastItem();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(
+          fixture.nativeElement.querySelector('li:last-child')
+        ).toHaveClass('kbd-sort-item-activated');
+      });
     });
   });
 

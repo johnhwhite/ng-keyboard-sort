@@ -1,1 +1,14 @@
-<router-outlet></router-outlet>
+<nav>
+  <ul>
+    <ng-container *ngFor="let rootRoutes of routes">
+      <ng-container *ngFor="let route of rootRoutes">
+        <li *ngIf="route.title">
+          <a routerLink="{{ route.path }}">{{ route.title }}</a>
+        </li>
+      </ng-container>
+    </ng-container>
+  </ul>
+</nav>
+<main>
+  <router-outlet></router-outlet>
+</main>
