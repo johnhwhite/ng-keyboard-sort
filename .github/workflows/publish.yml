@@ -40,16 +40,3 @@ jobs:
           npm publish --access public --tag "v${MAJOR_VERSION}-lts"
           npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
           npm config delete '//registry.npmjs.org/:_authToken'
-      - name: Publish to GitHub Packages
-        run: |
-          VERSION="$(jq -r '.version' package.json)"
-          cd dist/ng-keyboard-sort
-          npm config set '@${{ github.repository_owner }}:registry=https://npm.pkg.github.com'
-          npm config set '//npm.pkg.github.com/:_authToken=${{secrets.GH_TOKEN}}'
-          set -x
-          npm pkg set "version=${VERSION}"
-          npm pkg set "name=@${{ github.repository_owner }}/ng-keyboard-sort"
-          npm pkg set "publishConfig.registry=https://npm.pkg.github.com"
-          npm publish
-          npm config delete '@${{ github.repository_owner }}:registry'
-          npm config delete '//npm.pkg.github.com/:_authToken'
