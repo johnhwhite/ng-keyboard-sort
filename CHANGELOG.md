@@ -81,6 +81,18 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 2.1.4 (2023-05-14)
+
+## What's Changed
+* Update modules 2023-04-30 by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/58
+* ci: remove github package publish step by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/60
+* build(deps): bump engine.io and socket.io by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/59
+
+## New Contributors
+* @dependabot made their first contribution in https://github.com/johnhwhite/ng-keyboard-sort/pull/59
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.3...v2.1.4
+
 ## [1.1.0](https://www.github.com/johnhwhite/ng-keyboard-sort/compare/v1.0.2...v1.1.0) (2023-02-12)
 
 * fix: check both item and list disabled states by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/15
