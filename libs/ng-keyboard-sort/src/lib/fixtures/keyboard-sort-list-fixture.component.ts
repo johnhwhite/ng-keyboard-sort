@@ -29,6 +29,9 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
         <span *kbdSortKeyboardSortItemIfFocused>{{ ' ' }}Focused</span>
       </li>
     </ul>
+    <div>
+      <button (click)="activateLastItem()">Activate last item</button>
+    </div>
   `,
 })
 export class KeyboardSortListFixtureComponent {
@@ -43,4 +46,8 @@ export class KeyboardSortListFixtureComponent {
   public direction: 'horizontal' | 'vertical' = 'horizontal';
 
   public disabled = false;
+
+  public activateLastItem() {
+    this.list?.activateNthItem(-1);
+  }
 }

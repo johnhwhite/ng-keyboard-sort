@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ApplicationRef,
   ChangeDetectorRef,
@@ -6,16 +7,17 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
-  Inject,
+  inject,
   Input,
+  OnChanges,
   OnDestroy,
   Output,
   QueryList,
+  SimpleChanges,
 } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { filter, Subscription, take } from 'rxjs';
-import { DOCUMENT } from '@angular/common';
 import { KeyboardSortEvent } from './keyboard-sort-event';
 import { KeyboardSortService } from './keyboard-sort.service';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
@@ -31,7 +33,7 @@ import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
     },
   ],
 })
-export class KeyboardSortListDirective implements OnDestroy {
+export class KeyboardSortListDirective implements OnChanges, OnDestroy {
   @ContentChildren(KeyboardSortItemDirective, { descendants: false })
   public items: QueryList<KeyboardSortItemDirective> | undefined;
 
@@ -39,13 +41,7 @@ export class KeyboardSortListDirective implements OnDestroy {
   public kbdSortListOrientation: 'horizontal' | 'vertical' = 'horizontal';
 
   @Input()
-  public get kbdSortListDisabled(): boolean {
-    return this.#kbdSortListDisabled;
-  }
-  public set kbdSortListDisabled(value: boolean) {
-    this.#kbdSortListDisabled = value;
-    this.kbdSortEnabled.emit(!value);
-  }
+  public kbdSortListDisabled = false;
 
   @Input()
   public kbdSortListData: unknown[] | undefined = [];
@@ -59,27 +55,29 @@ export class KeyboardSortListDirective implements OnDestroy {
   @Output()
   public kdbSortEnd = new EventEmitter<KeyboardSortEvent>();
 
-  #appRef: ApplicationRef;
-  #changeDetectorRef: ChangeDetectorRef;
-  #doc: Document;
-  #elementRef: ElementRef;
-  #subscriptions = new Subscription();
-  #kbdSortListDisabled = false;
+  public readonly elementRef = inject(ElementRef);
+
+  readonly #appRef = inject(ApplicationRef);
+  readonly #changeDetectorRef = inject(ChangeDetectorRef);
+  readonly #doc = inject(DOCUMENT);
+  readonly #elementRef = inject(ElementRef);
+  readonly #subscriptions = new Subscription();
   #previousIndex: number | undefined;
   #currentIndex: number | undefined;
 
-  constructor(
-    readonly changeDetectorRef: ChangeDetectorRef,
-    readonly appRef: ApplicationRef,
-    readonly elementRef: ElementRef,
-    @Inject(DOCUMENT) readonly document: Document,
-    readonly keyboardSortService: KeyboardSortService
-  ) {
-    this.#changeDetectorRef = changeDetectorRef;
-    this.#appRef = appRef;
-    this.#elementRef = elementRef;
-    this.#doc = document;
+  constructor(readonly keyboardSortService: KeyboardSortService) {
     keyboardSortService.list = this;
+  }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['kbdSortListData']) {
+      this.deactivateAll();
+    }
+    if (changes['kbdSortListDisabled']) {
+      this.kbdSortEnabled.emit(
+        changes['kbdSortListDisabled'].currentValue === false
+      );
+    }
   }
 
   public ngOnDestroy(): void {
@@ -182,20 +180,23 @@ export class KeyboardSortListDirective implements OnDestroy {
     if (this.items?.length) {
       const items = this.items.toArray();
       const currentPosition = items.indexOf(item);
-      if (currentPosition > -1 && currentPosition < items.length - 1) {
-        const moveToIndex = currentPosition + 1;
-        if (!this.#previousIndex) {
-          this.#previousIndex = currentPosition;
+      const currentLastPosition = items.length - 1;
+      if (currentPosition > -1) {
+        if (currentPosition < currentLastPosition) {
+          const moveToIndex = currentPosition + 1;
+          if (!this.#previousIndex) {
+            this.#previousIndex = currentPosition;
+          }
+          this.#currentIndex = moveToIndex;
+          if (this.kbdSortListData) {
+            moveItemInArray(this.kbdSortListData, currentPosition, moveToIndex);
+            this.#changeDetectorRef.detectChanges();
+          }
+          setTimeout(() => {
+            this.activateNthItem(moveToIndex);
+          });
+          return true;
         }
-        this.#currentIndex = moveToIndex;
-        if (this.kbdSortListData) {
-          moveItemInArray(this.kbdSortListData, currentPosition, moveToIndex);
-          this.#changeDetectorRef.detectChanges();
-        }
-        setTimeout(() => {
-          this.activateNthItem(moveToIndex);
-        });
-        return true;
       }
     }
     return false;
@@ -205,7 +206,7 @@ export class KeyboardSortListDirective implements OnDestroy {
     this.onNextStable(() => {
       if (this.items?.length) {
         const items = this.items.toArray();
-        const item = items[n];
+        const item = items[n > -1 ? n : items.length + n];
         if (item) {
           this.activateItem(item);
         }

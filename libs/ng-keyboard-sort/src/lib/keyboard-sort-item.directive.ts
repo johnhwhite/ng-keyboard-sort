@@ -7,17 +7,15 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
-  Inject,
+  inject,
   Input,
   OnDestroy,
   Output,
   QueryList,
   Renderer2,
-  SkipSelf,
 } from '@angular/core';
 import { filter, fromEvent, merge, Observable, Subscription, take } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
-import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT } from '@angular/common';
 import { KeyboardSortService } from './keyboard-sort.service';
@@ -39,6 +37,7 @@ const directionalKeys = {
     '[class.kbd-sort-item]': 'true',
     '[class.kbd-sort-item-disabled]': 'kbdSortItemDisabled',
     '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled',
+    '[class.kbd-sort-item-activated]': 'activated',
   },
   providers: [
     {
@@ -94,34 +93,21 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
   @Output()
   public kbdSortItemFocused = new EventEmitter<boolean>();
 
-  readonly #list: KeyboardSortListDirective | undefined;
+  public readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+
+  readonly #list = inject(KeyboardSortService).list;
   #subscriptions = new Subscription();
   #events = new Subscription();
-  #appRef: ApplicationRef;
-  #changeDetectorRef: ChangeDetectorRef;
-  #doc: Document;
-  #platform: Platform;
-  #renderer: Renderer2;
+  readonly #appRef = inject(ApplicationRef);
+  readonly #changeDetectorRef = inject(ChangeDetectorRef, { skipSelf: true });
+  readonly #platform = inject(Platform);
+  readonly #renderer = inject(Renderer2);
+  readonly #doc = inject(DOCUMENT);
   #kbdSortItemDisabled = false;
   #activated = false;
   #focused = false;
 
-  constructor(
-    readonly renderer: Renderer2,
-    @SkipSelf() readonly changeDetectorRef: ChangeDetectorRef,
-    public readonly elementRef: ElementRef<HTMLElement>,
-    readonly appRef: ApplicationRef,
-    readonly platform: Platform,
-    @Inject(DOCUMENT) readonly document: Document,
-    readonly keyboardSortService: KeyboardSortService,
-    readonly keyboardSortItemService: KeyboardSortItemService
-  ) {
-    this.#renderer = renderer;
-    this.#appRef = appRef;
-    this.#changeDetectorRef = changeDetectorRef;
-    this.#platform = platform;
-    this.#doc = document;
-    this.#list = keyboardSortService.list;
+  constructor(readonly keyboardSortItemService: KeyboardSortItemService) {
     keyboardSortItemService.item = this;
   }
 
