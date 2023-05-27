@@ -1,4 +1,11 @@
-import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  ApplicationRef,
+  Component,
+  inject,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
@@ -46,6 +53,8 @@ export class KeyboardSortListFixtureComponent {
   public direction: 'horizontal' | 'vertical' = 'horizontal';
 
   public disabled = false;
+
+  #appRef = inject(ApplicationRef);
 
   public activateLastItem() {
     this.list?.activateNthItem(-1);

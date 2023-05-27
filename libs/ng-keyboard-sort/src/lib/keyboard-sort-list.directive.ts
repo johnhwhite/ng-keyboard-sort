@@ -19,7 +19,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { filter, Subscription, take } from 'rxjs';
 import { KeyboardSortEvent } from './keyboard-sort-event';
-import { KeyboardSortService } from './keyboard-sort.service';
+import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
 
 @Directive({
@@ -28,8 +28,8 @@ import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
   standalone: true,
   providers: [
     {
-      provide: KeyboardSortService,
-      useFactory: () => new KeyboardSortService(),
+      provide: KeyboardSortListService,
+      useFactory: () => new KeyboardSortListService(),
     },
   ],
 })
@@ -65,7 +65,7 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
   #previousIndex: number | undefined;
   #currentIndex: number | undefined;
 
-  constructor(readonly keyboardSortService: KeyboardSortService) {
+  constructor(readonly keyboardSortService: KeyboardSortListService) {
     keyboardSortService.list = this;
   }
 

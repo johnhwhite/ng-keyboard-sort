@@ -2,6 +2,6 @@ import { Injectable } from '@angular/core';
 import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 
 @Injectable()
-export class KeyboardSortService {
+export class KeyboardSortListService {
   public list: KeyboardSortListDirective | undefined;
 }
