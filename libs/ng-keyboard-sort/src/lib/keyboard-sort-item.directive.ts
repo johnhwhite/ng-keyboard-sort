@@ -18,7 +18,7 @@ import { filter, fromEvent, merge, Observable, Subscription, take } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT } from '@angular/common';
-import { KeyboardSortService } from './keyboard-sort.service';
+import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 const directionalKeys = {
@@ -95,7 +95,7 @@ export class KeyboardSortItemDirective implements AfterViewInit, OnDestroy {
 
   public readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
 
-  readonly #list = inject(KeyboardSortService).list;
+  readonly #list = inject(KeyboardSortListService).list;
   #subscriptions = new Subscription();
   #events = new Subscription();
   readonly #appRef = inject(ApplicationRef);

@@ -7,7 +7,7 @@ import {
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
-import { KeyboardSortService } from './keyboard-sort.service';
+import { KeyboardSortListService } from './keyboard-sort-list.service';
 
 describe('ListDirective', () => {
   let component: KeyboardSortListFixtureComponent;
@@ -21,7 +21,7 @@ describe('ListDirective', () => {
   ) {
     TestBed.configureTestingModule({
       imports: [KeyboardSortListFixtureComponent],
-      providers: [KeyboardSortService],
+      providers: [KeyboardSortListService],
     });
 
     fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
@@ -312,6 +312,15 @@ describe('ListDirective', () => {
         component.activateLastItem();
         fixture.detectChanges();
         await fixture.whenStable();
+        expect(
+          Array.from<HTMLLIElement>(
+            fixture.nativeElement.querySelectorAll('li')
+          ).map((el) => el.className?.trim())
+        ).toEqual([
+          'kbd-sort-item kbd-sort-item-enabled',
+          'kbd-sort-item kbd-sort-item-enabled',
+          'kbd-sort-item kbd-sort-item-enabled kbd-sort-item-activated',
+        ]);
         expect(
           fixture.nativeElement.querySelector('li:last-child')
         ).toHaveClass('kbd-sort-item-activated');
