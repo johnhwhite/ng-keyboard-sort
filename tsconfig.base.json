@@ -25,11 +25,24 @@
     "lib": ["ES2022", "dom"],
     "rootDir": "."
   },
+  "references": [
+    {
+      "path": "./apps/e2e/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/e2e/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/ng-keyboard-sort/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/ng-keyboard-sort/tsconfig.spec.json"
+    }
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  },
-  "exclude": ["node_modules", "tmp"]
+  }
 }
