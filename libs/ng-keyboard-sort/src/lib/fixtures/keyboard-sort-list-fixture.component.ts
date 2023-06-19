@@ -1,16 +1,10 @@
-import {
-  ApplicationRef,
-  Component,
-  inject,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
 import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-active.directive';
+import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
 
 @Component({
   standalone: true,
@@ -26,10 +20,11 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
       kbdSortList
       [kbdSortListData]="data"
       [kbdSortListOrientation]="direction"
-      [kbdSortListDisabled]="disabled">
+      [kbdSortListDisabled]="disabled"
+      (kdbSortDrop)="sortDrop($event)">
       <li
-        *ngFor="let item of data; index as i"
-        kbdSortItem
+        *ngFor="let item of data || []; index as i; trackBy: trackByFn"
+        [kbdSortItem]="i"
         [attr.id]="'item-' + i">
         {{ item }}
         <span *kbdSortKeyboardSortItemIfActive>{{ ' ' }}Active</span>
@@ -54,9 +49,11 @@ export class KeyboardSortListFixtureComponent {
 
   public disabled = false;
 
-  #appRef = inject(ApplicationRef);
+  public drops: KeyboardSortEventDrop[] = [];
 
-  public activateLastItem() {
-    this.list?.activateNthItem(-1);
+  public sortDrop($event: KeyboardSortEventDrop) {
+    this.drops.push($event);
   }
+
+  protected trackByFn = (_: number, item: string) => item;
 }

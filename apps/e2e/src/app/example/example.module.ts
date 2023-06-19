@@ -5,7 +5,11 @@ import {
   CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import { KeyboardSortModule } from 'ng-keyboard-sort';
+import {
+  KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemIfFocusedDirective,
+  KeyboardSortModule,
+} from 'ng-keyboard-sort';
 
 import { ExampleRoutingModule } from './example-routing.module';
 import { ExampleComponent } from './example.component';
@@ -19,6 +23,8 @@ import { ExampleComponent } from './example.component';
     CdkDropList,
     KeyboardSortModule,
     CdkDragPlaceholder,
+    KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
   ],
 })
 export class ExampleModule {}

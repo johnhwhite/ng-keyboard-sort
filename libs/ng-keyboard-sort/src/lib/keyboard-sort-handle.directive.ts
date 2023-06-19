@@ -1,4 +1,11 @@
-import { Directive, ElementRef, HostBinding } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  inject,
+} from '@angular/core';
+import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Directive({
   selector: '[kbdSortHandle]',
@@ -9,5 +16,12 @@ export class KeyboardSortHandleDirective {
   @HostBinding('attr.tabindex')
   public tabindex = '-1';
 
-  constructor(public readonly elementRef: ElementRef<HTMLElement>) {}
+  public readonly elementRef = inject(ElementRef<HTMLElement>);
+
+  #itemService = inject(KeyboardSortItemService, { optional: true });
+
+  @HostListener('keydown', ['$event'])
+  public handleKeydown(event: KeyboardEvent): void {
+    this.#itemService?.onKeydown(event);
+  }
 }

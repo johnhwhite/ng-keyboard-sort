@@ -17,21 +17,36 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
   ],
   providers: [KeyboardSortListService],
   template: `
-    <div kbdSortItem [kbdSortItemDisabled]="disabled" #item id="example-item">
-      <div *ngIf="showHandle" kbdSortHandle class="example-handle">Handle</div>
+    <div
+      [kbdSortItem]="0"
+      [kbdSortItemDisabled]="disabled"
+      [activated]="activated"
+      #item
+      id="example-item">
+      <div *ngIf="showHandle" kbdSortHandle #handle class="example-handle">
+        Handle
+      </div>
       <span>Item 1</span>
-      <span *kbdSortKeyboardSortItemIfActive class="example-active"
-        >Active</span
-      >
-      <span *kbdSortKeyboardSortItemIfFocused class="example-focus"
-        >Focused</span
-      >
+      <span *kbdSortKeyboardSortItemIfActive #active>Active</span>
+      <span *kbdSortKeyboardSortItemIfFocused #focus>Focused</span>
     </div>
   `,
 })
 export class KeyboardSortItemFixtureComponent {
   @ViewChild('item', { static: true, read: KeyboardSortItemDirective })
   public item: KeyboardSortItemDirective | undefined;
+
+  @ViewChild('active', {
+    read: KeyboardSortItemIfActiveDirective,
+  })
+  public active: KeyboardSortItemIfActiveDirective | undefined;
+
+  @ViewChild('focus', {
+    read: KeyboardSortItemIfFocusedDirective,
+  })
+  public focus: KeyboardSortItemIfFocusedDirective | undefined;
+
+  public activated = false;
 
   public showHandle = false;
 

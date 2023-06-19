@@ -13,7 +13,13 @@
   kbdSortListOrientation="horizontal"
   [cdkDropListData]="items"
   [kbdSortListData]="items">
-  <li *ngFor="let item of items" cdkDrag cdkDragLockAxis="x" kbdSortItem>
+  <li
+    *ngFor="let item of items; index as i; trackBy: trackByFn"
+    cdkDrag
+    cdkDragLockAxis="x"
+    [kbdSortItem]="i">
     {{ item }}
+    <span *kbdSortKeyboardSortItemIfActive class="active-indicator">🆙</span>
+    <span *kbdSortKeyboardSortItemIfFocused class="focus-indicator">🔦</span>
   </li>
 </ul>
