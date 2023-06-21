@@ -23,13 +23,16 @@
     "test": {
       "executor": "@angular-devkit/build-angular:karma",
       "options": {
+        "polyfills": ["zone.js", "zone.js/testing"],
         "tsConfig": "libs/ng-keyboard-sort/tsconfig.spec.json",
-        "polyfills": ["zone.js", "zone.js/testing"]
+        "karmaConfig": "libs/ng-keyboard-sort/karma.conf.js"
       },
       "configurations": {
         "ci": {
-          "browsers": "ChromeHeadless",
-          "watch": false
+          "browsers": "ChromeHeadlessCI",
+          "watch": false,
+          "codeCoverage": true,
+          "sourceMap": true
         }
       }
     },

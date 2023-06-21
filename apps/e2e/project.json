@@ -71,17 +71,18 @@
       "options": {
         "polyfills": ["zone.js", "zone.js/testing"],
         "tsConfig": "apps/e2e/tsconfig.spec.json",
-        "assets": ["apps/e2e/src/favicon.ico", "apps/e2e/src/assets"],
+        "karmaConfig": "apps/e2e/karma.conf.js",
         "styles": [
           "apps/e2e/src/styles.css",
           "node_modules/@angular/cdk/_index.scss"
-        ],
-        "scripts": []
+        ]
       },
       "configurations": {
         "ci": {
-          "browsers": "ChromeHeadless",
-          "watch": false
+          "browsers": "ChromeHeadlessCI",
+          "watch": false,
+          "codeCoverage": true,
+          "sourceMap": true
         }
       }
     },
