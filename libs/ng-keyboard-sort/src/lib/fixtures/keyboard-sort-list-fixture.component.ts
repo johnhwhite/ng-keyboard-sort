@@ -16,6 +16,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
     KeyboardSortItemIfActiveDirective,
   ],
   template: `
+    <a href="#item-0">Start</a>
     <ul
       kbdSortList
       [kbdSortListData]="data"

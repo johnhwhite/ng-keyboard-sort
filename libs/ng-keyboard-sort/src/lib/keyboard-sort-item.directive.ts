@@ -54,7 +54,6 @@ export class KeyboardSortItemDirective
       this.focused = false;
     }
     this.#activated = value;
-    this.list?.capturePreviousIndex(this);
     this.kbdSortItemActivated.emit(value);
   }
 
@@ -97,7 +96,7 @@ export class KeyboardSortItemDirective
 
   public readonly elementRef = inject(ElementRef<HTMLElement>);
 
-  readonly list = inject(KeyboardSortListService).list;
+  readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
   readonly #subscriptions = new Subscription();
   #kbdSortItemDisabled = false;
@@ -168,7 +167,7 @@ export class KeyboardSortItemDirective
 
   public activate() {
     if (!this.activated && !this.isDisabled()) {
-      this.list?.deactivateAll();
+      this.#list?.deactivateAll(this.position);
       this.activated = true;
     }
   }
@@ -183,25 +182,25 @@ export class KeyboardSortItemDirective
     if (this.kbdSortItemDisabled) {
       return true;
     }
-    return !!this.list?.kbdSortListDisabled;
+    return !!this.#list?.kbdSortListDisabled;
   }
 
   public moveUp(): boolean {
-    if (!this.list) {
+    if (!this.#list) {
       return false;
     }
     if (this.activated && !this.isDisabled()) {
-      return this.list.moveItemUp(this);
+      return this.#list.moveItemUp(this);
     }
     return false;
   }
 
   public moveDown(): boolean {
-    if (!this.list) {
+    if (!this.#list) {
       return false;
     }
     if (this.activated && !this.isDisabled()) {
-      return this.list.moveItemDown(this);
+      return this.#list.moveItemDown(this);
     }
     return false;
   }

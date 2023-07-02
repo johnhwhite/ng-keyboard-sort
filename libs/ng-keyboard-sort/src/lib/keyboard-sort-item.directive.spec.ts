@@ -86,12 +86,13 @@ describe('ItemDirective', () => {
     expect(handleElement).toBeTruthy();
     expect(component.item?.elementRef.nativeElement).toBeTruthy();
     component.item?.focus('keyboard');
-    expect(component.item?.focused).toBeTrue();
-    component.item?.activate();
-    expect(component.item?.focused).toBeFalse();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(handleElement.matches(':focus-within')).toBeTrue();
+    expect(component.item?.focused).toBeTrue();
+    component.item?.activate();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.item?.focused).toBeFalse();
   });
 
   it('should change focus', async () => {

@@ -5,6 +5,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
@@ -13,6 +15,7 @@ import { KeyboardSortListService } from './keyboard-sort-list.service';
 describe('ListDirective', () => {
   let component: KeyboardSortListFixtureComponent;
   let fixture: ComponentFixture<KeyboardSortListFixtureComponent>;
+  let loader: HarnessLoader;
   const getItem = (index: number): KeyboardSortItemDirective => {
     return component.items?.toArray()[index] as KeyboardSortItemDirective;
   };
@@ -26,6 +29,7 @@ describe('ListDirective', () => {
     });
 
     fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
+    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
     component = fixture.componentInstance;
     Object.assign(component, componentOverrides);
     fixture.detectChanges();
@@ -36,8 +40,8 @@ describe('ListDirective', () => {
   }
 
   afterEach(() => {
-    component.list?.ngOnDestroy();
-    fixture.destroy();
+    component?.list?.ngOnDestroy();
+    fixture?.destroy();
   });
 
   it('should create an instance', () => {
@@ -56,6 +60,13 @@ describe('ListDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(item?.activated).toBeFalse();
+    const listElement = fixture.nativeElement.querySelector('ul');
+    listElement.dispatchEvent(
+      new FocusEvent('blur', { relatedTarget: listElement.ownerDocument.body })
+    );
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(listElement.getAttribute('tabindex')).toBe('0');
   });
 
   it('should change orientation', async () => {
@@ -131,13 +142,20 @@ describe('ListDirective', () => {
     (fixture.nativeElement as HTMLElement).querySelector('ul')?.focus();
     fixture.detectChanges();
     await fixture.whenStable();
+    expect(
+      (fixture.nativeElement as HTMLElement)
+        .querySelector('ul')
+        ?.getAttribute('tabindex')
+    ).toBe('-1');
     component.list?.activateItem(getItem(0));
     fixture.detectChanges();
     await fixture.whenStable();
+    expect(getItem(0).activated).toBeTrue();
     expect(getItem(0).moveDown()).toBeTrue();
     fixture.detectChanges();
     await fixture.whenStable();
-    getItem(1).deactivate();
+    expect(getItem(1).activated).toBeTrue();
+    component.list?.deactivateAll();
     fixture.detectChanges();
     await fixture.whenStable();
     expect(getItem(1).moveDown()).toBeFalse();
@@ -155,9 +173,6 @@ describe('ListDirective', () => {
     expect(getItem(2).elementRef.nativeElement.textContent?.trim()).toBe(
       'Item 3'
     );
-    component.list?.deactivateAll();
-    fixture.detectChanges();
-    await fixture.whenStable();
     expect(getItem(0).activated).toBeFalse();
     if (component.list) {
       component.list.kbdSortListDisabled = true;
@@ -225,7 +240,7 @@ describe('ListDirective', () => {
         expect(getItem(0).focused).toBeTrue();
       }));
 
-      it(`should move item up in ${direction} direction`, fakeAsync(() => {
+      it(`should move item up in ${direction} direction`, async () => {
         setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -240,18 +255,20 @@ describe('ListDirective', () => {
         expect(component.data).toEqual(['Item 1', 'Item 2', 'Item 3']);
         lastItem.onKeydown(new KeyboardEvent('keydown', { key: arrows[1] }));
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(component.data).toEqual(['Item 1', 'Item 3', 'Item 2']);
         component.list?.deactivateAll();
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
+        expect(lastItem.activated).toBeFalsy();
+        expect(lastItem.focused).toBeFalsy();
         expect(component.drops).toEqual([
           {
             previousIndex: 2,
             currentIndex: 1,
           },
         ]);
-      }));
+      });
 
       it(`should move item down in ${direction} direction`, fakeAsync(() => {
         setupTest({
