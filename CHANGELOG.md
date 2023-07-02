@@ -81,6 +81,21 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.0.0 (2023-07-02)
+
+## What's Changed
+* feat!: update to Angular 16 by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/61
+* refactor!: renamed KeyboardSortService to KeyboardSortListService by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/65
+* chore: update nx 16.2 by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/66
+* chore: update tsconfig by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/67
+* ci: test configuration update by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/69
+* refactor!: move methods to services, switch to cdk focus manager by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/68
+* build: add webkit option for karma tests by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/70
+* feat!: update to Angular 16.1 by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/72
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.4...v3.0.0
+
 ## 2.1.4 (2023-05-14)
 
 ## What's Changed
