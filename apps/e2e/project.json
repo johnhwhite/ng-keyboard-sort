@@ -79,7 +79,7 @@
       },
       "configurations": {
         "ci": {
-          "browsers": "ChromeHeadlessCI",
+          "browsers": "ChromeHeadlessCI,WebkitHeadless",
           "watch": false,
           "codeCoverage": true,
           "sourceMap": true
