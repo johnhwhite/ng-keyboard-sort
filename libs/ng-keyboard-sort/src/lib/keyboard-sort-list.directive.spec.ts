@@ -5,8 +5,6 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
@@ -15,7 +13,6 @@ import { KeyboardSortListService } from './keyboard-sort-list.service';
 describe('ListDirective', () => {
   let component: KeyboardSortListFixtureComponent;
   let fixture: ComponentFixture<KeyboardSortListFixtureComponent>;
-  let loader: HarnessLoader;
   const getItem = (index: number): KeyboardSortItemDirective => {
     return component.items?.toArray()[index] as KeyboardSortItemDirective;
   };
@@ -29,7 +26,6 @@ describe('ListDirective', () => {
     });
 
     fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
-    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
     component = fixture.componentInstance;
     Object.assign(component, componentOverrides);
     fixture.detectChanges();
