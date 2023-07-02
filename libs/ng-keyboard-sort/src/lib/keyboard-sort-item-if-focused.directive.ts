@@ -1,12 +1,12 @@
 import {
   AfterViewInit,
   Directive,
+  inject,
   OnDestroy,
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
-import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { Subscription } from 'rxjs';
 
 @Directive({
@@ -17,22 +17,12 @@ export class KeyboardSortItemIfFocusedDirective
   implements AfterViewInit, OnDestroy
 {
   #hasView = false;
-  #item: KeyboardSortItemDirective | undefined;
+  readonly #item = inject(KeyboardSortItemService).item;
   readonly #subscription = new Subscription();
-  readonly #templateRef: TemplateRef<unknown>;
-  readonly #viewContainer: ViewContainerRef;
+  readonly #templateRef = inject(TemplateRef) as TemplateRef<unknown>;
+  readonly #viewContainer = inject(ViewContainerRef);
 
-  constructor(
-    templateRef: TemplateRef<unknown>,
-    viewContainer: ViewContainerRef,
-    keyboardSortItemService: KeyboardSortItemService
-  ) {
-    this.#templateRef = templateRef;
-    this.#viewContainer = viewContainer;
-    this.#item = keyboardSortItemService.item;
-  }
-
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.#updateView();
     if (this.#item) {
       this.#subscription.add(
@@ -41,7 +31,7 @@ export class KeyboardSortItemIfFocusedDirective
     }
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.#subscription.unsubscribe();
   }
 

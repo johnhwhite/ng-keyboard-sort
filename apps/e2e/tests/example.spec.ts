@@ -7,12 +7,21 @@ test('test', async ({ page }) => {
   await page.press('input', 'Tab');
   await expect(page.locator('main li:first-child')).toContainText('A');
   await expect(page.locator('main li:first-child')).toBeFocused();
+  await expect(
+    page.locator('main li:first-child .focus-indicator')
+  ).toBeVisible();
   await page.locator('main li:first-child').dispatchEvent('keydown', {
     key: 'Enter',
   });
   await expect(page.locator('main li:first-child')).toHaveClass(
     /\bkbd-sort-item-activated\b/
   );
+  await expect(
+    page.locator('main li:first-child .focus-indicator')
+  ).not.toBeVisible();
+  await expect(
+    page.locator('main li:first-child .active-indicator')
+  ).toBeVisible();
   await page.locator('main li:first-child').dispatchEvent('keydown', {
     key: 'ArrowRight',
   });
