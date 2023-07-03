@@ -44,6 +44,8 @@ jobs:
       - name: Build
         run: npm run build
       - name: Test
-        run: npm run test:all
+        run: |
+          npx ng run ng-keyboard-sort:test:ci
+          npx ng run e2e:test:ci
       - name: End to End Tests
         run: npm run e2e
