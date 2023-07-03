@@ -12,6 +12,9 @@ jobs:
   build:
     name: Build and Run Tests
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.35.1-focal
+      options: --ipc=host
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,12 +40,18 @@ jobs:
           npm ci
           npx playwright install --with-deps webkit
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      - name: Lint, Build, Test
+      - name: Prep
         run: |
           npx playwright install --with-deps webkit
+      - name: Lint
+        run: |
           npm run lint:all
-          npm run test:all
+      - name: Build
+        run: |
           npm run build
+      - name: Test
+        run: |
+          npm run test:all
       - name: End to End Tests
         run: |
           npm run e2e
