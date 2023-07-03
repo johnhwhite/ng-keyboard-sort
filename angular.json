@@ -36,7 +36,8 @@
               "browsers": "ChromeHeadlessCI,WebkitHeadless",
               "watch": false,
               "codeCoverage": true,
-              "sourceMap": true
+              "sourceMap": true,
+              "progress": false
             }
           }
         },
@@ -134,7 +135,8 @@
               "browsers": "ChromeHeadlessCI,WebkitHeadless",
               "watch": false,
               "codeCoverage": true,
-              "sourceMap": true
+              "sourceMap": true,
+              "progress": false
             }
           }
         },
