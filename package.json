@@ -24,8 +24,7 @@
     "lint:e2e": "ng lint ng-keyboard-sort",
     "lint:all": "npm run lint && npm run lint:e2e",
     "commit": "cz",
-    "prepare": "is-ci || husky install",
-    "postinstall": "is-ci || node ./scripts/postinstall.js"
+    "prepare": "is-ci || husky install"
   },
   "dependencies": {
     "@angular/animations": "16.1.3",
