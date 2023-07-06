@@ -33,10 +33,17 @@
           },
           "configurations": {
             "ci": {
-              "browsers": "ChromeHeadlessCI,WebkitHeadless",
+              "browsers": "ChromeHeadlessCI",
               "watch": false,
               "codeCoverage": true,
               "sourceMap": true,
+              "progress": false
+            },
+            "ci-webkit": {
+              "browsers": "WebkitHeadless",
+              "watch": false,
+              "codeCoverage": false,
+              "sourceMap": false,
               "progress": false
             }
           }
@@ -132,10 +139,17 @@
           },
           "configurations": {
             "ci": {
-              "browsers": "ChromeHeadlessCI,WebkitHeadless",
+              "browsers": "ChromeHeadlessCI",
               "watch": false,
               "codeCoverage": true,
               "sourceMap": true,
+              "progress": false
+            },
+            "ci-webkit": {
+              "browsers": "WebkitHeadless",
+              "watch": false,
+              "codeCoverage": false,
+              "sourceMap": false,
               "progress": false
             }
           }

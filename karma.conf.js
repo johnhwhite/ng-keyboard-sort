@@ -66,6 +66,9 @@ module.exports = function (config, coverageDir) {
         flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
       },
     },
+    autoWatch: !process.env.CI,
+    singleRun: !!process.env.CI,
+    processKillTimeout: 10000,
     concurrency: process.env.CI ? 1 : Number.POSITIVE_INFINITY,
   });
 };
