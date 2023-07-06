@@ -1,3 +1,6 @@
+if (typeof process.env.CI !== 'undefined') {
+  process.env.CI = 'false';
+}
 if (!process.env.CHROME_BIN) {
   const chromeBin = require('playwright-core').chromium.executablePath();
   if (chromeBin) {
@@ -40,9 +43,9 @@ module.exports = function (config, coverageDir) {
         : [
             { type: 'html' },
             { type: 'json-summary' },
+            { type: 'text' },
             { type: 'text-summary' },
             { type: 'lcov', subdir: 'lcov-report' },
-            { type: 'text' },
           ],
       check: {
         global: {
