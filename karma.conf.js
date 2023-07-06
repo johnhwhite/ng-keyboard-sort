@@ -27,7 +27,7 @@ module.exports = function (config, coverageDir) {
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      clearContext: process.env.CI || false, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
@@ -35,12 +35,15 @@ module.exports = function (config, coverageDir) {
     coverageReporter: {
       dir: coverageDir,
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'json-summary' },
-        { type: 'text-summary' },
-        { type: 'lcov', subdir: 'lcov-report' },
-      ],
+      reporters: process.env.CI
+        ? [{ type: 'text' }, { type: 'text-summary' }]
+        : [
+            { type: 'html' },
+            { type: 'json-summary' },
+            { type: 'text-summary' },
+            { type: 'lcov', subdir: 'lcov-report' },
+            { type: 'text' },
+          ],
       check: {
         global: {
           statements: 100,
@@ -50,20 +53,19 @@ module.exports = function (config, coverageDir) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: process.env.CI ? ['progress'] : ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: false,
-    browsers: ['Chrome'],
+    browsers: process.env.CI
+      ? ['ChromeHeadlessCI', 'WebkitHeadless']
+      : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
       },
     },
-    singleRun: true,
-    concurrency: Infinity,
-    restartOnFileChange: false,
+    concurrency: process.env.CI ? 1 : Number.POSITIVE_INFINITY,
   });
 };
