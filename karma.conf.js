@@ -1,6 +1,3 @@
-if (typeof process.env.CI !== 'undefined') {
-  process.env.CI = 'false';
-}
 if (!process.env.CHROME_BIN) {
   const chromeBin = require('playwright-core').chromium.executablePath();
   if (chromeBin) {
@@ -26,7 +23,7 @@ module.exports = function (config, coverageDir) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-chrome-launcher'),
-      require('karma-webkit-launcher'),
+      require(__dirname + '/scripts/karma-webkit-launcher.js'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
