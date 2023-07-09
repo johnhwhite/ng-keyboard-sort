@@ -5,13 +5,18 @@ on:
 jobs:
   pr-comment:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/github-script@v6
         with:
           script: |
+            const sbImage = `https://developer.stackblitz.com/img/open_in_stackblitz.svg`;
+            const sbPath = `${{ github.repository }}/tree/${{ github.ref_name }}`;
             const newComment = `
             <!-- ${{ github.workflow }} -->
-            [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/${{ github.repository }}/tree/${{ github.ref_name }})
+            [![Open in StackBlitz](${sbImage})](https://stackblitz.com/fork/github/${sbPath})
             `;
             github.rest.issues.listComments({
               owner: context.repo.owner,
