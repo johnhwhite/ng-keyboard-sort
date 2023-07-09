@@ -13,7 +13,7 @@ jobs:
         with:
           script: |
             const sbImage = `https://developer.stackblitz.com/img/open_in_stackblitz.svg`;
-            const sbPath = `${{ github.repository }}/tree/${{ github.ref_name }}`;
+            const sbPath = `${{ github.repository }}/tree/${{ github.head_ref }}`;
             const newComment = `
             <!-- ${{ github.workflow }} -->
             [![Open in StackBlitz](${sbImage})](https://stackblitz.com/fork/github/${sbPath})
