@@ -1,0 +1,40 @@
+name: PR Comment
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  pr-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const newComment = `
+            <!-- ${{ github.workflow }} -->
+            [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/${{ github.repository }}/tree/${{ github.ref_name }})
+            `;
+            github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            }).then(comments => {
+              const comment = comments.data.find(comment => (
+                comment.user.login === 'github-actions[bot]'
+                && comment.body.includes(`<!-- ${{ github.workflow }} -->`)
+              ))
+              if (comment) {
+                github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id,
+                  body: newComment
+                })
+              } else {
+                github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: newComment
+                })
+              }
+            })
