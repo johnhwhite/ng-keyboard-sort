@@ -38,13 +38,6 @@
               "codeCoverage": true,
               "sourceMap": true,
               "progress": false
-            },
-            "ci-webkit": {
-              "browsers": "WebkitHeadless",
-              "watch": false,
-              "codeCoverage": false,
-              "sourceMap": false,
-              "progress": false
             }
           }
         },
@@ -143,13 +136,6 @@
               "watch": false,
               "codeCoverage": true,
               "sourceMap": true,
-              "progress": false
-            },
-            "ci-webkit": {
-              "browsers": "WebkitHeadless",
-              "watch": false,
-              "codeCoverage": false,
-              "sourceMap": false,
               "progress": false
             }
           }

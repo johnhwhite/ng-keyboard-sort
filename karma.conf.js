@@ -1,19 +1,3 @@
-if (!process.env.CHROME_BIN) {
-  const chromeBin = require('playwright-core').chromium.executablePath();
-  if (chromeBin) {
-    process.env.CHROME_BIN = chromeBin;
-  }
-}
-if (!process.env.WEBKIT_BIN) {
-  const webkitBin = require('playwright-core').webkit.executablePath();
-  if (webkitBin) {
-    process.env.WEBKIT_BIN = webkitBin;
-  }
-}
-if (!process.env.WEBKIT_HEADLESS_BIN && process.env.WEBKIT_BIN) {
-  process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
-}
-
 module.exports = function (config, coverageDir) {
   config.set({
     basePath: '',
@@ -23,7 +7,6 @@ module.exports = function (config, coverageDir) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-chrome-launcher'),
-      require(__dirname + '/scripts/karma-webkit-launcher.js'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
@@ -57,9 +40,7 @@ module.exports = function (config, coverageDir) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: process.env.CI
-      ? ['ChromeHeadlessCI', 'WebkitHeadless']
-      : ['Chrome'],
+    browsers: process.env.CI ? ['ChromeHeadlessCI'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
