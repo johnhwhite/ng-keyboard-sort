@@ -8,7 +8,7 @@ if (!process.env.WEBKIT_HEADLESS_BIN && process.env.WEBKIT_BIN) {
   process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
 }
 
-module.exports = function (config, coverageDir) {
+module.exports = function (config, coverageDir, isCi) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -21,7 +21,7 @@ module.exports = function (config, coverageDir) {
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: !process.env.CI, // leave Jasmine Spec Runner output visible in browser
+      clearContext: !isCi, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
@@ -29,8 +29,8 @@ module.exports = function (config, coverageDir) {
     coverageReporter: {
       dir: coverageDir,
       subdir: '.',
-      reporters: process.env.CI
-        ? [{ type: 'text' }, { type: 'text-summary' }]
+      reporters: isCi
+        ? [{ type: 'text' }]
         : [
             { type: 'html' },
             { type: 'json-summary' },
@@ -46,23 +46,21 @@ module.exports = function (config, coverageDir) {
         },
       },
     },
-    reporters: process.env.CI ? ['progress'] : ['progress', 'kjhtml'],
+    reporters: isCi ? [] : ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: !process.env.CI,
-    browsers: process.env.CI
-      ? ['ChromeHeadlessCI', 'WebkitHeadless']
-      : ['Chrome'],
+    autoWatch: !isCi,
+    browsers: isCi ? ['ChromeHeadlessCI', 'WebkitHeadless'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
       },
     },
-    singleRun: !!process.env.CI,
-    concurrency: process.env.CI ? 1 : Number.POSITIVE_INFINITY,
-    restartOnFileChange: !process.env.CI,
+    singleRun: isCi,
+    concurrency: isCi ? 1 : Number.POSITIVE_INFINITY,
+    restartOnFileChange: !isCi,
     processKillTimeout: 10000,
   });
 };

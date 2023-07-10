@@ -33,10 +33,11 @@
           },
           "configurations": {
             "ci": {
-              "browsers": "ChromeHeadlessCI,WebkitHeadless",
-              "watch": false,
+              "karmaConfig": "libs/ng-keyboard-sort/karma-ci.conf.js",
               "codeCoverage": true,
-              "sourceMap": true
+              "progress": false,
+              "sourceMap": true,
+              "watch": false
             }
           }
         },
@@ -131,10 +132,11 @@
           },
           "configurations": {
             "ci": {
-              "browsers": "ChromeHeadlessCI,WebkitHeadless",
-              "watch": false,
+              "karmaConfig": "apps/e2e/karma-ci.conf.js",
               "codeCoverage": true,
-              "sourceMap": true
+              "progress": false,
+              "sourceMap": true,
+              "watch": false
             }
           }
         },
