@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.0.1 (2023-07-10)
+
+## What's Changed
+* ci: comment on pr with stackblitz link by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/74
+* build: remove nx dependency by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/73
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.0.0...v3.0.1
+
 ## 3.0.0 (2023-07-02)
 
 ## What's Changed
