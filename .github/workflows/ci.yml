@@ -47,6 +47,9 @@ jobs:
       - name: Build
         run: npm run build
       - name: Test
-        run: npm run test:all
+        run: |
+          set -eo pipefail
+          npx ng test ng-keyboard-sort --configuration=ci
+          npx ng test e2e --configuration=ci
       - name: End to End Tests
         run: npm run e2e

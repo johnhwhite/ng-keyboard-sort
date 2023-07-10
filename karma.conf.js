@@ -1,3 +1,13 @@
+if (!process.env.WEBKIT_BIN) {
+  const webkitBin = require('playwright-core').webkit.executablePath();
+  if (webkitBin) {
+    process.env.WEBKIT_BIN = webkitBin;
+  }
+}
+if (!process.env.WEBKIT_HEADLESS_BIN && process.env.WEBKIT_BIN) {
+  process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
+}
+
 module.exports = function (config, coverageDir) {
   config.set({
     basePath: '',
@@ -7,10 +17,11 @@ module.exports = function (config, coverageDir) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-chrome-launcher'),
+      require(__dirname + '/scripts/karma-webkit-launcher.js'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: process.env.CI || false, // leave Jasmine Spec Runner output visible in browser
+      clearContext: !process.env.CI, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
@@ -23,7 +34,6 @@ module.exports = function (config, coverageDir) {
         : [
             { type: 'html' },
             { type: 'json-summary' },
-            { type: 'text' },
             { type: 'text-summary' },
             { type: 'lcov', subdir: 'lcov-report' },
           ],
@@ -40,16 +50,19 @@ module.exports = function (config, coverageDir) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: process.env.CI ? ['ChromeHeadlessCI'] : ['Chrome'],
+    autoWatch: !process.env.CI,
+    browsers: process.env.CI
+      ? ['ChromeHeadlessCI', 'WebkitHeadless']
+      : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
       },
     },
-    autoWatch: !process.env.CI,
     singleRun: !!process.env.CI,
-    processKillTimeout: 10000,
     concurrency: process.env.CI ? 1 : Number.POSITIVE_INFINITY,
+    restartOnFileChange: !process.env.CI,
+    processKillTimeout: 10000,
   });
 };
