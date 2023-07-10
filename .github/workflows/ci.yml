@@ -8,6 +8,9 @@ on:
 
 env:
   node_version: 18
+  CI: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build:
     name: Build and Run Tests
@@ -37,21 +40,13 @@ jobs:
           npm ci
           npx playwright install --with-deps webkit
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      - name: Set NX SHAs
-        uses: nrwl/nx-set-shas@v3
-      - name: Lint, Build, Test
-        run: |
-          npx playwright install --with-deps webkit
-          npx nx format:check
-          npx nx affected \
-            --base="${{ env.NX_BASE }}" \
-            --head="${{ env.NX_HEAD }}" \
-            --targets=lint,build,test \
-            --parallel=2 \
-            --configuration=ci
+      - name: Prep
+        run: npx playwright install --with-deps webkit
+      - name: Lint
+        run: npm run lint:all
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: node ./scripts/test.js
       - name: End to End Tests
-        run: |
-          npx nx affected \
-            --base="${{ env.NX_BASE }}" \
-            --head="${{ env.NX_HEAD }}" \
-            --targets=e2e
+        run: npm run e2e

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  await page.goto('http://localhost:4200/example-with-handles');
+  await page.goto('/example-with-handles');
   await expect(page.locator('main li:first-child.kbd-sort-item')).toBeTruthy();
   await page.waitForSelector('main input:focus');
   await page.press('main input', 'Tab');

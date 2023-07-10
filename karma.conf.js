@@ -1,9 +1,3 @@
-if (!process.env.CHROME_BIN) {
-  const chromeBin = require('playwright-core').chromium.executablePath();
-  if (chromeBin) {
-    process.env.CHROME_BIN = chromeBin;
-  }
-}
 if (!process.env.WEBKIT_BIN) {
   const webkitBin = require('playwright-core').webkit.executablePath();
   if (webkitBin) {
@@ -14,7 +8,7 @@ if (!process.env.WEBKIT_HEADLESS_BIN && process.env.WEBKIT_BIN) {
   process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
 }
 
-module.exports = function (config, coverageDir) {
+module.exports = function (config, coverageDir, isCi) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -23,11 +17,11 @@ module.exports = function (config, coverageDir) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-chrome-launcher'),
-      require('karma-webkit-launcher'),
+      require(__dirname + '/scripts/karma-webkit-launcher.js'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      clearContext: !isCi, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
@@ -35,12 +29,14 @@ module.exports = function (config, coverageDir) {
     coverageReporter: {
       dir: coverageDir,
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'json-summary' },
-        { type: 'text-summary' },
-        { type: 'lcov', subdir: 'lcov-report' },
-      ],
+      reporters: isCi
+        ? [{ type: 'text' }]
+        : [
+            { type: 'html' },
+            { type: 'json-summary' },
+            { type: 'text-summary' },
+            { type: 'lcov', subdir: 'lcov-report' },
+          ],
       check: {
         global: {
           statements: 100,
@@ -50,20 +46,21 @@ module.exports = function (config, coverageDir) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: isCi ? [] : ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
+    autoWatch: !isCi,
+    browsers: isCi ? ['ChromeHeadlessCI', 'WebkitHeadless'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
       },
     },
-    singleRun: true,
-    concurrency: Infinity,
-    restartOnFileChange: true,
+    singleRun: isCi,
+    concurrency: isCi ? 1 : Number.POSITIVE_INFINITY,
+    restartOnFileChange: !isCi,
+    processKillTimeout: 10000,
   });
 };

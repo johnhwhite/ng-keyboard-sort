@@ -1,10 +1,8 @@
 {
   "installDependencies": true,
-  "startCommand": "turbo start",
+  "startCommand": "npm run start",
   "env": {
     "ENABLE_CJS_IMPORTS": true,
-    "NODE_ENV": "development",
-    "NX_DAEMON": false,
-    "NX_SKIP_NX_CACHE": true
+    "NODE_ENV": "development"
   }
 }
