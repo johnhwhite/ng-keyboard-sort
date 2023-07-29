@@ -28,6 +28,9 @@ jobs:
                 && comment.body.includes(`<!-- ${{ github.workflow }} -->`)
               ))
               if (comment) {
+                if (comment.body === newComment) {
+                  return
+                }
                 github.rest.issues.updateComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,

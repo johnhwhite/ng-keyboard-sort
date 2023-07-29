@@ -15,6 +15,8 @@ jobs:
   build:
     name: Build and Run Tests
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,6 +42,25 @@ jobs:
           npm ci
           npx playwright install --with-deps webkit
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - name: Validate commit message
+        if: github.event_name == 'pull_request'
+        run: |
+          set -exo pipefail
+          PR_NUM=${{ github.event.pull_request.number }}
+          PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline' $PR_NUM)
+          PR_TITLE=$(gh pr view --json title --jq '.title' $PR_NUM)
+          if [[ $PR_COMMIT != $PR_TITLE ]]; then
+            echo "❌ PR title and commit message must match"
+            exit 1
+          fi
+          echo $PR_COMMIT | npx commitlint --strict
+          if [[ $? != 0 ]]; then
+            echo "❌ Commit message validation failed"
+            exit 1
+          fi
+          echo "✅ Commit message validation passed"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Prep
         run: npx playwright install --with-deps webkit
       - name: Lint
