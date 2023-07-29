@@ -43,9 +43,10 @@ jobs:
           npx playwright install --with-deps webkit
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Validate commit message
+        if: github.event_name == 'pull_request'
         run: |
-          PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline')
-          PR_TITLE=$(gh pr view --json title --jq '.title')
+          PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline' ${{ github.ref_name }})
+          PR_TITLE=$(gh pr view --json title --jq '.title' ${{ github.ref_name }})
           if [[ $PR_COMMIT != $PR_TITLE ]]; then
             echo "PR title and commit message must match"
             exit 1
