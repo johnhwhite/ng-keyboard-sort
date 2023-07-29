@@ -42,7 +42,13 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Validate commit message
         run: |
-          jq -r .head_commit.message ${{ github.github.event_path }} | commitlint --strict
+          PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline')
+          PR_TITLE=$(gh pr view --json title --jq '.title')
+          if [[ $PR_COMMIT != $PR_TITLE ]]; then
+            echo "PR title and commit message must match"
+            exit 1
+          fi
+          echo $PR_COMMIT | npx commitlint --strict
       - name: Prep
         run: npx playwright install --with-deps webkit
       - name: Lint
