@@ -41,8 +41,9 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}
+          restore-keys: '${{ runner.os }}-node-${{ env.node_version }}-'
       - name: Install
-        run: npm ci
+        run: npm i
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
       - name: Validate commit message
         if: github.event_name == 'pull_request'
