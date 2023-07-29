@@ -21,7 +21,7 @@ module.exports = function (config, coverageDir, isCi) {
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: !isCi, // leave Jasmine Spec Runner output visible in browser
+      clearContext: isCi, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces

@@ -3,8 +3,19 @@
 
 set -ex
 
-npx pretty-quick --staged
+UNSTAGED=$(git diff --name-only)
+
+if [ -n "$UNSTAGED" ]; then
+  git stash push --keep-index
+fi
+git diff --cached --name-only -z | xargs -0 npx prettier -wu
+git add .
+
 npm run lint:all
 npm run test:all
 npm run build
 npm run e2e
+
+if [ -n "$UNSTAGED" ]; then
+  git stash pop
+fi
