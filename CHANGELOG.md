@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.0.3 (2023-07-29)
+
+## What's Changed
+* ci: cache improvement by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/80
+* ci: improve cache reuse by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/82
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.0.2...v3.0.3
+
 ## 3.0.2 (2023-07-29)
 
 ## What's Changed
