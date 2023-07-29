@@ -24,7 +24,9 @@
     "lint:e2e": "ng lint ng-keyboard-sort",
     "lint:all": "npm run lint && npm run lint:e2e",
     "commit": "cz",
-    "prepare": "is-ci || husky install"
+    "prepare": "is-ci || husky install",
+    "commitlint": "commitlint --edit",
+    "validate-commit-msg": "commitlint --strict"
   },
   "dependencies": {
     "@angular/animations": "16.1.7",
@@ -54,6 +56,7 @@
     "@angular/localize": "16.1.7",
     "@commitlint/cli": "^17.6.7",
     "@commitlint/config-angular": "^17.6.7",
+    "@commitlint/config-conventional": "^17.6.7",
     "@playwright/test": "^1.36.2",
     "@schematics/angular": "16.1.6",
     "@types/jasmine": "~4.3.5",
@@ -61,6 +64,7 @@
     "@typescript-eslint/parser": "6.2.0",
     "@typescript-eslint/typescript-estree": "^6.2.0",
     "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "~8.46.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "8.9.0",

@@ -40,6 +40,9 @@ jobs:
           npm ci
           npx playwright install --with-deps webkit
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      - name: Validate commit message
+        run: |
+          jq -r .head_commit.message ${{ github.github.event_path }} | commitlint --strict
       - name: Prep
         run: npx playwright install --with-deps webkit
       - name: Lint
