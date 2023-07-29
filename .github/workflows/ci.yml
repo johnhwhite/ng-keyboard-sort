@@ -45,14 +45,20 @@ jobs:
       - name: Validate commit message
         if: github.event_name == 'pull_request'
         run: |
+          set -exo pipefail
           PR_NUM=${{ github.event.pull_request.number }}
           PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline' $PR_NUM)
           PR_TITLE=$(gh pr view --json title --jq '.title' $PR_NUM)
           if [[ $PR_COMMIT != $PR_TITLE ]]; then
-            echo "PR title and commit message must match"
+            echo "❌ PR title and commit message must match"
             exit 1
           fi
           echo $PR_COMMIT | npx commitlint --strict
+          if [[ $? != 0 ]]; then
+            echo "❌ Commit message validation failed"
+            exit 1
+          fi
+          echo "✅ Commit message validation passed"
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Prep
