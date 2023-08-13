@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-set -ex
+set -exo pipefail
 
 UNSTAGED=$(git diff --name-only)
 
