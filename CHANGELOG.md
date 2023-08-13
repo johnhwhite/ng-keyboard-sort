@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.1.0 (2023-08-13)
+
+## What's Changed
+* build(deps): bump critters and @angular-devkit/build-angular by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/83
+* feat: update to Angular 16.2 by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/85
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.0.3...v3.1.0
+
 ## 3.0.3 (2023-07-29)
 
 ## What's Changed
