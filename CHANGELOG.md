@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.1.1 (2023-09-24)
+
+## What's Changed
+* chore: update e2e examples by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/86
+* chore: update dependencies by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/88
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.0...v3.1.1
+
 ## 3.1.0 (2023-08-13)
 
 ## What's Changed
