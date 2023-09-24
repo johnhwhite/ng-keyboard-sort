@@ -15,8 +15,13 @@ describe('ExampleComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ExampleComponent],
-      imports: [CdkDrag, CdkDropList, KeyboardSortModule, CdkDragPlaceholder],
+      imports: [
+        CdkDrag,
+        CdkDropList,
+        ExampleComponent,
+        KeyboardSortModule,
+        CdkDragPlaceholder,
+      ],
     });
 
     fixture = TestBed.createComponent(ExampleComponent);

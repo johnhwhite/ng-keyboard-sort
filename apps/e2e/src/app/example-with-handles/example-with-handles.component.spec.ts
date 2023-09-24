@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ExampleWithHandlesComponent } from './example-with-handles.component';
-import { KeyboardSortModule } from 'ng-keyboard-sort';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -15,8 +14,12 @@ describe('ExampleWithHandlesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExampleWithHandlesComponent],
-      imports: [CdkDrag, CdkDropList, KeyboardSortModule, CdkDragPlaceholder],
+      imports: [
+        CdkDrag,
+        CdkDropList,
+        CdkDragPlaceholder,
+        ExampleWithHandlesComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ExampleWithHandlesComponent);

@@ -1,10 +1,32 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { NgFor } from '@angular/common';
+import {
+  KeyboardSortItemDirective,
+  KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemIfFocusedDirective,
+  KeyboardSortListDirective,
+} from 'ng-keyboard-sort';
 
 @Component({
   selector: 'app-example',
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.css'],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDropList,
+    KeyboardSortListDirective,
+    KeyboardSortItemDirective,
+    KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
+    NgFor,
+  ],
 })
 export class ExampleComponent {
   public items: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -15,3 +37,5 @@ export class ExampleComponent {
 
   protected trackByFn = (_: number, item: string) => item;
 }
+
+export default ExampleComponent;

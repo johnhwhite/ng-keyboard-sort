@@ -9,6 +9,13 @@ li {
   padding: 10px;
   font-size: 20px;
   cursor: move;
+  position: relative;
+}
+
+.indicator {
+  position: absolute;
+  left: 2px;
+  bottom: -2px;
 }
 
 .kbd-sort-item-activated {
