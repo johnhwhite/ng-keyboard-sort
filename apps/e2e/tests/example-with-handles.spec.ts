@@ -6,7 +6,7 @@ test('test', async ({ page }) => {
   await page.waitForSelector('main input:focus');
   await page.press('main input', 'Tab');
   await expect(page.locator('main li:first-child .handle')).toBeFocused();
-  await expect(page.locator('main li:first-child')).toContainText('Item 1');
+  await expect(page.locator('main li:first-child')).toContainText('Dog 1');
   await page.locator('main li:first-child .handle').dispatchEvent('keydown', {
     key: 'Enter',
   });
@@ -20,8 +20,8 @@ test('test', async ({ page }) => {
   await expect(page.locator('main li:nth-child(2)')).toHaveClass(
     /\bkbd-sort-item-activated\b/
   );
-  await expect(page.locator('main li:first-child')).toContainText('Item 2');
-  await expect(page.locator('main li:nth-child(2)')).toContainText('Item 1');
+  await expect(page.locator('main li:first-child')).toContainText('Dog 2');
+  await expect(page.locator('main li:nth-child(2)')).toContainText('Dog 1');
   await page.locator('main li:nth-child(2) .handle').dispatchEvent('keydown', {
     key: 'Enter',
   });

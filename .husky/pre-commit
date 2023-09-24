@@ -8,7 +8,7 @@ UNSTAGED=$(git diff --name-only)
 if [ -n "$UNSTAGED" ]; then
   git stash push --keep-index
 fi
-git diff --cached --name-only -z | xargs -0 npx prettier -wu
+git diff --cached --name-only --diff-filter=d -z | xargs -0 npx prettier -wu
 git add .
 
 npm run lint:all

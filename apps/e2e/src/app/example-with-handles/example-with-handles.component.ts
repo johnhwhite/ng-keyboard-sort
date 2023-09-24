@@ -1,21 +1,45 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { NgFor } from '@angular/common';
+import {
+  KeyboardSortHandleDirective,
+  KeyboardSortItemDirective,
+  KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemIfFocusedDirective,
+  KeyboardSortListDirective,
+} from 'ng-keyboard-sort';
 
 @Component({
   selector: 'app-example-with-handles',
   templateUrl: './example-with-handles.component.html',
   styleUrls: ['./example-with-handles.component.css'],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDropList,
+    KeyboardSortHandleDirective,
+    KeyboardSortItemDirective,
+    KeyboardSortItemIfActiveDirective,
+    KeyboardSortItemIfFocusedDirective,
+    KeyboardSortListDirective,
+    NgFor,
+  ],
 })
 export class ExampleWithHandlesComponent {
   public items: string[] = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-    'Item 6',
-    'Item 7',
-    'Item 8',
+    'Dog 1',
+    'Dog 2',
+    'Dog 3',
+    'Dog 4',
+    'Dog 5',
+    'Dog 6',
+    'Dog 7',
+    'Dog 8',
   ];
 
   public drop($event: CdkDragDrop<string[]>) {
@@ -24,3 +48,5 @@ export class ExampleWithHandlesComponent {
 
   protected trackByFn = (_: number, item: string) => item;
 }
+
+export default ExampleWithHandlesComponent;
