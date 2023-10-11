@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.1.2 (2023-10-11)
+
+## What's Changed
+* build(deps-dev): bump postcss from 8.4.27 to 8.4.31 by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/89
+* ci: fix linting step by @johnhwhite in https://github.com/johnhwhite/ng-keyboard-sort/pull/91
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.1...v3.1.2
+
 ## 3.1.1 (2023-09-24)
 
 ## What's Changed
