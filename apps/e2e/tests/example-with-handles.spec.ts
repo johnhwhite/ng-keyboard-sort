@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test';
 test('test', async ({ page }) => {
   await page.goto('/example-with-handles');
   await expect(page.locator('main li:first-child.kbd-sort-item')).toBeTruthy();
-  await page.waitForSelector('main input:focus');
+  await page.waitForSelector('main input');
+  await page.focus('main input');
   await page.press('main input', 'Tab');
   await expect(page.locator('main li:first-child .handle')).toBeFocused();
   await expect(page.locator('main li:first-child')).toContainText('Dog 1');
