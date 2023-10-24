@@ -81,6 +81,14 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.1.3 (2023-10-24)
+
+## What's Changed
+* build(deps-dev): bump @babel/traverse from 7.22.10 to 7.23.2 by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/92
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.2...v3.1.3
+
 ## 3.1.2 (2023-10-11)
 
 ## What's Changed
