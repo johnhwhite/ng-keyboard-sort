@@ -81,6 +81,15 @@
 
 **Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v2.1.2...v2.1.3
 
+## 3.1.4 (2023-12-02)
+
+## What's Changed
+* build(deps-dev): bump axios from 1.4.0 to 1.6.1 by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/94
+* build(deps-dev): bump @adobe/css-tools from 4.3.1 to 4.3.2 by @dependabot in https://github.com/johnhwhite/ng-keyboard-sort/pull/95
+
+
+**Full Changelog**: https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.3...v3.1.4
+
 ## 3.1.3 (2023-10-24)
 
 ## What's Changed
