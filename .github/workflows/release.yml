@@ -16,9 +16,8 @@ jobs:
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
-          release-type: node
+          release-type: simple
           default-branch: '${{ github.ref_name }}'
-          changelog-notes-type: 'github'
           package-name: ng-keyboard-sort
           token: ${{ secrets.GH_TOKEN }}
           changelog-types: >
@@ -35,8 +34,49 @@ jobs:
               { "type": "style", "section": "Styles", "hidden": false },
               { "type": "test", "section": "Tests", "hidden": false }
             ]
-      - name: Publish
+      - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
-        run: gh workflow run 53740030 -R johnhwhite/ng-keyboard-sort --ref main
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Setup node
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+      - name: Get node cache
+        if: ${{ steps.release.outputs.release_created }}
+        id: get-node-cache
+        run: |
+          ./scripts/node-cache.sh >> $GITHUB_OUTPUT
+      - name: Cache node_modules
+        if: ${{ steps.release.outputs.release_created }}
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}
+          restore-keys: '${{ runner.os }}-node-${{ env.node_version }}-'
+      - name: Install
+        if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm i
+      - name: Build
+        if: ${{ steps.release.outputs.release_created }}
+        id: build
+        run: |
+          npm run build:package
+          echo "::set-output name=version::$(cat version.txt)"
+      - name: Publish to NPM
+        if: ${{ steps.release.outputs.release_created }}
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          VERSION: ${{ steps.build.outputs.version }}
+          MAJOR_VERSION: ${{ steps.release.outputs.major }}
+        run: |
+          cd dist/ng-keyboard-sort
+          npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
+          set -x
+          npm pkg set "version=${VERSION}"
+          npm publish --access public --tag "v${MAJOR_VERSION}-lts"
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
+          fi
