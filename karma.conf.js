@@ -27,7 +27,7 @@ module.exports = function (config, coverageDir, isCi) {
       suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
-      dir: coverageDir,
+      dir: __dirname + '/coverage/' + coverageDir,
       subdir: '.',
       reporters: isCi
         ? [{ type: 'text' }]

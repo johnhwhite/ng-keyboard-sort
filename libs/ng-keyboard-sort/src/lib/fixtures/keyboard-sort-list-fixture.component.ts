@@ -23,14 +23,13 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
       [kbdSortListOrientation]="direction"
       [kbdSortListDisabled]="disabled"
       (kdbSortDrop)="sortDrop($event)">
-      <li
-        *ngFor="let item of data || []; index as i; trackBy: trackByFn"
-        [kbdSortItem]="i"
-        [attr.id]="'item-' + i">
-        {{ item }}
-        <span *kbdSortKeyboardSortItemIfActive>{{ ' ' }}Active</span>
-        <span *kbdSortKeyboardSortItemIfFocused>{{ ' ' }}Focused</span>
-      </li>
+      @for (item of data || []; track item; let i = $index) {
+        <li [kbdSortItem]="i" [attr.id]="'item-' + i">
+          {{ item }}
+          <span *kbdSortKeyboardSortItemIfActive>{{ ' ' }}Active</span>
+          <span *kbdSortKeyboardSortItemIfFocused>{{ ' ' }}Focused</span>
+        </li>
+      }
     </ul>
     <div>
       <button (click)="activateLastItem()">Activate last item</button>
@@ -55,6 +54,4 @@ export class KeyboardSortListFixtureComponent {
   public sortDrop($event: KeyboardSortEventDrop) {
     this.drops.push($event);
   }
-
-  protected trackByFn = (_: number, item: string) => item;
 }

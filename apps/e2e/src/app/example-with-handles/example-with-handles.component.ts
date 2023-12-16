@@ -45,8 +45,6 @@ export class ExampleWithHandlesComponent {
   public drop($event: CdkDragDrop<string[]>) {
     moveItemInArray(this.items, $event.previousIndex, $event.currentIndex);
   }
-
-  protected trackByFn = (_: number, item: string) => item;
 }
 
 export default ExampleWithHandlesComponent;

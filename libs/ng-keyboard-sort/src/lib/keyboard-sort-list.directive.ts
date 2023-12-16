@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ApplicationRef,
   ChangeDetectorRef,
   ContentChildren,
   Directive,
@@ -57,7 +56,6 @@ export class KeyboardSortListDirective
   @Output()
   public readonly kdbSortDrop = new EventEmitter<KeyboardSortEventDrop>();
 
-  readonly #appRef = inject(ApplicationRef);
   readonly #changeDetectorRef = inject(ChangeDetectorRef);
   #focusKeyManager: FocusKeyManager<KeyboardSortItemDirective> | undefined;
   readonly #focusMonitor = inject(FocusMonitor);
@@ -193,12 +191,8 @@ export class KeyboardSortListDirective
   public deactivateAll(except?: number): void {
     this.items?.forEach((item) => {
       if (item.position !== except) {
-        if (item.activated) {
-          item.activated = false;
-        }
-        if (item.focused) {
-          item.focused = false;
-        }
+        item.activated = false;
+        item.focused = false;
       }
     });
   }
