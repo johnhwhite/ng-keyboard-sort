@@ -12,7 +12,7 @@ import {
   Output,
   QueryList,
 } from '@angular/core';
-import { concatWith, of, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
@@ -50,11 +50,13 @@ export class KeyboardSortItemDirective
     return this.#activated;
   }
   public set activated(value: boolean) {
-    if (value && this.focused) {
-      this.focused = false;
+    if (this.#activated !== value) {
+      if (value && this.focused) {
+        this.focused = false;
+      }
+      this.#activated = value;
+      this.kbdSortItemActivated.emit(value);
     }
-    this.#activated = value;
-    this.kbdSortItemActivated.emit(value);
   }
 
   public get focused(): boolean {
@@ -102,7 +104,6 @@ export class KeyboardSortItemDirective
   #kbdSortItemDisabled = false;
   #activated = false;
   #focused = false;
-  #hasHandles = false;
 
   constructor() {
     this.#itemService.item = this;
@@ -111,15 +112,6 @@ export class KeyboardSortItemDirective
   public ngAfterViewInit(): void {
     if (this.activated) {
       this.activated = true;
-    }
-    if (this.handles) {
-      this.#subscriptions.add(
-        of(this.handles)
-          .pipe(concatWith(this.handles.changes))
-          .subscribe((handles: QueryList<KeyboardSortHandleDirective>) => {
-            this.#hasHandles = handles.length > 0;
-          })
-      );
     }
   }
 

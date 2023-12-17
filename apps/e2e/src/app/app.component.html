@@ -1,12 +1,14 @@
 <nav>
   <ul>
-    <ng-container *ngFor="let rootRoutes of routes">
-      <ng-container *ngFor="let route of rootRoutes">
-        <li *ngIf="route.title">
-          <a routerLink="{{ route.path }}">{{ route.title }}</a>
-        </li>
-      </ng-container>
-    </ng-container>
+    @for (rootRoutes of routes; track rootRoutes) {
+      @for (route of rootRoutes; track route.path) {
+        @if (route.title) {
+          <li>
+            <a routerLink="{{ route.path }}">{{ route.title }}</a>
+          </li>
+        }
+      }
+    }
   </ul>
 </nav>
 <main>
