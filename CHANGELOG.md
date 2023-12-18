@@ -1,5 +1,35 @@
 # Changelog
 
+## [4.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.4...v4.0.0) (2023-12-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* Internal properties have been marked with `@internal`, switched to `protected`, or removed if unused (`KeyboardSortEvent`).
+* upgrade to Angular 17 ([#100](https://github.com/johnhwhite/ng-keyboard-sort/issues/100))
+
+### Build System
+
+* update peer dependencies ([#102](https://github.com/johnhwhite/ng-keyboard-sort/issues/102)) ([ea8d4f7](https://github.com/johnhwhite/ng-keyboard-sort/commit/ea8d4f70a445110b5220c80b9d0d71e8f1dd6feb))
+* update test config ([#103](https://github.com/johnhwhite/ng-keyboard-sort/issues/103)) ([0226bb5](https://github.com/johnhwhite/ng-keyboard-sort/commit/0226bb528512c9aa0ad69b812e363fd52dae9890))
+
+
+### Miscellaneous Chores
+
+* rebuild changelog ([#97](https://github.com/johnhwhite/ng-keyboard-sort/issues/97)) ([7592162](https://github.com/johnhwhite/ng-keyboard-sort/commit/7592162f81a49d0c4c58fcf3fdc251c7089f9c70))
+
+
+### Documentation
+
+* update example app ([#104](https://github.com/johnhwhite/ng-keyboard-sort/issues/104)) ([6524597](https://github.com/johnhwhite/ng-keyboard-sort/commit/65245974ac877694e71131c9dd655e9c8a5730f7))
+
+
+### Features
+
+* clarify public api ([#105](https://github.com/johnhwhite/ng-keyboard-sort/issues/105)) ([99e8a73](https://github.com/johnhwhite/ng-keyboard-sort/commit/99e8a7307dbd6360fc88fb78c285fc3c312f2549))
+* update control flow syntax ([#101](https://github.com/johnhwhite/ng-keyboard-sort/issues/101)) ([ef8de6d](https://github.com/johnhwhite/ng-keyboard-sort/commit/ef8de6da8f5c67cee2ccf30b63c47bc77ceba984))
+* upgrade to Angular 17 ([#100](https://github.com/johnhwhite/ng-keyboard-sort/issues/100)) ([98014b4](https://github.com/johnhwhite/ng-keyboard-sort/commit/98014b427745c13bfeb4ffdca70876a4614de71a))
+
 ## [3.1.4](https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.3...v3.1.4) (2023-12-02)
 
 
