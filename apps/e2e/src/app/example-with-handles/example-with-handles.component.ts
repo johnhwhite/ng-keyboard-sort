@@ -14,6 +14,11 @@ import {
   KeyboardSortListDirective,
 } from 'ng-keyboard-sort';
 
+export type Item = {
+  name: string;
+  placeholder: string;
+};
+
 @Component({
   selector: 'app-example-with-handles',
   templateUrl: './example-with-handles.component.html',
@@ -31,18 +36,17 @@ import {
   ],
 })
 export class ExampleWithHandlesComponent {
-  public items: string[] = [
-    'Dog 1',
-    'Dog 2',
-    'Dog 3',
-    'Dog 4',
-    'Dog 5',
-    'Dog 6',
-    'Dog 7',
-    'Dog 8',
+  public items: Item[] = [
+    { name: 'Happy', placeholder: '😀' },
+    { name: 'Dopey', placeholder: '😵‍💫' },
+    { name: 'Sneezy', placeholder: '🤧' },
+    { name: 'Bashful', placeholder: '🫣' },
+    { name: 'Sleepy', placeholder: '😴' },
+    { name: 'Grumpy', placeholder: '😠' },
+    { name: 'Doc', placeholder: '🤓' },
   ];
 
-  public drop($event: CdkDragDrop<string[]>) {
+  public drop($event: CdkDragDrop<Item[]>): void {
     moveItemInArray(this.items, $event.previousIndex, $event.currentIndex);
   }
 }

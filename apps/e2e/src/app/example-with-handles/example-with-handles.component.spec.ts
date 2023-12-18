@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExampleWithHandlesComponent } from './example-with-handles.component';
+import {
+  ExampleWithHandlesComponent,
+  Item,
+} from './example-with-handles.component';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -12,15 +15,15 @@ describe('ExampleWithHandlesComponent', () => {
   let component: ExampleWithHandlesComponent;
   let fixture: ComponentFixture<ExampleWithHandlesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         CdkDrag,
         CdkDropList,
         CdkDragPlaceholder,
         ExampleWithHandlesComponent,
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(ExampleWithHandlesComponent);
     component = fixture.componentInstance;
@@ -38,7 +41,7 @@ describe('ExampleWithHandlesComponent', () => {
     const event = {
       previousIndex: 0,
       currentIndex: 1,
-    } as CdkDragDrop<string[]>;
+    } as CdkDragDrop<Item[]>;
     component.drop(event);
     expect(items[0]).toEqual(secondItem);
     expect(items[1]).toEqual(firstItem);
