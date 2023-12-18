@@ -25,6 +25,7 @@
     "lint:all": "ng lint",
     "commit": "cz",
     "prepare": "is-ci || husky install",
+    "postinstall": "node scripts/postinstall.mjs",
     "commitlint": "commitlint --edit",
     "validate-commit-msg": "commitlint --strict"
   },
@@ -38,6 +39,7 @@
     "@angular/platform-browser-dynamic": "17.0.7",
     "@angular/router": "17.0.7",
     "rxjs": "~7.8.1",
+    "semver": "^7.5.4",
     "tslib": "^2.6.2",
     "zone.js": "0.14.2"
   },
