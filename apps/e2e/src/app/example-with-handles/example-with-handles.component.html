@@ -1,17 +1,18 @@
 <h1>Keyboard Sort Example With Handles</h1>
 <p>
   This example integrates the keyboard sort with CDK drag and drop sorting and
-  uses a handle element.
+  uses a handle element. Use the button to focus on the first list item and then
+  use the arrow keys to move it up and down.
 </p>
 
 <div>
-  <label
-    >Add item:{{ ' ' }}
-    <input type="text" />
-  </label>
+  <button type="button" (click)="list.focus()" class="start">
+    Keyboard sort
+  </button>
 </div>
 
 <ul
+  #list
   cdkDropList
   (cdkDropListDropped)="drop($event)"
   kbdSortList
@@ -19,12 +20,12 @@
   kbdSortListOrientation="vertical"
   [cdkDropListData]="items"
   [kbdSortListData]="items">
-  @for (item of items; track item; let i = $index) {
+  @for (item of items; track item.name; let i = $index) {
     <li cdkDrag cdkDragLockAxis="y" [kbdSortItem]="i">
-      <div class="handle" kbdSortHandle>{{ item }}</div>
-      <div class="placeholder">🐶</div>
-      <span *kbdSortKeyboardSortItemIfActive>😇 active!</span>
-      <span *kbdSortKeyboardSortItemIfFocused>😊 focused.</span>
+      <div class="placeholder">{{ item.placeholder }}</div>
+      <div class="handle" kbdSortHandle>{{ item.name }}</div>
+      <span *kbdSortKeyboardSortItemIfActive>↕️</span>
+      <span *kbdSortKeyboardSortItemIfFocused>⋯️</span>
     </li>
   }
 </ul>
