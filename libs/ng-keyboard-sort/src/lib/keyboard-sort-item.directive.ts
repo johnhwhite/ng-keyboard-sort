@@ -29,12 +29,7 @@ import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
     '[class.kbd-sort-item-activated]': 'activated',
     '[class.kbd-sort-item-focused]': 'focused',
   },
-  providers: [
-    {
-      provide: KeyboardSortItemService,
-      useFactory: () => new KeyboardSortItemService(),
-    },
-  ],
+  providers: [KeyboardSortItemService],
 })
 export class KeyboardSortItemDirective
   implements AfterViewInit, OnDestroy, FocusableOption
@@ -59,6 +54,9 @@ export class KeyboardSortItemDirective
     }
   }
 
+  /**
+   * @internal
+   */
   public get focused(): boolean {
     return this.#focused;
   }

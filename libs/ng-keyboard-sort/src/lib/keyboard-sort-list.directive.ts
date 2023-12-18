@@ -25,21 +25,16 @@ import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
   selector: '[kbdSortList]',
   exportAs: 'kbdSortList',
   standalone: true,
-  providers: [
-    {
-      provide: KeyboardSortListService,
-      useFactory: () => new KeyboardSortListService(),
-    },
-  ],
+  providers: [KeyboardSortListService],
 })
 export class KeyboardSortListDirective
   implements AfterViewInit, OnChanges, OnDestroy
 {
   @ContentChildren(KeyboardSortItemDirective)
-  public items: QueryList<KeyboardSortItemDirective> | undefined;
+  protected items: QueryList<KeyboardSortItemDirective> | undefined;
 
   @HostBinding('attr.tabindex')
-  public tabindex: '0' | '-1' = '0';
+  protected tabindex: '0' | '-1' = '0';
 
   @Input()
   public kbdSortListOrientation: 'horizontal' | 'vertical' = 'horizontal';

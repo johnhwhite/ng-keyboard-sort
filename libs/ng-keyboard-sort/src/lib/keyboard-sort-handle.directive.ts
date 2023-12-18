@@ -14,8 +14,11 @@ import { KeyboardSortItemService } from './keyboard-sort-item.service';
 })
 export class KeyboardSortHandleDirective {
   @HostBinding('attr.tabindex')
-  public tabindex = '-1';
+  protected tabindex = '-1';
 
+  /**
+   * @internal
+   */
   public readonly elementRef = inject(ElementRef<HTMLElement>);
 
   #itemService = inject(KeyboardSortItemService, { optional: true });

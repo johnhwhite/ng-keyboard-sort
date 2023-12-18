@@ -19,7 +19,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
     <a href="#item-0">Start</a>
     <ul
       kbdSortList
-      [kbdSortListData]="data"
+      [kbdSortListData]="data || []"
       [kbdSortListOrientation]="direction"
       [kbdSortListDisabled]="disabled"
       (kdbSortDrop)="sortDrop($event)">
@@ -53,5 +53,9 @@ export class KeyboardSortListFixtureComponent {
 
   public sortDrop($event: KeyboardSortEventDrop) {
     this.drops.push($event);
+  }
+
+  public activateLastItem() {
+    this.items?.last?.activate();
   }
 }

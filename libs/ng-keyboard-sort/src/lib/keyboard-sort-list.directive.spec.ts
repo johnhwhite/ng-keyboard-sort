@@ -63,6 +63,13 @@ describe('ListDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(listElement.getAttribute('tabindex')).toBe('0');
+    component.activateLastItem();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const last = component.items?.last;
+    expect(last).toBeTruthy();
+    expect(last?.activated).toBeTrue();
+    expect(last?.focused).toBeFalse();
   });
 
   it('should change orientation', async () => {

@@ -1,7 +1,6 @@
-export * from './lib/keyboard-sort-handle.directive';
-export * from './lib/keyboard-sort-item.directive';
-export * from './lib/keyboard-sort-item-if-active.directive';
-export * from './lib/keyboard-sort-item-if-focused.directive';
-export * from './lib/keyboard-sort-list.directive';
-export * from './lib/keyboard-sort.module';
-export * from './lib/keyboard-sort-event';
+export { KeyboardSortHandleDirective } from './lib/keyboard-sort-handle.directive';
+export { KeyboardSortItemDirective } from './lib/keyboard-sort-item.directive';
+export { KeyboardSortItemIfActiveDirective } from './lib/keyboard-sort-item-if-active.directive';
+export { KeyboardSortItemIfFocusedDirective } from './lib/keyboard-sort-item-if-focused.directive';
+export { KeyboardSortListDirective } from './lib/keyboard-sort-list.directive';
+export { KeyboardSortModule } from './lib/keyboard-sort.module';
