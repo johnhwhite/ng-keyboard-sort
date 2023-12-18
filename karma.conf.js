@@ -21,7 +21,7 @@ module.exports = function (config, coverageDir, isCi) {
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     client: {
-      clearContext: isCi, // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
@@ -29,14 +29,13 @@ module.exports = function (config, coverageDir, isCi) {
     coverageReporter: {
       dir: __dirname + '/coverage/' + coverageDir,
       subdir: '.',
-      reporters: isCi
-        ? [{ type: 'text' }]
-        : [
-            { type: 'html' },
-            { type: 'json-summary' },
-            { type: 'text-summary' },
-            { type: 'lcov', subdir: 'lcov-report' },
-          ],
+      reporters: [
+        { type: 'text' },
+        { type: 'html' },
+        { type: 'json-summary' },
+        { type: 'text-summary' },
+        { type: 'lcov', subdir: 'lcov-report' },
+      ],
       check: {
         global: {
           statements: 100,
@@ -46,7 +45,7 @@ module.exports = function (config, coverageDir, isCi) {
         },
       },
     },
-    reporters: isCi ? [] : ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
