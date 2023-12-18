@@ -9,6 +9,9 @@ const directionalKeys = {
   right: ['ArrowRight', 'D', 'd'],
 };
 
+/**
+ * @internal
+ */
 @Injectable()
 export class KeyboardSortItemService {
   public item: KeyboardSortItemDirective | undefined;
