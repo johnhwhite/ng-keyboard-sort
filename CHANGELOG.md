@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.0...v4.0.1) (2024-03-26)
+
+
+### Bug Fixes
+
+* update dependencies ([#110](https://github.com/johnhwhite/ng-keyboard-sort/issues/110)) ([f71074c](https://github.com/johnhwhite/ng-keyboard-sort/commit/f71074c66f09278ca82a79887ca5ad4bbffa6a69))
+
 ## [4.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v3.1.4...v4.0.0) (2023-12-18)
 
 
