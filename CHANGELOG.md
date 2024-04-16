@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.0.2](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.1...v4.0.2) (2024-04-16)
+
+
+### Bug Fixes
+
+* update commitlint to v19 ([#114](https://github.com/johnhwhite/ng-keyboard-sort/issues/114)) ([3cb47c6](https://github.com/johnhwhite/ng-keyboard-sort/commit/3cb47c6ac37080a6b40add197ebf7c84f5cbcfbf))
+* update dependencies ([#112](https://github.com/johnhwhite/ng-keyboard-sort/issues/112)) ([05675e4](https://github.com/johnhwhite/ng-keyboard-sort/commit/05675e4b196384bbdce18f5f03110f2f3cb6edf0))
+* update eslint and prettier ([#115](https://github.com/johnhwhite/ng-keyboard-sort/issues/115)) ([d44e551](https://github.com/johnhwhite/ng-keyboard-sort/commit/d44e551d67ab897874eb2fb9f61b01045a944d02))
+
 ## [4.0.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.0...v4.0.1) (2024-03-26)
 
 
