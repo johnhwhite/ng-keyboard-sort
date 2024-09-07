@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.3](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.2...v4.0.3) (2024-09-07)
+
+
+### Build System
+
+* **deps-dev:** bump axios from 1.6.8 to 1.7.7 ([#120](https://github.com/johnhwhite/ng-keyboard-sort/issues/120)) ([5f8411e](https://github.com/johnhwhite/ng-keyboard-sort/commit/5f8411e42635d3a36497187f0e8c03afe0a26979))
+* **deps-dev:** bump braces from 3.0.2 to 3.0.3 ([#116](https://github.com/johnhwhite/ng-keyboard-sort/issues/116)) ([3dcd77a](https://github.com/johnhwhite/ng-keyboard-sort/commit/3dcd77a593623774d23aef768943467aafd4d0d0))
+* **deps:** bump webpack and @angular-devkit/build-angular ([#117](https://github.com/johnhwhite/ng-keyboard-sort/issues/117)) ([a494953](https://github.com/johnhwhite/ng-keyboard-sort/commit/a494953c029175ef1a89746dc17637bf3a190cc2))
+* **deps:** bump ws, engine.io and socket.io-adapter ([#119](https://github.com/johnhwhite/ng-keyboard-sort/issues/119)) ([abd875a](https://github.com/johnhwhite/ng-keyboard-sort/commit/abd875a804d9531f92f7eb0ca075fff1b7783681))
+
 ## [4.0.2](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.1...v4.0.2) (2024-04-16)
 
 
