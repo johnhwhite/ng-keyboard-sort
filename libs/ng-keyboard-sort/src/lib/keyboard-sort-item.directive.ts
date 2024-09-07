@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  booleanAttribute,
   ContentChildren,
   Directive,
   ElementRef,
@@ -40,7 +41,7 @@ export class KeyboardSortItemDirective
   @Input({ alias: 'kbdSortItem', required: true })
   public position = -1;
 
-  @Input()
+  @Input({ transform: booleanAttribute })
   public get activated(): boolean {
     return this.#activated;
   }
@@ -70,7 +71,7 @@ export class KeyboardSortItemDirective
   @HostBinding('attr.tabindex')
   public readonly tabindex = '-1' as const;
 
-  @Input()
+  @Input({ transform: booleanAttribute })
   public get kbdSortItemDisabled(): boolean {
     return this.#kbdSortItemDisabled;
   }

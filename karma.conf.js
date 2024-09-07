@@ -20,9 +20,6 @@ module.exports = function (config, coverageDir, isCi) {
       require(__dirname + '/scripts/karma-webkit-launcher.js'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
-    client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
-    },
     jasmineHtmlReporter: {
       suppressAll: true, // removes the duplicated traces
     },
@@ -53,8 +50,13 @@ module.exports = function (config, coverageDir, isCi) {
     browsers: isCi ? ['ChromeHeadlessCI', 'WebkitHeadless'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
-        base: 'ChromeHeadless',
-        flags: ['--disable-translate', '--disable-extensions', '--no-sandbox'],
+        base: 'Chrome',
+        flags: [
+          '--disable-extensions',
+          '--disable-gpu',
+          '--disable-translate',
+          '--headless=new',
+        ],
       },
     },
     singleRun: isCi,
