@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  booleanAttribute,
   ChangeDetectorRef,
   ContentChildren,
   Directive,
@@ -39,7 +40,7 @@ export class KeyboardSortListDirective
   @Input()
   public kbdSortListOrientation: 'horizontal' | 'vertical' = 'horizontal';
 
-  @Input()
+  @Input({ transform: booleanAttribute })
   public kbdSortListDisabled = false;
 
   @Input({ required: true })
