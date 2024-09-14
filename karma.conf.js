@@ -8,7 +8,7 @@ if (!process.env.WEBKIT_HEADLESS_BIN && process.env.WEBKIT_BIN) {
   process.env.WEBKIT_HEADLESS_BIN = process.env.WEBKIT_BIN;
 }
 
-module.exports = function (config, coverageDir, isCi) {
+module.exports = function (config, coverageDir) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -46,8 +46,6 @@ module.exports = function (config, coverageDir, isCi) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: !isCi,
-    browsers: isCi ? ['ChromeHeadlessCI', 'WebkitHeadless'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'Chrome',
@@ -59,9 +57,7 @@ module.exports = function (config, coverageDir, isCi) {
         ],
       },
     },
-    singleRun: isCi,
-    concurrency: isCi ? 1 : Number.POSITIVE_INFINITY,
-    restartOnFileChange: !isCi,
-    processKillTimeout: 10000,
+    restartOnFileChange: true,
+    browsers: ['Chrome'],
   });
 };
