@@ -33,7 +33,7 @@
           },
           "configurations": {
             "ci": {
-              "karmaConfig": "libs/ng-keyboard-sort/karma-ci.conf.js",
+              "browsers": "ChromeHeadlessCI,WebkitHeadless",
               "codeCoverage": true,
               "progress": false,
               "sourceMap": true,
@@ -132,7 +132,7 @@
           },
           "configurations": {
             "ci": {
-              "karmaConfig": "apps/e2e/karma-ci.conf.js",
+              "browsers": "ChromeHeadlessCI,WebkitHeadless",
               "codeCoverage": true,
               "progress": false,
               "sourceMap": true,
