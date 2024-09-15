@@ -1,17 +1,16 @@
 import {
   AfterViewInit,
-  booleanAttribute,
-  ContentChildren,
+  contentChildren,
   Directive,
+  effect,
   ElementRef,
-  EventEmitter,
-  HostBinding,
   HostListener,
   inject,
-  Input,
+  input,
+  model,
   OnDestroy,
-  Output,
-  QueryList,
+  output,
+  signal,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
@@ -24,93 +23,76 @@ import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
   exportAs: 'kbdSortItem',
   standalone: true,
   host: {
+    '[attr.tabindex]': '"-1"',
     '[class.kbd-sort-item]': 'true',
-    '[class.kbd-sort-item-disabled]': 'kbdSortItemDisabled',
-    '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled',
-    '[class.kbd-sort-item-activated]': 'activated',
-    '[class.kbd-sort-item-focused]': 'focused',
+    '[class.kbd-sort-item-disabled]': 'kbdSortItemDisabled()',
+    '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled()',
+    '[class.kbd-sort-item-activated]': 'activated()',
+    '[class.kbd-sort-item-focused]': 'focused()',
   },
   providers: [KeyboardSortItemService],
 })
 export class KeyboardSortItemDirective
   implements AfterViewInit, OnDestroy, FocusableOption
 {
-  @ContentChildren(KeyboardSortHandleDirective)
-  public handles: QueryList<KeyboardSortHandleDirective> | undefined;
+  public readonly handles = contentChildren(KeyboardSortHandleDirective);
 
-  @Input({ alias: 'kbdSortItem', required: true })
-  public position = -1;
-
-  @Input({ transform: booleanAttribute })
-  public get activated(): boolean {
-    return this.#activated;
-  }
-  public set activated(value: boolean) {
-    if (this.#activated !== value) {
-      if (value && this.focused) {
-        this.focused = false;
-      }
-      this.#activated = value;
-      this.kbdSortItemActivated.emit(value);
-    }
-  }
-
+  public position = input.required<number>({
+    alias: 'kbdSortItem',
+  });
+  public readonly activated = model<boolean>(false);
   /**
    * @internal
    */
-  public get focused(): boolean {
-    return this.#focused;
-  }
-  public set focused(value: boolean) {
-    if (this.#focused !== value) {
-      this.#focused = value;
-      this.kbdSortItemFocused.emit(value);
-    }
-  }
-
-  @HostBinding('attr.tabindex')
-  public readonly tabindex = '-1' as const;
-
-  @Input({ transform: booleanAttribute })
-  public get kbdSortItemDisabled(): boolean {
-    return this.#kbdSortItemDisabled;
-  }
-  public set kbdSortItemDisabled(value: boolean) {
-    if (value && this.activated) {
-      this.activated = false;
-    }
-    this.#kbdSortItemDisabled = value;
-  }
+  public readonly focused = signal<boolean>(false);
+  public readonly kbdSortItemDisabled = model<boolean>(false);
 
   public get disabled(): boolean {
-    return this.kbdSortItemDisabled;
+    return this.kbdSortItemDisabled();
   }
   public set disabled(value: boolean) {
-    this.kbdSortItemDisabled = value;
+    this.kbdSortItemDisabled.set(value);
   }
 
-  @Output()
-  public kbdSortItemActivated = new EventEmitter<boolean>();
-
-  @Output()
-  public kbdSortItemFocused = new EventEmitter<boolean>();
-
+  public readonly kbdSortItemActivated = output<boolean>();
+  public readonly kbdSortItemFocused = output<boolean>();
   public readonly elementRef = inject(ElementRef<HTMLElement>);
 
   readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
   readonly #subscriptions = new Subscription();
-  #kbdSortItemDisabled = false;
-  #activated = false;
-  #focused = false;
 
   constructor() {
     this.#itemService.item = this;
+    effect(
+      () => {
+        const itemDisabled = this.kbdSortItemDisabled();
+        const isActivated = this.activated();
+        if (itemDisabled && isActivated) {
+          this.activated.set(false);
+        }
+      },
+      { allowSignalWrites: true }
+    );
+    effect(
+      () => {
+        const activated = this.activated();
+        const focused = this.focused();
+        if (activated && focused) {
+          this.focused.set(false);
+        }
+        this.kbdSortItemActivated.emit(activated);
+        this.kbdSortItemFocused.emit(focused);
+      },
+      {
+        allowSignalWrites: true,
+      }
+    );
   }
 
   public ngAfterViewInit(): void {
-    if (this.activated) {
-      this.activated = true;
+    if (this.activated()) {
+      this.activated.set(true);
     }
   }
 
@@ -120,12 +102,12 @@ export class KeyboardSortItemDirective
 
   public focus(origin?: FocusOrigin): void {
     if (['keyboard', 'program'].includes(origin || '')) {
-      if (!this.activated) {
-        this.focused = true;
+      if (!this.activated()) {
+        this.focused.set(true);
       }
       if (!this.elementRef.nativeElement.matches(':focus-within')) {
-        if (this.handles?.first) {
-          this.handles.first.elementRef.nativeElement.focus();
+        if (this.handles()[0]) {
+          this.handles()[0].elementRef.nativeElement.focus();
         } else {
           this.elementRef.nativeElement.focus();
         }
@@ -135,10 +117,10 @@ export class KeyboardSortItemDirective
 
   @HostListener('focusout')
   public onFocusOut(): void {
-    if (this.activated) {
+    if (this.activated()) {
       this.deactivate();
-    } else if (this.focused) {
-      this.focused = false;
+    } else if (this.focused()) {
+      this.focused.set(false);
     }
   }
 
@@ -148,39 +130,39 @@ export class KeyboardSortItemDirective
   }
 
   public toggleActivated() {
-    if (this.activated) {
+    if (this.activated()) {
       this.deactivate();
-      this.focused = true;
+      this.focused.set(true);
     } else {
       this.activate();
     }
   }
 
   public activate() {
-    if (!this.activated && !this.isDisabled()) {
-      this.#list?.deactivateAll(this.position);
-      this.activated = true;
+    if (!this.activated() && !this.isDisabled()) {
+      this.#list?.deactivateAll(this.position());
+      this.activated.set(true);
     }
   }
 
   public deactivate() {
     if (this.activated) {
-      this.activated = false;
+      this.activated.set(false);
     }
   }
 
   public isDisabled(): boolean {
-    if (this.kbdSortItemDisabled) {
+    if (this.kbdSortItemDisabled()) {
       return true;
     }
-    return !!this.#list?.kbdSortListDisabled;
+    return !!this.#list?.kbdSortListDisabled();
   }
 
   public moveUp(): boolean {
     if (!this.#list) {
       return false;
     }
-    if (this.activated && !this.isDisabled()) {
+    if (this.activated() && !this.isDisabled()) {
       return this.#list.moveItemUp(this);
     }
     return false;
@@ -190,7 +172,7 @@ export class KeyboardSortItemDirective
     if (!this.#list) {
       return false;
     }
-    if (this.activated && !this.isDisabled()) {
+    if (this.activated() && !this.isDisabled()) {
       return this.#list.moveItemDown(this);
     }
     return false;

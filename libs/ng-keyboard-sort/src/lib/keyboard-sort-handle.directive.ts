@@ -1,21 +1,15 @@
-import {
-  Directive,
-  ElementRef,
-  HostBinding,
-  HostListener,
-  inject,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Directive({
   selector: '[kbdSortHandle]',
   exportAs: 'kbdSortHandle',
   standalone: true,
+  host: {
+    '[attr.tabindex]': '"-1"',
+  },
 })
 export class KeyboardSortHandleDirective {
-  @HostBinding('attr.tabindex')
-  protected tabindex = '-1';
-
   /**
    * @internal
    */

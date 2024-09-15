@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, model, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
@@ -19,8 +19,8 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
   template: `
     <div
       [kbdSortItem]="0"
-      [kbdSortItemDisabled]="disabled"
-      [activated]="activated"
+      [kbdSortItemDisabled]="disabled()"
+      [activated]="activated()"
       #item
       id="example-item">
       <div *ngIf="showHandle" kbdSortHandle #handle class="example-handle">
@@ -46,9 +46,7 @@ export class KeyboardSortItemFixtureComponent {
   })
   public focus: KeyboardSortItemIfFocusedDirective | undefined;
 
-  public activated = false;
-
-  public showHandle = false;
-
-  public disabled = false;
+  public readonly activated = model<boolean>(false);
+  public readonly showHandle = model<boolean>(false);
+  public readonly disabled = model<boolean>(false);
 }

@@ -39,44 +39,45 @@ export class KeyboardSortItemService {
       event.preventDefault();
       event.stopPropagation();
 
+      const kbdSortListOrientation = this.#list?.kbdSortListOrientation();
       const directionalCommands = {
         moveUp:
-          this.#list?.kbdSortListOrientation === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.up
             : directionalKeys.left,
         moveDown:
-          this.#list?.kbdSortListOrientation === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.down
             : directionalKeys.right,
         pickUp:
-          this.#list?.kbdSortListOrientation === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.left
             : directionalKeys.up,
         putDown:
-          this.#list?.kbdSortListOrientation === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.right
             : directionalKeys.down,
       };
 
       if (directionalCommands.moveUp.includes(event.key)) {
-        if (this.item.activated) {
+        if (this.item.activated()) {
           this.item.moveUp();
         } else {
           this.#list?.focusPreviousItem(this.item);
         }
       } else if (directionalCommands.moveDown.includes(event.key)) {
-        if (this.item.activated) {
+        if (this.item.activated()) {
           this.item.moveDown();
         } else {
           this.#list?.focusNextItem(this.item);
         }
       } else if (
-        !this.item.activated &&
+        !this.item.activated() &&
         directionalCommands.pickUp.includes(event.key)
       ) {
         this.item.activate();
       } else if (
-        this.item.activated &&
+        this.item.activated() &&
         directionalCommands.putDown.includes(event.key)
       ) {
         this.item.deactivate();

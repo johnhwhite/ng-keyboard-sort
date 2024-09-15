@@ -19,7 +19,7 @@
   cdkDropListOrientation="vertical"
   kbdSortListOrientation="vertical"
   [cdkDropListData]="items"
-  [kbdSortListData]="items">
+  [(kbdSortListData)]="items">
   @for (item of items; track item.name; let i = $index) {
     <li cdkDrag cdkDragLockAxis="y" [kbdSortItem]="i">
       <div class="placeholder">{{ item.placeholder }}</div>
