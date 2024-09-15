@@ -36,7 +36,7 @@ export class KeyboardSortItemIfActiveDirective
   }
 
   #updateView(): void {
-    const shouldShow = this.#item?.activated && !this.#item?.isDisabled();
+    const shouldShow = this.#item?.activated() && !this.#item?.isDisabled();
     if (shouldShow && !this.#hasView) {
       this.#viewContainer.createEmbeddedView(this.#templateRef);
       this.#hasView = true;

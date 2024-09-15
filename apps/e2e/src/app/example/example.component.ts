@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, model } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -29,10 +29,12 @@ import {
   ],
 })
 export class ExampleComponent {
-  public items: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  public items = model<string[]>(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
 
   public drop($event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.items, $event.previousIndex, $event.currentIndex);
+    const items = this.items();
+    moveItemInArray(items, $event.previousIndex, $event.currentIndex);
+    this.items.set([...items]);
   }
 }
 

@@ -1,4 +1,10 @@
-import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  model,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
@@ -19,11 +25,11 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
     <a href="#item-0">Start</a>
     <ul
       kbdSortList
-      [kbdSortListData]="data || []"
-      [kbdSortListOrientation]="direction"
-      [kbdSortListDisabled]="disabled"
+      [kbdSortListData]="data() || []"
+      [kbdSortListOrientation]="direction()"
+      [kbdSortListDisabled]="disabled()"
       (kdbSortDrop)="sortDrop($event)">
-      @for (item of data || []; track item; let i = $index) {
+      @for (item of data() || []; track item; let i = $index) {
         <li [kbdSortItem]="i" [attr.id]="'item-' + i">
           {{ item }}
           <span *kbdSortKeyboardSortItemIfActive>{{ ' ' }}Active</span>
@@ -43,11 +49,11 @@ export class KeyboardSortListFixtureComponent {
   @ViewChildren(KeyboardSortItemDirective)
   public items: QueryList<KeyboardSortItemDirective> | undefined;
 
-  public data: string[] | undefined = ['Item 1', 'Item 2', 'Item 3'];
+  public data = model<string[] | undefined>(['Item 1', 'Item 2', 'Item 3']);
 
-  public direction: 'horizontal' | 'vertical' = 'horizontal';
+  public direction = model<'horizontal' | 'vertical'>('horizontal');
 
-  public disabled = false;
+  public disabled = model<boolean>(false);
 
   public drops: KeyboardSortEventDrop[] = [];
 

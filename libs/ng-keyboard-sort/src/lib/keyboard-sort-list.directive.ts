@@ -1,17 +1,16 @@
 import {
   AfterViewInit,
-  booleanAttribute,
   ChangeDetectorRef,
   ContentChildren,
   Directive,
-  EventEmitter,
   HostBinding,
   HostListener,
   inject,
-  Input,
+  input,
+  model,
   OnChanges,
   OnDestroy,
-  Output,
+  output,
   QueryList,
   SimpleChanges,
 } from '@angular/core';
@@ -37,27 +36,19 @@ export class KeyboardSortListDirective
   @HostBinding('attr.tabindex')
   protected tabindex: '0' | '-1' = '0';
 
-  @Input()
-  public kbdSortListOrientation: 'horizontal' | 'vertical' = 'horizontal';
-
-  @Input({ transform: booleanAttribute })
-  public kbdSortListDisabled = false;
-
-  @Input({ required: true })
-  public kbdSortListData: unknown[] = [];
-
-  @Output()
-  public readonly kbdSortEnabled = new EventEmitter<boolean>();
-
-  @Output()
-  public readonly kdbSortDrop = new EventEmitter<KeyboardSortEventDrop>();
+  public readonly kbdSortListOrientation = input<'horizontal' | 'vertical'>(
+    'horizontal'
+  );
+  public readonly kbdSortListDisabled = input<boolean>(false);
+  public readonly kbdSortListData = model<unknown[]>([]);
+  public readonly kbdSortEnabled = output<boolean>();
+  public readonly kdbSortDrop = output<KeyboardSortEventDrop>();
 
   readonly #changeDetectorRef = inject(ChangeDetectorRef);
   #focusKeyManager: FocusKeyManager<KeyboardSortItemDirective> | undefined;
   readonly #focusMonitor = inject(FocusMonitor);
   readonly #subscriptions = new Subscription();
   #itemSubscriptions = new Subscription();
-  #previousIndex: number | undefined;
   #currentIndex: number | undefined;
   #focusIndex: number | undefined;
   #midChange = false;
@@ -77,8 +68,8 @@ export class KeyboardSortListDirective
           this.#focusKeyManager.change.subscribe((focusedIndex) => {
             this.#focusIndex = focusedIndex;
             this.items?.forEach((item, index) => {
-              if (index !== focusedIndex && item.focused) {
-                item.focused = false;
+              if (index !== focusedIndex && item.focused()) {
+                item.focused.set(false);
               }
             });
             this.#changeDetectorRef.markForCheck();
@@ -96,33 +87,19 @@ export class KeyboardSortListDirective
               this.#itemSubscriptions.add(
                 item.kbdSortItemActivated.subscribe((isActive) => {
                   if (isActive) {
-                    if (typeof this.#previousIndex === 'undefined') {
-                      this.#previousIndex = item.position;
-                    }
-                    this.#currentIndex = item.position;
-                  } else if (!this.#midChange) {
-                    if (
-                      this.#previousIndex !== undefined &&
-                      this.#currentIndex !== undefined &&
-                      this.#previousIndex !== this.#currentIndex
-                    ) {
-                      this.kdbSortDrop.emit({
-                        previousIndex: this.#previousIndex,
-                        currentIndex: this.#currentIndex,
-                      });
-                    }
-                    this.#previousIndex = undefined;
-                    this.#currentIndex = undefined;
+                    this.#currentIndex = item.position();
                   }
-                  this.#changeDetectorRef.markForCheck();
                 })
               );
               this.#itemSubscriptions.add(
                 item.kbdSortItemFocused.subscribe((isFocused) => {
-                  if (isFocused && this.#focusIndex !== item.position) {
-                    this.#focusIndex = item.position;
+                  if (isFocused && this.#focusIndex !== item.position()) {
+                    this.#focusIndex = item.position();
                     this.focusItem(item);
-                  } else if (!isFocused && this.#focusIndex === item.position) {
+                  } else if (
+                    !isFocused &&
+                    this.#focusIndex === item.position()
+                  ) {
                     this.#focusIndex = undefined;
                   }
                   this.#changeDetectorRef.markForCheck();
@@ -186,9 +163,9 @@ export class KeyboardSortListDirective
   @HostListener('keydown.escape')
   public deactivateAll(except?: number): void {
     this.items?.forEach((item) => {
-      if (item.position !== except) {
-        item.activated = false;
-        item.focused = false;
+      if (item.position() !== except) {
+        item.activated.set(false);
+        item.focused.set(false);
       }
     });
   }
@@ -232,29 +209,29 @@ export class KeyboardSortListDirective
 
   public focusPreviousItem(item: KeyboardSortItemDirective): void {
     this.#focusKeyManager?.setActiveItem(
-      item.position > 0 ? item.position - 1 : this.#listSize - 1
+      item.position() > 0 ? item.position() - 1 : this.#listSize - 1
     );
   }
 
   public focusNextItem(item: KeyboardSortItemDirective): void {
     this.#focusKeyManager?.setActiveItem(
-      item.position < this.#listSize - 1 ? item.position + 1 : 0
+      item.position() < this.#listSize - 1 ? item.position() + 1 : 0
     );
   }
 
   public moveItemUp(item: KeyboardSortItemDirective): boolean {
-    return this.moveItemInDataArray(item.position - 1, item.position);
+    return this.moveItemInDataArray(item.position() - 1, item.position());
   }
 
   public moveItemDown(item: KeyboardSortItemDirective): boolean {
-    return this.moveItemInDataArray(item.position + 1, item.position);
+    return this.moveItemInDataArray(item.position() + 1, item.position());
   }
 
   private moveItemInDataArray(moveToIndex: number, currentPosition: number) {
     const item = this.items?.get(currentPosition);
     if (
       !item ||
-      item.position === moveToIndex ||
+      item.position() === moveToIndex ||
       moveToIndex < 0 ||
       moveToIndex > this.#listSize - 1
     ) {
@@ -264,9 +241,15 @@ export class KeyboardSortListDirective
     this.#midChange = true;
     this.#focusIndex = moveToIndex;
     this.#currentIndex = moveToIndex;
-    moveItemInArray(this.kbdSortListData, currentPosition, moveToIndex);
+    const data = this.kbdSortListData();
+    moveItemInArray(data, currentPosition, moveToIndex);
+    this.kbdSortListData.set([...data]);
     // Detect changes and finish when the query list is updated.
     this.#changeDetectorRef.detectChanges();
+    this.kdbSortDrop.emit({
+      previousIndex: currentPosition,
+      currentIndex: moveToIndex,
+    });
     return true;
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, model } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -36,7 +36,7 @@ export type Item = {
   ],
 })
 export class ExampleWithHandlesComponent {
-  public items: Item[] = [
+  public items = model<Item[]>([
     { name: 'Happy', placeholder: '😀' },
     { name: 'Dopey', placeholder: '😵‍💫' },
     { name: 'Sneezy', placeholder: '🤧' },
@@ -44,10 +44,12 @@ export class ExampleWithHandlesComponent {
     { name: 'Sleepy', placeholder: '😴' },
     { name: 'Grumpy', placeholder: '😠' },
     { name: 'Doc', placeholder: '🤓' },
-  ];
+  ]);
 
   public drop($event: CdkDragDrop<Item[]>): void {
-    moveItemInArray(this.items, $event.previousIndex, $event.currentIndex);
+    const items = this.items();
+    moveItemInArray(items, $event.previousIndex, $event.currentIndex);
+    this.items.set([...items]);
   }
 }
 

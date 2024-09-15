@@ -14,9 +14,9 @@
   kbdSortList
   cdkDropListOrientation="horizontal"
   kbdSortListOrientation="horizontal"
-  [cdkDropListData]="items"
-  [kbdSortListData]="items">
-  @for (item of items; track item; let i = $index) {
+  [cdkDropListData]="items()"
+  [(kbdSortListData)]="items">
+  @for (item of items(); track item; let i = $index) {
     <li cdkDrag cdkDragLockAxis="x" [kbdSortItem]="i">
       {{ item }}
       <span *kbdSortKeyboardSortItemIfActive class="indicator active-indicator"

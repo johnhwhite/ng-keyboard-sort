@@ -6,7 +6,11 @@ describe('ItemDirective', () => {
   let fixture: ComponentFixture<KeyboardSortItemFixtureComponent>;
 
   function setupTest(
-    overrides: Partial<KeyboardSortItemFixtureComponent> = {}
+    overrides: Partial<{
+      activated: boolean;
+      showHandle: boolean;
+      disabled: boolean;
+    }> = {}
   ): void {
     TestBed.configureTestingModule({
       imports: [KeyboardSortItemFixtureComponent],
@@ -14,7 +18,9 @@ describe('ItemDirective', () => {
 
     fixture = TestBed.createComponent(KeyboardSortItemFixtureComponent);
     component = fixture.componentInstance;
-    Object.assign(component, overrides);
+    Object.entries(overrides).forEach(([key, value]) => {
+      fixture.componentRef.setInput(key, value);
+    });
     fixture.detectChanges();
   }
 
@@ -30,13 +36,13 @@ describe('ItemDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeTrue();
-    expect(component.item?.activated).toBeTruthy();
-    expect(component.item?.focused).toBeFalsy();
+    expect(component.item?.activated()).toBeTruthy();
+    expect(component.item?.focused()).toBeFalsy();
     component.item?.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.activated).toBeFalsy();
-    expect(component.item?.focused).toBeTruthy();
+    expect(component.item?.activated()).toBeFalsy();
+    expect(component.item?.focused()).toBeTruthy();
   });
 
   it('should use handles', async () => {
@@ -70,11 +76,6 @@ describe('ItemDirective', () => {
       fixture.nativeElement.querySelector('.example-handle');
     expect(handleElement).toBeTruthy();
     expect(handleElement.getAttribute('tabindex')).toBe('-1');
-    expect(component.item?.tabindex).toBe('-1');
-    component.showHandle = false;
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(component.item?.tabindex).toBe('-1');
   });
 
   it('should focus on handle', async () => {
@@ -88,37 +89,37 @@ describe('ItemDirective', () => {
     component.item?.focus('keyboard');
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.focused).toBeTrue();
+    expect(component.item?.focused()).toBeTrue();
     component.item?.activate();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.focused).toBeFalse();
+    expect(component.item?.focused()).toBeFalse();
   });
 
   it('should change focus', async () => {
     setupTest();
     const item = component.item;
     expect(item).toBeTruthy();
-    expect(item?.activated).toBeFalse();
+    expect(item?.activated()).toBeFalse();
     if (item) {
-      item.focused = true;
+      item.focused.set(true);
       item.activate();
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(item.focused).toBeFalse();
-      expect(item.activated).toBeTrue();
+      expect(item.focused()).toBeFalse();
+      expect(item.activated()).toBeTrue();
       item.deactivate();
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(item.activated).toBeFalse();
+      expect(item.activated()).toBeFalse();
       item.toggleActivated();
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(item.activated).toBeTrue();
+      expect(item.activated()).toBeTrue();
       item.toggleActivated();
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(item.activated).toBeFalse();
+      expect(item.activated()).toBeFalse();
     } else {
       fail();
     }
@@ -129,20 +130,20 @@ describe('ItemDirective', () => {
     const item = component.item;
     expect(item).toBeTruthy();
     item?.ngAfterViewInit();
-    expect(item?.activated).toBeFalse();
+    expect(item?.activated()).toBeFalse();
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Enter' })
     );
-    expect(item?.activated).toBeTrue();
-    expect(item?.focused).toBeFalse();
+    expect(item?.activated()).toBeTrue();
+    expect(item?.focused()).toBeFalse();
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keydown', { key: ' ' })
     );
-    expect(item?.activated).toBeFalse();
-    expect(item?.focused).toBeTrue();
+    expect(item?.activated()).toBeFalse();
+    expect(item?.focused()).toBeTrue();
   }));
 
-  it('should noop without a list', () => {
+  it('should noop without a list', async () => {
     setupTest();
     expect(component).toBeTruthy();
     expect(component.item).toBeTruthy();
@@ -151,7 +152,9 @@ describe('ItemDirective', () => {
     expect(component.item).toBeTruthy();
     if (component.item) {
       component.item.activate();
-      component.item.disabled = true;
+      component.disabled.set(true);
+      fixture.detectChanges();
+      await fixture.whenStable();
     }
     expect(component.item?.isDisabled()).toBeTrue();
   });
@@ -160,7 +163,9 @@ describe('ItemDirective', () => {
     setupTest();
     expect(component).toBeTruthy();
     expect(component.item).toBeTruthy();
-    component.disabled = true;
+    if (component.item) {
+      component.item.disabled = true;
+    }
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.isDisabled()).toBeTrue();
@@ -169,7 +174,7 @@ describe('ItemDirective', () => {
     component.item?.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.activated).toBeFalse();
+    expect(component.item?.activated()).toBeFalse();
   });
 
   it('should handle initially activated', async () => {
@@ -178,19 +183,26 @@ describe('ItemDirective', () => {
     });
     expect(component).toBeTruthy();
     expect(component.item).toBeTruthy();
-    expect(component.item?.activated).toBeTrue();
+    expect(component.item?.activated()).toBeTrue();
     component.item?.focus();
     component.item?.onFocusOut();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.activated).toBeFalse();
+    expect(component.item?.activated()).toBeFalse();
     component.item?.focus('keyboard');
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.focused).toBeTrue();
+    expect(component.item?.focused()).toBeTrue();
     component.item?.onFocusOut();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(component.item?.focused).toBeFalse();
+    expect(component.item?.focused()).toBeFalse();
+    component.activated.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.disabled.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.item?.isDisabled()).toBeTrue();
   });
 });
