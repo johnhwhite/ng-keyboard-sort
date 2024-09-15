@@ -29,7 +29,6 @@ describe('KeyboardSortItemIfFocusedDirective', () => {
     });
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
-    await fixture.whenStable();
     kbdSortItemFocused.next();
     fixture.detectChanges();
     await fixture.whenStable();

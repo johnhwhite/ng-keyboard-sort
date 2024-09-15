@@ -43,12 +43,10 @@ export class KeyboardSortItemDirective
     alias: 'kbdSortItem',
   });
   public readonly activated = model<boolean>(false);
-
   /**
    * @internal
    */
   public readonly focused = signal<boolean>(false);
-
   public readonly kbdSortItemDisabled = model<boolean>(false);
 
   public get disabled(): boolean {

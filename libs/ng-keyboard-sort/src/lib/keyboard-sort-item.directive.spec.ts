@@ -154,7 +154,6 @@ describe('ItemDirective', () => {
       component.item.activate();
       component.disabled.set(true);
       fixture.detectChanges();
-      await fixture.whenStable();
     }
     expect(component.item?.isDisabled()).toBeTrue();
   });

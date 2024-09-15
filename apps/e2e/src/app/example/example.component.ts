@@ -29,7 +29,16 @@ import {
   ],
 })
 export class ExampleComponent {
-  public items = model<string[]>(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+  public readonly items = model<string[]>([
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+  ]);
 
   public drop($event: CdkDragDrop<string[]>) {
     const items = this.items();

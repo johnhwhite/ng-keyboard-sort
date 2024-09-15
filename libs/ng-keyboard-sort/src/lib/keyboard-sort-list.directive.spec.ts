@@ -186,7 +186,6 @@ describe('ListDirective', () => {
     expect(getItem(0).activated()).toBeFalse();
     fixture.componentInstance.disabled.set(true);
     fixture.detectChanges();
-    await fixture.whenStable();
     expect(getItem(0).isDisabled()).toBeTrue();
   });
 

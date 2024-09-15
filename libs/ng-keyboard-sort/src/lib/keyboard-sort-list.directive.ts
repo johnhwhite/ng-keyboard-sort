@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   ContentChildren,
   Directive,
-  HostBinding,
   HostListener,
   inject,
   input,
@@ -12,6 +11,7 @@ import {
   OnDestroy,
   output,
   QueryList,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -26,6 +26,9 @@ import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
   exportAs: 'kbdSortList',
   standalone: true,
   providers: [KeyboardSortListService],
+  host: {
+    '[attr.tabindex]': 'tabindex()',
+  },
 })
 export class KeyboardSortListDirective
   implements AfterViewInit, OnChanges, OnDestroy
@@ -33,8 +36,7 @@ export class KeyboardSortListDirective
   @ContentChildren(KeyboardSortItemDirective)
   protected items: QueryList<KeyboardSortItemDirective> | undefined;
 
-  @HostBinding('attr.tabindex')
-  protected tabindex: '0' | '-1' = '0';
+  protected readonly tabindex = signal<'0' | '-1'>('0');
 
   public readonly kbdSortListOrientation = input<'horizontal' | 'vertical'>(
     'horizontal'
@@ -49,8 +51,8 @@ export class KeyboardSortListDirective
   readonly #focusMonitor = inject(FocusMonitor);
   readonly #subscriptions = new Subscription();
   #itemSubscriptions = new Subscription();
-  #currentIndex: number | undefined;
-  #focusIndex: number | undefined;
+  readonly #currentIndex = signal<number | undefined>(undefined);
+  readonly #focusIndex = signal<number | undefined>(undefined);
   #midChange = false;
   #listSize = 0;
 
@@ -66,13 +68,12 @@ export class KeyboardSortListDirective
       if (this.#focusKeyManager) {
         this.#subscriptions.add(
           this.#focusKeyManager.change.subscribe((focusedIndex) => {
-            this.#focusIndex = focusedIndex;
+            this.#focusIndex.set(focusedIndex);
             this.items?.forEach((item, index) => {
               if (index !== focusedIndex && item.focused()) {
                 item.focused.set(false);
               }
             });
-            this.#changeDetectorRef.markForCheck();
           })
         );
       }
@@ -87,33 +88,32 @@ export class KeyboardSortListDirective
               this.#itemSubscriptions.add(
                 item.kbdSortItemActivated.subscribe((isActive) => {
                   if (isActive) {
-                    this.#currentIndex = item.position();
+                    this.#currentIndex.set(item.position());
                   }
                 })
               );
               this.#itemSubscriptions.add(
                 item.kbdSortItemFocused.subscribe((isFocused) => {
-                  if (isFocused && this.#focusIndex !== item.position()) {
-                    this.#focusIndex = item.position();
+                  if (isFocused && this.#focusIndex() !== item.position()) {
+                    this.#focusIndex.set(item.position());
                     this.focusItem(item);
                   } else if (
                     !isFocused &&
-                    this.#focusIndex === item.position()
+                    this.#focusIndex() === item.position()
                   ) {
-                    this.#focusIndex = undefined;
+                    this.#focusIndex.set(undefined);
                   }
-                  this.#changeDetectorRef.markForCheck();
                 })
               );
             });
             if (this.#midChange) {
               this.#midChange = false;
-              if (typeof this.#currentIndex !== 'undefined') {
-                const item = this.items?.get(this.#currentIndex);
+              const currentIndex = this.#currentIndex();
+              if (typeof currentIndex !== 'undefined') {
+                const item = this.items?.get(currentIndex);
                 if (item) {
                   this.focusItem(item);
                   this.activateItem(item);
-                  this.#changeDetectorRef.detectChanges();
                 }
               }
             }
@@ -177,25 +177,15 @@ export class KeyboardSortListDirective
 
   @HostListener('focusout')
   public onFocusOut(): void {
-    /* istanbul ignore if */
-    if (this.#midChange) {
-      return;
-    }
-    if (this.tabindex === '-1') {
-      this.tabindex = '0';
-      this.#changeDetectorRef.markForCheck();
+    if (!this.#midChange && this.tabindex() === '-1') {
+      this.tabindex.set('0');
     }
   }
 
   @HostListener('focusin')
   public onFocusIn(): void {
-    /* istanbul ignore if */
-    if (this.#midChange) {
-      return;
-    }
-    if (this.tabindex === '0') {
-      this.tabindex = '-1';
-      this.#changeDetectorRef.markForCheck();
+    if (!this.#midChange && this.tabindex() === '0') {
+      this.tabindex.set('-1');
     }
   }
 
@@ -239,8 +229,8 @@ export class KeyboardSortListDirective
     }
     item.activate();
     this.#midChange = true;
-    this.#focusIndex = moveToIndex;
-    this.#currentIndex = moveToIndex;
+    this.#focusIndex.set(moveToIndex);
+    this.#currentIndex.set(moveToIndex);
     const data = this.kbdSortListData();
     moveItemInArray(data, currentPosition, moveToIndex);
     this.kbdSortListData.set([...data]);

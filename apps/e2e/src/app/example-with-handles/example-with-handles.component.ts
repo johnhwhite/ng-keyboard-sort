@@ -36,7 +36,7 @@ export type Item = {
   ],
 })
 export class ExampleWithHandlesComponent {
-  public items = model<Item[]>([
+  public readonly items = model<Item[]>([
     { name: 'Happy', placeholder: '😀' },
     { name: 'Dopey', placeholder: '😵‍💫' },
     { name: 'Sneezy', placeholder: '🤧' },

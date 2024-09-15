@@ -39,21 +39,22 @@ export class KeyboardSortItemService {
       event.preventDefault();
       event.stopPropagation();
 
+      const kbdSortListOrientation = this.#list?.kbdSortListOrientation();
       const directionalCommands = {
         moveUp:
-          this.#list?.kbdSortListOrientation() === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.up
             : directionalKeys.left,
         moveDown:
-          this.#list?.kbdSortListOrientation() === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.down
             : directionalKeys.right,
         pickUp:
-          this.#list?.kbdSortListOrientation() === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.left
             : directionalKeys.up,
         putDown:
-          this.#list?.kbdSortListOrientation() === 'vertical'
+          kbdSortListOrientation === 'vertical'
             ? directionalKeys.right
             : directionalKeys.down,
       };
