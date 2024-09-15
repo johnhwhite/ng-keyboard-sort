@@ -36,14 +36,14 @@ describe('ExampleWithHandlesComponent', () => {
 
   it('should move items up and down', () => {
     const items = component.items;
-    const firstItem = items()[0];
-    const secondItem = items()[1];
+    const firstItem = items[0];
+    const secondItem = items[1];
     const event = {
       previousIndex: 0,
       currentIndex: 1,
     } as CdkDragDrop<Item[]>;
     component.drop(event);
-    expect(items()[0]).toEqual(secondItem);
-    expect(items()[1]).toEqual(firstItem);
+    expect(items[0]).toEqual(secondItem);
+    expect(items[1]).toEqual(firstItem);
   });
 });
