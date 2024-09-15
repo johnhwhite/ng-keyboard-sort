@@ -11,6 +11,10 @@ Library to add keyboard commands for elements that also use CDK drag and drop so
 
 ### kbdSortList
 
+#### Model: kbdSortListData
+
+The array of items to sort, updated as items are moved.
+
 #### Input: kbdSortListOrientation
 
 Either `horizontal` or `vertical`.

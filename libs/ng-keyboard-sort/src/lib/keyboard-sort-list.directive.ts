@@ -1,7 +1,6 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
-  ContentChildren,
+  contentChildren,
   Directive,
   HostListener,
   inject,
@@ -10,7 +9,6 @@ import {
   OnChanges,
   OnDestroy,
   output,
-  QueryList,
   signal,
   SimpleChanges,
 } from '@angular/core';
@@ -20,6 +18,7 @@ import { concatWith, of, Subscription } from 'rxjs';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
 import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[kbdSortList]',
@@ -30,11 +29,8 @@ import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
     '[attr.tabindex]': 'tabindex()',
   },
 })
-export class KeyboardSortListDirective
-  implements AfterViewInit, OnChanges, OnDestroy
-{
-  @ContentChildren(KeyboardSortItemDirective)
-  protected items: QueryList<KeyboardSortItemDirective> | undefined;
+export class KeyboardSortListDirective implements OnChanges, OnDestroy {
+  protected readonly items = contentChildren(KeyboardSortItemDirective);
 
   protected readonly tabindex = signal<'0' | '-1'>('0');
 
@@ -58,68 +54,61 @@ export class KeyboardSortListDirective
 
   constructor(readonly keyboardSortService: KeyboardSortListService) {
     keyboardSortService.list = this;
-  }
-
-  public ngAfterViewInit(): void {
-    if (this.items?.changes) {
-      this.#focusKeyManager = new FocusKeyManager<KeyboardSortItemDirective>(
-        this.items
-      ).withWrap();
-      if (this.#focusKeyManager) {
-        this.#subscriptions.add(
-          this.#focusKeyManager.change.subscribe((focusedIndex) => {
-            this.#focusIndex.set(focusedIndex);
-            this.items?.forEach((item, index) => {
-              if (index !== focusedIndex && item.focused()) {
-                item.focused.set(false);
-              }
-            });
-          })
-        );
-      }
-      this.#subscriptions.add(
-        of(this.items)
-          .pipe(concatWith(this.items.changes))
-          .subscribe((items: QueryList<KeyboardSortItemDirective>) => {
-            this.#listSize = items.length;
-            this.#itemSubscriptions.unsubscribe();
-            this.#itemSubscriptions = new Subscription();
-            items.forEach((item) => {
-              this.#itemSubscriptions.add(
-                item.kbdSortItemActivated.subscribe((isActive) => {
-                  if (isActive) {
-                    this.#currentIndex.set(item.position());
-                  }
-                })
-              );
-              this.#itemSubscriptions.add(
-                item.kbdSortItemFocused.subscribe((isFocused) => {
-                  if (isFocused && this.#focusIndex() !== item.position()) {
-                    this.#focusIndex.set(item.position());
-                    this.focusItem(item);
-                  } else if (
-                    !isFocused &&
-                    this.#focusIndex() === item.position()
-                  ) {
-                    this.#focusIndex.set(undefined);
-                  }
-                })
-              );
-            });
-            if (this.#midChange) {
-              this.#midChange = false;
-              const currentIndex = this.#currentIndex();
-              if (typeof currentIndex !== 'undefined') {
-                const item = this.items?.get(currentIndex);
-                if (item) {
-                  this.focusItem(item);
-                  this.activateItem(item);
+    this.#subscriptions.add(
+      of(this.items())
+        .pipe(concatWith(toObservable(this.items)))
+        .subscribe((items) => {
+          this.#listSize = items.length;
+          this.#focusKeyManager?.destroy();
+          this.#focusKeyManager =
+            new FocusKeyManager<KeyboardSortItemDirective>(items).withWrap();
+          this.#subscriptions.add(
+            this.#focusKeyManager.change.subscribe((focusedIndex) => {
+              this.#focusIndex.set(focusedIndex);
+              items.forEach((item, index) => {
+                if (index !== focusedIndex && item.focused()) {
+                  item.focused.set(false);
                 }
+              });
+            })
+          );
+          this.#itemSubscriptions.unsubscribe();
+          this.#itemSubscriptions = new Subscription();
+          items.forEach((item) => {
+            this.#itemSubscriptions.add(
+              item.kbdSortItemActivated.subscribe((isActive) => {
+                if (isActive) {
+                  this.#currentIndex.set(item.position());
+                }
+              })
+            );
+            this.#itemSubscriptions.add(
+              item.kbdSortItemFocused.subscribe((isFocused) => {
+                if (isFocused && this.#focusIndex() !== item.position()) {
+                  this.#focusIndex.set(item.position());
+                  this.focusItem(item);
+                } else if (
+                  !isFocused &&
+                  this.#focusIndex() === item.position()
+                ) {
+                  this.#focusIndex.set(undefined);
+                }
+              })
+            );
+          });
+          if (this.#midChange) {
+            this.#midChange = false;
+            const currentIndex = this.#currentIndex();
+            if (typeof currentIndex !== 'undefined') {
+              const item = items[currentIndex];
+              if (item) {
+                this.focusItem(item);
+                this.activateItem(item);
               }
             }
-          })
-      );
-    }
+          }
+        })
+    );
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -155,14 +144,14 @@ export class KeyboardSortListDirective
   public ngOnDestroy(): void {
     this.#itemSubscriptions.unsubscribe();
     this.#subscriptions.unsubscribe();
-    this.items?.forEach((item) => {
+    this.items().forEach((item) => {
       this.#focusMonitor.stopMonitoring(item.elementRef);
     });
   }
 
   @HostListener('keydown.escape')
   public deactivateAll(except?: number): void {
-    this.items?.forEach((item) => {
+    this.items().forEach((item) => {
       if (item.position() !== except) {
         item.activated.set(false);
         item.focused.set(false);
@@ -218,7 +207,7 @@ export class KeyboardSortListDirective
   }
 
   private moveItemInDataArray(moveToIndex: number, currentPosition: number) {
-    const item = this.items?.get(currentPosition);
+    const item = this.items()[currentPosition];
     if (
       !item ||
       item.position() === moveToIndex ||

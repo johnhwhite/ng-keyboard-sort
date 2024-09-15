@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  ContentChildren,
+  contentChildren,
   Directive,
   effect,
   ElementRef,
@@ -10,7 +10,6 @@ import {
   model,
   OnDestroy,
   output,
-  QueryList,
   signal,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -36,8 +35,7 @@ import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
 export class KeyboardSortItemDirective
   implements AfterViewInit, OnDestroy, FocusableOption
 {
-  @ContentChildren(KeyboardSortHandleDirective)
-  public handles: QueryList<KeyboardSortHandleDirective> | undefined;
+  public readonly handles = contentChildren(KeyboardSortHandleDirective);
 
   public position = input.required<number>({
     alias: 'kbdSortItem',
@@ -108,8 +106,8 @@ export class KeyboardSortItemDirective
         this.focused.set(true);
       }
       if (!this.elementRef.nativeElement.matches(':focus-within')) {
-        if (this.handles?.first) {
-          this.handles.first.elementRef.nativeElement.focus();
+        if (this.handles()[0]) {
+          this.handles()[0].elementRef.nativeElement.focus();
         } else {
           this.elementRef.nativeElement.focus();
         }
