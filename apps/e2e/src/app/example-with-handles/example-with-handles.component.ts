@@ -14,10 +14,10 @@ import {
   KeyboardSortListDirective,
 } from 'ng-keyboard-sort';
 
-export type Item = {
+export interface Item {
   name: string;
   placeholder: string;
-};
+}
 
 @Component({
   selector: 'app-example-with-handles',

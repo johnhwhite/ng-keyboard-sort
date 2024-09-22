@@ -52,8 +52,8 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
   #midChange = false;
   #listSize = 0;
 
-  constructor(readonly keyboardSortService: KeyboardSortListService) {
-    keyboardSortService.list = this;
+  constructor() {
+    inject(KeyboardSortListService).list = this;
     this.#subscriptions.add(
       of(this.items())
         .pipe(concatWith(toObservable(this.items)))
@@ -199,14 +199,14 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
   }
 
   public moveItemUp(item: KeyboardSortItemDirective): boolean {
-    return this.moveItemInDataArray(item.position() - 1, item.position());
+    return this.#moveItemInDataArray(item.position() - 1, item.position());
   }
 
   public moveItemDown(item: KeyboardSortItemDirective): boolean {
-    return this.moveItemInDataArray(item.position() + 1, item.position());
+    return this.#moveItemInDataArray(item.position() + 1, item.position());
   }
 
-  private moveItemInDataArray(moveToIndex: number, currentPosition: number) {
+  #moveItemInDataArray(moveToIndex: number, currentPosition: number) {
     const item = this.items()[currentPosition];
     if (
       !item ||
@@ -222,6 +222,7 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
     this.#currentIndex.set(moveToIndex);
     const data = this.kbdSortListData();
     moveItemInArray(data, currentPosition, moveToIndex);
+    this.#itemSubscriptions.unsubscribe();
     this.kbdSortListData.set([...data]);
     // Detect changes and finish when the query list is updated.
     this.#changeDetectorRef.detectChanges();

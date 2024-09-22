@@ -15,7 +15,7 @@ export class KeyboardSortHandleDirective {
    */
   public readonly elementRef = inject(ElementRef<HTMLElement>);
 
-  #itemService = inject(KeyboardSortItemService, { optional: true });
+  readonly #itemService = inject(KeyboardSortItemService, { optional: true });
 
   @HostListener('keydown', ['$event'])
   public handleKeydown(event: KeyboardEvent): void {
