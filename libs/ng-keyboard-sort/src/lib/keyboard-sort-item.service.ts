@@ -16,7 +16,7 @@ const directionalKeys = {
 export class KeyboardSortItemService {
   public item: KeyboardSortItemDirective | undefined;
 
-  #list = inject(KeyboardSortListService).list;
+  readonly #list = inject(KeyboardSortListService).list;
 
   public onKeydown(event: KeyboardEvent): void {
     if (!this.item || this.item.isDisabled()) {
