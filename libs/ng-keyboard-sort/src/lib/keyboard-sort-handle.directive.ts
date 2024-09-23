@@ -1,5 +1,4 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
-import { KeyboardSortItemService } from './keyboard-sort-item.service';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
   selector: '[kbdSortHandle]',
@@ -14,11 +13,4 @@ export class KeyboardSortHandleDirective {
    * @internal
    */
   public readonly elementRef = inject(ElementRef<HTMLElement>);
-
-  readonly #itemService = inject(KeyboardSortItemService, { optional: true });
-
-  @HostListener('keydown', ['$event'])
-  public handleKeydown(event: KeyboardEvent): void {
-    this.#itemService?.onKeydown(event);
-  }
 }
