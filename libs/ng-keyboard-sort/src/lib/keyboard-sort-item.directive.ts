@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  computed,
   contentChildren,
   Directive,
   effect,
@@ -17,6 +18,13 @@ import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
+
+const directionalKeys = {
+  up: ['ArrowUp', 'W', 'w'],
+  down: ['ArrowDown', 'S', 's'],
+  left: ['ArrowLeft', 'A', 'a'],
+  right: ['ArrowRight', 'D', 'd'],
+};
 
 @Directive({
   selector: '[kbdSortItem]',
@@ -57,6 +65,12 @@ export class KeyboardSortItemDirective
   public readonly kbdSortItemActivated = output<boolean>();
   public readonly kbdSortItemFocused = output<boolean>();
   public readonly elementRef = inject(ElementRef<HTMLElement>);
+
+  public readonly isDisabled = computed<boolean>(() => {
+    const itemDisabled = this.kbdSortItemDisabled();
+    const listDisabled = !!this.#list?.kbdSortListDisabled();
+    return itemDisabled || listDisabled;
+  });
 
   readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
@@ -126,7 +140,71 @@ export class KeyboardSortItemDirective
 
   @HostListener('keydown', ['$event'])
   public onKeydown($event: KeyboardEvent): void {
-    this.#itemService?.onKeydown($event);
+    if (this.isDisabled()) {
+      return;
+    }
+    if ($event.key === 'Enter' || $event.key === ' ') {
+      $event.preventDefault();
+      $event.stopPropagation();
+      this.toggleActivated();
+      return;
+    }
+    if (
+      [
+        ...directionalKeys.up,
+        ...directionalKeys.down,
+        ...directionalKeys.left,
+        ...directionalKeys.right,
+      ].includes($event.key)
+    ) {
+      $event.preventDefault();
+      $event.stopPropagation();
+
+      const kbdSortListOrientation = this.#list?.kbdSortListOrientation();
+      const directionalCommands = {
+        moveUp:
+          kbdSortListOrientation === 'vertical'
+            ? directionalKeys.up
+            : directionalKeys.left,
+        moveDown:
+          kbdSortListOrientation === 'vertical'
+            ? directionalKeys.down
+            : directionalKeys.right,
+        pickUp:
+          kbdSortListOrientation === 'vertical'
+            ? directionalKeys.left
+            : directionalKeys.up,
+        putDown:
+          kbdSortListOrientation === 'vertical'
+            ? directionalKeys.right
+            : directionalKeys.down,
+      };
+
+      if (directionalCommands.moveUp.includes($event.key)) {
+        if (this.activated()) {
+          this.moveUp();
+        } else {
+          this.#list?.focusPreviousItem(this);
+        }
+      } else if (directionalCommands.moveDown.includes($event.key)) {
+        if (this.activated()) {
+          this.moveDown();
+        } else {
+          this.#list?.focusNextItem(this);
+        }
+      } else if (
+        !this.activated() &&
+        directionalCommands.pickUp.includes($event.key)
+      ) {
+        this.activate();
+      } else if (
+        this.activated() &&
+        directionalCommands.putDown.includes($event.key)
+      ) {
+        this.deactivate();
+        this.focus('keyboard');
+      }
+    }
   }
 
   public toggleActivated() {
@@ -149,13 +227,6 @@ export class KeyboardSortItemDirective
     if (this.activated) {
       this.activated.set(false);
     }
-  }
-
-  public isDisabled(): boolean {
-    if (this.kbdSortItemDisabled()) {
-      return true;
-    }
-    return !!this.#list?.kbdSortListDisabled();
   }
 
   public moveUp(): boolean {

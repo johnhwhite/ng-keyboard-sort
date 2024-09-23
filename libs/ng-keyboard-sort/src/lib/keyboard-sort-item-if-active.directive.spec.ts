@@ -1,26 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
-import { KeyboardSortItemIfFocusedDirective } from 'ng-keyboard-sort';
+import { KeyboardSortItemIfActiveDirective } from 'ng-keyboard-sort';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Component({
   standalone: true,
   selector: 'kbd-sort-test-component',
-  template: ` <div *kbdSortKeyboardSortItemIfFocused></div> `,
-  imports: [KeyboardSortItemIfFocusedDirective],
+  template: ` <div *kbdSortKeyboardSortItemIfActive></div> `,
+  imports: [KeyboardSortItemIfActiveDirective],
 })
 class TestComponent {}
 
-describe('KeyboardSortItemIfFocusedDirective', () => {
+describe('KeyboardSortItemIfActiveDirective', () => {
   it('should show and hide', async () => {
-    const focused = signal(false);
+    const activated = signal(false);
     const isDisabled = signal(false);
     TestBed.configureTestingModule({
       imports: [TestComponent],
       providers: [
         {
           provide: KeyboardSortItemService,
-          useValue: { item: { focused, isDisabled } },
+          useValue: { item: { activated, isDisabled } },
         },
       ],
     });
@@ -28,11 +28,11 @@ describe('KeyboardSortItemIfFocusedDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('div')).toBeFalsy();
-    focused.set(true);
+    activated.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('div')).toBeTruthy();
-    focused.set(false);
+    activated.set(false);
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('div')).toBeFalsy();
