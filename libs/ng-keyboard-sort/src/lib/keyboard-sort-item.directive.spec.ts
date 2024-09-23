@@ -59,10 +59,12 @@ describe('ItemDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalse();
-    const handleElement =
+    const handleElement: HTMLElement | undefined =
       fixture.nativeElement.querySelector('.example-handle');
     expect(handleElement).toBeTruthy();
-    handleElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    handleElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })
+    );
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeTrue();
