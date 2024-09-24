@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
-import { KeyboardSortListService } from './keyboard-sort-list.service';
 
 describe('KeyboardSortItemService', () => {
   let service: KeyboardSortItemService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [KeyboardSortItemService, KeyboardSortListService],
+      providers: [KeyboardSortItemService],
     });
     service = TestBed.inject(KeyboardSortItemService);
   });
