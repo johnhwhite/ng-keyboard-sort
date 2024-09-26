@@ -1,0 +1,51 @@
+name: Pages
+on:
+  push:
+env:
+  node_version: 20
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  pages:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node_version }}
+      - name: Build
+        shell: bash
+        run: |
+          mkdir _site
+          BRANCHES="$(git ls-remote --heads ${{ github.repositoryUrl }} | cut -f 2 | xargs -IX basename X)"
+          echo "Building:"
+          echo "${BRANCHES}" | sed 's/^/ 🟢 /g'
+          echo ''
+          set -x
+          for b in ${BRANCHES}; do
+            echo " ⏳ ${b}"
+            git clone -b ${b} --depth 1 -- ${{ github.repositoryUrl }} working
+            cd working
+            npm ci
+            npm run build
+            if [ "${b}" == "main" ]; then
+              mv dist/apps/e2e/browser/* ../_site/
+            else
+              mv dist/apps/e2e/browser ../_site/${b}
+            fi
+            echo " ✅ ${b}"
+            cd ..
+            rm -rf working
+          done
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

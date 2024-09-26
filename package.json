@@ -30,46 +30,46 @@
     "validate-commit-msg": "commitlint --strict"
   },
   "dependencies": {
-    "@angular/animations": "18.2.5",
-    "@angular/cdk": "18.2.5",
-    "@angular/common": "18.2.5",
-    "@angular/core": "18.2.5",
-    "@angular/forms": "18.2.5",
-    "@angular/platform-browser": "18.2.5",
-    "@angular/platform-browser-dynamic": "18.2.5",
-    "@angular/router": "18.2.5",
+    "@angular/animations": "18.2.6",
+    "@angular/cdk": "18.2.6",
+    "@angular/common": "18.2.6",
+    "@angular/core": "18.2.6",
+    "@angular/forms": "18.2.6",
+    "@angular/platform-browser": "18.2.6",
+    "@angular/platform-browser-dynamic": "18.2.6",
+    "@angular/router": "18.2.6",
     "rxjs": "~7.8.1",
     "semver": "^7.6.3",
     "tslib": "^2.7.0",
     "zone.js": "0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "18.2.5",
-    "@angular-devkit/core": "18.2.5",
-    "@angular-devkit/schematics": "18.2.5",
+    "@angular-devkit/build-angular": "18.2.6",
+    "@angular-devkit/core": "18.2.6",
+    "@angular-devkit/schematics": "18.2.6",
     "@angular-eslint/builder": "^18.3.1",
     "@angular-eslint/eslint-plugin": "18.3.1",
     "@angular-eslint/eslint-plugin-template": "18.3.1",
     "@angular-eslint/template-parser": "18.3.1",
-    "@angular/build": "18.2.5",
-    "@angular/cli": "~18.2.5",
-    "@angular/compiler": "18.2.5",
-    "@angular/compiler-cli": "18.2.5",
-    "@angular/language-service": "18.2.5",
-    "@angular/localize": "18.2.5",
+    "@angular/build": "18.2.6",
+    "@angular/cli": "~18.2.6",
+    "@angular/compiler": "18.2.6",
+    "@angular/compiler-cli": "18.2.6",
+    "@angular/language-service": "18.2.6",
+    "@angular/localize": "18.2.6",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-angular": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@playwright/test": "^1.47.2",
-    "@schematics/angular": "18.2.5",
+    "@schematics/angular": "18.2.6",
     "@types/jasmine": "~5.1.4",
-    "@typescript-eslint/eslint-plugin": "8.6.0",
-    "@typescript-eslint/parser": "8.6.0",
-    "@typescript-eslint/typescript-estree": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "8.7.0",
+    "@typescript-eslint/parser": "8.7.0",
+    "@typescript-eslint/typescript-estree": "^8.7.0",
     "angular-eslint": "^18.3.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "~9.11.0",
+    "eslint": "~9.11.1",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.6",
@@ -90,12 +90,17 @@
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
     "typescript": "5.5.4",
-    "typescript-eslint": "^8.6.0",
+    "typescript-eslint": "^8.7.0",
     "uuid": "^10.0.0"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "overrides": {
+    "@angular/build@18.2.5": {
+      "rollup": "4.22.4"
     }
   }
 }
