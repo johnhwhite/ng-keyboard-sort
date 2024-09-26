@@ -16,23 +16,37 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: repo
+          fetch-depth: 0
+          ref: main
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
+      - name: Setup cache
+        uses: actions/cache@v4
+        with:
+          path: '~/.npm'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Build
         shell: bash
         run: |
           mkdir _site
-          BRANCHES="$(git ls-remote --heads ${{ github.repositoryUrl }} | cut -f 2 | xargs -IX basename X)"
+          cd repo
+          BRANCHES="$(git branch -r --format='%(refname:lstrip=3)')"
           echo "Building:"
           echo "${BRANCHES}" | sed 's/^/ 🟢 /g'
           echo ''
           set -x
           for b in ${BRANCHES}; do
             echo " ⏳ ${b}"
-            git clone -b ${b} --depth 1 -- ${{ github.repositoryUrl }} working
-            cd working
+            git clean -dfX
+            git switch ${b}
             npm ci
             npm run build
             if [ "${b}" == "main" ]; then
@@ -41,8 +55,6 @@ jobs:
               mv dist/apps/e2e/browser ../_site/${b}
             fi
             echo " ✅ ${b}"
-            cd ..
-            rm -rf working
           done
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
