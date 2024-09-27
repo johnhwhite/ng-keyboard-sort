@@ -1,0 +1,64 @@
+name: Pages
+on:
+  push:
+env:
+  node_version: 20
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  pages:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: repo
+          fetch-depth: 0
+          ref: main
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node_version }}
+      - name: Setup cache
+        uses: actions/cache@v4
+        with:
+          path: '~/.npm'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Build
+        shell: bash
+        run: |
+          mkdir _site
+          cd repo
+          BRANCHES="$(git branch -r --format='%(refname:lstrip=3)')"
+          echo "Building:"
+          echo "${BRANCHES}" | sed 's/^/ 🟢 /g'
+          echo ''
+          set -x
+          for b in ${BRANCHES}; do
+            echo " ⏳ ${b}"
+            git clean -dfX
+            git switch ${b}
+            npm ci
+            if [ "${b}" == "main" ]; then
+              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/"
+              mv dist/apps/e2e/browser/* ../_site/
+            else
+              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/${b}/"
+              mv dist/apps/e2e/browser ../_site/${b}
+            fi
+            echo " ✅ ${b}"
+          done
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

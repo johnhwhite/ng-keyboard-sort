@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  node_version: 18
+  node_version: 20
 jobs:
   release-please:
     name: Release Please
@@ -36,12 +36,12 @@ jobs:
             ]
       - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
       - name: Setup node
         if: ${{ steps.release.outputs.release_created }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
       - name: Get node cache
@@ -52,7 +52,7 @@ jobs:
       - name: Cache node_modules
         if: ${{ steps.release.outputs.release_created }}
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}

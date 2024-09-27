@@ -7,8 +7,7 @@ on:
   pull_request:
 
 env:
-  node_version: 18
-  CI: true
+  node_version: 20
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -19,7 +18,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Yaml Lint
@@ -28,7 +27,7 @@ jobs:
             -d '{extends: default, rules: {document-start: disable, line-length: {max: 120}, truthy: disable}}' \
             $(git ls-files '*.yaml' '*.yml')
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
       - name: Get node cache
@@ -37,7 +36,7 @@ jobs:
           sh ./scripts/node-cache.sh >> $GITHUB_OUTPUT
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}
