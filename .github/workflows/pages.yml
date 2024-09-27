@@ -49,10 +49,10 @@ jobs:
             git switch ${b}
             npm ci
             if [ "${b}" == "main" ]; then
-              npm run build -- --baseHref="/$(basename $GITHUB_REPOSITORY)/"
+              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/"
               mv dist/apps/e2e/browser/* ../_site/
             else
-              npm run build -- --baseHref="/$(basename $GITHUB_REPOSITORY)/${b}/"
+              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/${b}/"
               mv dist/apps/e2e/browser ../_site/${b}
             fi
             echo " ✅ ${b}"
