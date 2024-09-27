@@ -1,5 +1,40 @@
 # Changelog
 
+## [5.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.3...v5.0.0) (2024-09-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ng-keyboard-sort:** The `kbdSortListData` input should be used as a [two-way binding](https://angular.dev/guide/templates/two-way-binding), `[(kbdSortListData)]`. Previously, this input was updated by reference.
+* Added support for Angular 18. Removed support for Angular 17.
+
+### Build System
+
+* update test config ([#123](https://github.com/johnhwhite/ng-keyboard-sort/issues/123)) ([d4e56fc](https://github.com/johnhwhite/ng-keyboard-sort/commit/d4e56fcf282397434cb0a92c22452ab5bc86693d))
+* use eslint 9 flat config file ([#127](https://github.com/johnhwhite/ng-keyboard-sort/issues/127)) ([bbeaa79](https://github.com/johnhwhite/ng-keyboard-sort/commit/bbeaa799102af9da58fb9f97b87e8c8141460700))
+
+
+### Continuous Integration
+
+* create preview site ([#130](https://github.com/johnhwhite/ng-keyboard-sort/issues/130)) ([98963bc](https://github.com/johnhwhite/ng-keyboard-sort/commit/98963bc111f066b561edfdac9b64accf5475e528))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#124](https://github.com/johnhwhite/ng-keyboard-sort/issues/124)) ([643d646](https://github.com/johnhwhite/ng-keyboard-sort/commit/643d646c6c48aaaac8115f76053466fd5cb560da))
+
+
+### Features
+
+* **ng-keyboard-sort:** let handle events bubble ([#128](https://github.com/johnhwhite/ng-keyboard-sort/issues/128)) ([f5efd9a](https://github.com/johnhwhite/ng-keyboard-sort/commit/f5efd9a0e70110fc181efc8072e1450b1a72b4cd))
+* **ng-keyboard-sort:** update to use signals ([#125](https://github.com/johnhwhite/ng-keyboard-sort/issues/125)) ([150ee69](https://github.com/johnhwhite/ng-keyboard-sort/commit/150ee6971c1719d9078b74130bed13f03884ad41))
+* update to Angular 18 ([#121](https://github.com/johnhwhite/ng-keyboard-sort/issues/121)) ([859315a](https://github.com/johnhwhite/ng-keyboard-sort/commit/859315ad49ec74b559d3b2b317a905ffff44ac97))
+
+
+### Code Refactoring
+
+* **ng-keyboard-sort:** switch observables to signals ([#129](https://github.com/johnhwhite/ng-keyboard-sort/issues/129)) ([0f74755](https://github.com/johnhwhite/ng-keyboard-sort/commit/0f7475538e326ef83ccaeffa4137ebee79913ee6))
+
 ## [4.0.3](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.2...v4.0.3) (2024-09-07)
 
 
