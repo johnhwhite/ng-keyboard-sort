@@ -48,10 +48,11 @@ jobs:
             git clean -dfX
             git switch ${b}
             npm ci
-            npm run build
             if [ "${b}" == "main" ]; then
+              npm run build -- --baseHref="/$(basename $GITHUB_REPOSITORY)/"
               mv dist/apps/e2e/browser/* ../_site/
             else
+              npm run build -- --baseHref="/$(basename $GITHUB_REPOSITORY)/${b}/"
               mv dist/apps/e2e/browser ../_site/${b}
             fi
             echo " ✅ ${b}"
