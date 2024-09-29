@@ -1,6 +1,7 @@
 name: Pages
 on:
   push:
+    branches: '**'
 env:
   node_version: 20
 concurrency:
