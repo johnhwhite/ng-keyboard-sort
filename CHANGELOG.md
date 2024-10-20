@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v5.0.0...v5.0.1) (2024-10-20)
+
+
+### Bug Fixes
+
+* add type hint for data ([#137](https://github.com/johnhwhite/ng-keyboard-sort/issues/137)) ([ea37029](https://github.com/johnhwhite/ng-keyboard-sort/commit/ea37029eff563fc82be1144d91c7be5b2b180299))
+
 ## [5.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v4.0.3...v5.0.0) (2024-09-27)
 
 
