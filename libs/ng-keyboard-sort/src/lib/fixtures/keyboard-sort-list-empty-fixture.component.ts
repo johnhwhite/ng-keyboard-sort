@@ -9,5 +9,5 @@ import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 })
 export class KeyboardSortListEmptyFixtureComponent {
   @ViewChild(KeyboardSortListDirective)
-  public list: KeyboardSortListDirective | undefined;
+  public list: KeyboardSortListDirective<string[]> | undefined;
 }

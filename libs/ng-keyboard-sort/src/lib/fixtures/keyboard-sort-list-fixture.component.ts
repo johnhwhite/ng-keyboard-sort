@@ -44,7 +44,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
 })
 export class KeyboardSortListFixtureComponent {
   @ViewChild(KeyboardSortListDirective)
-  public list: KeyboardSortListDirective | undefined;
+  public list: KeyboardSortListDirective<string[]> | undefined;
 
   @ViewChildren(KeyboardSortItemDirective)
   public items: QueryList<KeyboardSortItemDirective> | undefined;
