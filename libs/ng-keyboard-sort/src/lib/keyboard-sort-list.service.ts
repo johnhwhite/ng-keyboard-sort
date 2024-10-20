@@ -5,6 +5,6 @@ import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
  * @internal
  */
 @Injectable()
-export class KeyboardSortListService {
-  public list: KeyboardSortListDirective | undefined;
+export class KeyboardSortListService<T extends unknown[]> {
+  public list: KeyboardSortListDirective<T> | undefined;
 }

@@ -29,7 +29,9 @@ import { toObservable } from '@angular/core/rxjs-interop';
     '[attr.tabindex]': 'tabindex()',
   },
 })
-export class KeyboardSortListDirective implements OnChanges, OnDestroy {
+export class KeyboardSortListDirective<T extends unknown[]>
+  implements OnChanges, OnDestroy
+{
   protected readonly items = contentChildren(KeyboardSortItemDirective);
 
   protected readonly tabindex = signal<'0' | '-1'>('0');
@@ -38,7 +40,7 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
     'horizontal'
   );
   public readonly kbdSortListDisabled = input<boolean>(false);
-  public readonly kbdSortListData = model<unknown[]>([]);
+  public readonly kbdSortListData = model<T>();
   public readonly kbdSortEnabled = output<boolean>();
   public readonly kdbSortDrop = output<KeyboardSortEventDrop>();
 
@@ -53,7 +55,7 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
   #listSize = 0;
 
   constructor() {
-    inject(KeyboardSortListService).list = this;
+    inject(KeyboardSortListService<T>).list = this;
     this.#subscriptions.add(
       of(this.items())
         .pipe(concatWith(toObservable(this.items)))
@@ -208,11 +210,13 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
 
   #moveItemInDataArray(moveToIndex: number, currentPosition: number) {
     const item = this.items()[currentPosition];
+    const data = this.kbdSortListData();
     if (
       !item ||
       item.position() === moveToIndex ||
       moveToIndex < 0 ||
-      moveToIndex > this.#listSize - 1
+      moveToIndex > this.#listSize - 1 ||
+      !data
     ) {
       return false;
     }
@@ -220,10 +224,9 @@ export class KeyboardSortListDirective implements OnChanges, OnDestroy {
     this.#midChange = true;
     this.#focusIndex.set(moveToIndex);
     this.#currentIndex.set(moveToIndex);
-    const data = this.kbdSortListData();
     moveItemInArray(data, currentPosition, moveToIndex);
     this.#itemSubscriptions.unsubscribe();
-    this.kbdSortListData.set([...data]);
+    this.kbdSortListData.set(data.slice() as T);
     // Detect changes and finish when the query list is updated.
     this.#changeDetectorRef.detectChanges();
     this.kdbSortDrop.emit({
