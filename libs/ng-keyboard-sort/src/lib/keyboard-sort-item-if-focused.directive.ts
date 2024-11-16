@@ -19,9 +19,7 @@ export class KeyboardSortItemIfFocusedDirective {
 
   constructor() {
     effect(() => {
-      const focused = !!this.#item?.focused();
-      const enabled = !this.#item?.isDisabled();
-      const shouldShow = focused && enabled;
+      const shouldShow = !!this.#item()?.focused();
       if (shouldShow && !this.#hasView) {
         this.#viewContainer.createEmbeddedView(this.#templateRef);
         this.#hasView = true;

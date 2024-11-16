@@ -1,5 +1,4 @@
 import { Component, model, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListService } from '../keyboard-sort-list.service';
@@ -7,9 +6,7 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
 import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
 
 @Component({
-  standalone: true,
   imports: [
-    CommonModule,
     KeyboardSortItemDirective,
     KeyboardSortHandleDirective,
     KeyboardSortItemIfActiveDirective,
@@ -23,9 +20,9 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
       [activated]="activated()"
       #item
       id="example-item">
-      <div *ngIf="showHandle" kbdSortHandle #handle class="example-handle">
-        Handle
-      </div>
+      @if (showHandle()) {
+        <div kbdSortHandle #handle class="example-handle">Handle</div>
+      }
       <span>Item 1</span>
       <span *kbdSortKeyboardSortItemIfActive #active>Active</span>
       <span *kbdSortKeyboardSortItemIfFocused #focus>Focused</span>

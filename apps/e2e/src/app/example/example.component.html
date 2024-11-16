@@ -14,9 +14,10 @@
   kbdSortList
   cdkDropListOrientation="horizontal"
   kbdSortListOrientation="horizontal"
-  [cdkDropListData]="items"
-  [(kbdSortListData)]="items">
-  @for (item of items; track item; let i = $index) {
+  [cdkDropListData]="items()"
+  [(kbdSortListData)]="items"
+  [kbdSortListDisabled]="!enabled()">
+  @for (item of items(); track item; let i = $index) {
     <li cdkDrag cdkDragLockAxis="x" [kbdSortItem]="i">
       {{ item }}
       <span *kbdSortKeyboardSortItemIfActive class="indicator active-indicator"
@@ -28,3 +29,13 @@
     </li>
   }
 </ul>
+<div>
+  <label
+    ><input [(ngModel)]="enabled" type="checkbox" /> Keyboard enabled</label
+  >
+</div>
+<div>
+  <button type="button" (click)="resetData()" (keydown.enter)="resetData()">
+    Reset data
+  </button>
+</div>

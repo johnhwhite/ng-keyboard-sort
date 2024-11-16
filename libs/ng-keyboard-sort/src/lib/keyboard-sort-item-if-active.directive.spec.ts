@@ -4,7 +4,6 @@ import { KeyboardSortItemIfActiveDirective } from 'ng-keyboard-sort';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Component({
-  standalone: true,
   selector: 'kbd-sort-test-component',
   template: ` <div *kbdSortKeyboardSortItemIfActive></div> `,
   imports: [KeyboardSortItemIfActiveDirective],
@@ -20,7 +19,7 @@ describe('KeyboardSortItemIfActiveDirective', () => {
       providers: [
         {
           provide: KeyboardSortItemService,
-          useValue: { item: { activated, isDisabled } },
+          useValue: { item: signal({ activated, isDisabled }) },
         },
       ],
     });

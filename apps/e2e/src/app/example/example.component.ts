@@ -1,14 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, model } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
-  KeyboardSortItemDirective,
-  KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemDirective, KeyboardSortItemIfActiveDirective,
   KeyboardSortItemIfFocusedDirective,
   KeyboardSortListDirective,
 } from 'ng-keyboard-sort';
@@ -21,18 +20,36 @@ import {
   imports: [
     CdkDrag,
     CdkDropList,
+    FormsModule,
     KeyboardSortListDirective,
     KeyboardSortItemDirective,
     KeyboardSortItemIfActiveDirective,
     KeyboardSortItemIfFocusedDirective,
-    NgFor,
   ],
 })
 export class ExampleComponent {
-  public items: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  public readonly items = model<string[]>([
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+  ]);
+  public readonly enabled = model<boolean>(true);
 
   public drop($event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.items, $event.previousIndex, $event.currentIndex);
+    const items = this.items();
+    moveItemInArray(items, $event.previousIndex, $event.currentIndex);
+    this.items.set([...items]);
+  }
+
+  public resetData(): void {
+    this.items.set(
+      [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].slice(0, this.items().length + 1)
+    );
   }
 }
 

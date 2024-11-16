@@ -131,7 +131,6 @@ describe('ItemDirective', () => {
     setupTest();
     const item = component.item;
     expect(item).toBeTruthy();
-    item?.ngAfterViewInit();
     expect(item?.activated()).toBeFalse();
     item?.elementRef.nativeElement.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Enter' })

@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   computed,
   contentChildren,
   Directive,
@@ -8,12 +7,10 @@ import {
   HostListener,
   inject,
   input,
+  linkedSignal,
   model,
-  OnDestroy,
   output,
-  signal,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
@@ -40,9 +37,7 @@ const directionalKeys = {
   },
   providers: [KeyboardSortItemService],
 })
-export class KeyboardSortItemDirective
-  implements AfterViewInit, OnDestroy, FocusableOption
-{
+export class KeyboardSortItemDirective implements FocusableOption {
   public readonly handles = contentChildren(KeyboardSortHandleDirective);
 
   public position = input.required<number>({
@@ -52,7 +47,7 @@ export class KeyboardSortItemDirective
   /**
    * @internal
    */
-  public readonly focused = signal<boolean>(false);
+  public readonly focused = linkedSignal<boolean>(() => !this.activated());
   public readonly kbdSortItemDisabled = model<boolean>(false);
 
   public get disabled(): boolean {
@@ -74,44 +69,19 @@ export class KeyboardSortItemDirective
 
   readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
-  readonly #subscriptions = new Subscription();
 
   constructor() {
-    this.#itemService.item = this;
-    effect(
-      () => {
-        const itemDisabled = this.kbdSortItemDisabled();
-        const isActivated = this.activated();
-        if (itemDisabled && isActivated) {
-          this.activated.set(false);
-        }
-      },
-      { allowSignalWrites: true }
-    );
-    effect(
-      () => {
-        const activated = this.activated();
-        const focused = this.focused();
-        if (activated && focused) {
-          this.focused.set(false);
-        }
-        this.kbdSortItemActivated.emit(activated);
-        this.kbdSortItemFocused.emit(focused);
-      },
-      {
-        allowSignalWrites: true,
+    this.focused.set(false);
+    this.#itemService.item.set(this);
+    effect(() => {
+      if (this.isDisabled()) {
+        this.activated.set(false);
       }
-    );
-  }
-
-  public ngAfterViewInit(): void {
-    if (this.activated()) {
-      this.activated.set(true);
-    }
-  }
-
-  public ngOnDestroy(): void {
-    this.#subscriptions.unsubscribe();
+    });
+    effect(() => {
+      this.kbdSortItemActivated.emit(this.activated());
+      this.kbdSortItemFocused.emit(this.focused());
+    });
   }
 
   public focus(origin?: FocusOrigin): void {
@@ -120,8 +90,9 @@ export class KeyboardSortItemDirective
         this.focused.set(true);
       }
       if (!this.elementRef.nativeElement.matches(':focus-within')) {
-        if (this.handles()[0]) {
-          this.handles()[0].elementRef.nativeElement.focus();
+        const firstHandle = this.handles().slice().shift();
+        if (firstHandle) {
+          firstHandle.elementRef.nativeElement.focus();
         } else {
           this.elementRef.nativeElement.focus();
         }
@@ -180,25 +151,26 @@ export class KeyboardSortItemDirective
             : directionalKeys.down,
       };
 
+      const activated = this.activated();
       if (directionalCommands.moveUp.includes($event.key)) {
-        if (this.activated()) {
+        if (activated) {
           this.moveUp();
         } else {
           this.#list?.focusPreviousItem(this);
         }
       } else if (directionalCommands.moveDown.includes($event.key)) {
-        if (this.activated()) {
+        if (activated) {
           this.moveDown();
         } else {
           this.#list?.focusNextItem(this);
         }
       } else if (
-        !this.activated() &&
+        !activated &&
         directionalCommands.pickUp.includes($event.key)
       ) {
         this.activate();
       } else if (
-        this.activated() &&
+        activated &&
         directionalCommands.putDown.includes($event.key)
       ) {
         this.deactivate();
@@ -224,9 +196,7 @@ export class KeyboardSortItemDirective
   }
 
   public deactivate() {
-    if (this.activated) {
-      this.activated.set(false);
-    }
+    this.activated.set(false);
   }
 
   public moveUp(): boolean {

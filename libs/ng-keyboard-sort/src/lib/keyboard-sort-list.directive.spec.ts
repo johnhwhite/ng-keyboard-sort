@@ -36,10 +36,6 @@ describe('ListDirective', () => {
       fixture.componentRef.setInput(key, value);
     });
     fixture.detectChanges();
-    component.items?.forEach((item) => {
-      item.ngAfterViewInit();
-    });
-    fixture.detectChanges();
   }
 
   afterEach(() => {
@@ -69,7 +65,7 @@ describe('ListDirective', () => {
     );
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(listElement.getAttribute('tabindex')).toBe('0');
+    expect(listElement.getAttribute('tabindex')).toBe('-1');
     component.activateLastItem();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -119,14 +115,15 @@ describe('ListDirective', () => {
     expect(item?.activated()).toBeFalse();
     expect(
       fixture.nativeElement.querySelectorAll('[tabindex="-1"]').length
-    ).toBe(3);
+    ).toBe(4);
     expect(
       fixture.nativeElement.querySelectorAll('[tabindex="0"]').length
-    ).toBe(1);
+    ).toBe(0);
     component.disabled.set(false);
     (fixture.nativeElement as HTMLElement).ownerDocument.body.focus();
     fixture.detectChanges();
     tick();
+    expect(getItem(0).disabled).toBeFalse();
     expect(getItem(0).focused()).toBeFalse();
     fixture.nativeElement.querySelector('ul')?.focus();
     fixture.detectChanges();
@@ -136,6 +133,7 @@ describe('ListDirective', () => {
     expect(component.list?.moveItemUp(getItem(2))).toBeTrue();
     fixture.detectChanges();
     tick();
+    getItem(0).focus('keyboard');
     component.list?.focusPreviousItem(getItem(0));
     fixture.detectChanges();
     tick();

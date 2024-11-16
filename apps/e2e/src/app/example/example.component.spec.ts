@@ -34,7 +34,7 @@ describe('ExampleComponent', () => {
   });
 
   it('should move items up and down', () => {
-    const items = component.items;
+    const items = component.items();
     const firstItem = items[0];
     const secondItem = items[1];
     const event = {
@@ -44,5 +44,20 @@ describe('ExampleComponent', () => {
     component.drop(event);
     expect(items[0]).toEqual(secondItem);
     expect(items[1]).toEqual(firstItem);
+  });
+
+  it('should reset data', () => {
+    component.resetData();
+    expect(component.items()).toEqual([
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+    ]);
   });
 });
