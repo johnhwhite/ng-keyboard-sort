@@ -5,7 +5,6 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { NgFor } from '@angular/common';
 import {
   KeyboardSortHandleDirective,
   KeyboardSortItemDirective,
@@ -23,7 +22,6 @@ export interface Item {
   selector: 'app-example-with-handles',
   templateUrl: './example-with-handles.component.html',
   styleUrls: ['./example-with-handles.component.css'],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDropList,
@@ -32,7 +30,6 @@ export interface Item {
     KeyboardSortItemIfActiveDirective,
     KeyboardSortItemIfFocusedDirective,
     KeyboardSortListDirective,
-    NgFor,
   ],
 })
 export class ExampleWithHandlesComponent {

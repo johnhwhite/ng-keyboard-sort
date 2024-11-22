@@ -19,9 +19,7 @@ export class KeyboardSortItemIfActiveDirective {
 
   constructor() {
     effect(() => {
-      const activated = !!this.#item?.activated();
-      const enabled = !this.#item?.isDisabled();
-      const shouldShow = activated && enabled;
+      const shouldShow = !!this.#item()?.activated();
       if (shouldShow && !this.#hasView) {
         this.#viewContainer.createEmbeddedView(this.#templateRef);
         this.#hasView = true;

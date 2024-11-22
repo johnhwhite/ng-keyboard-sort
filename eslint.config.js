@@ -19,7 +19,21 @@ module.exports = tseslint.config(
       eslintConfigPrettier,
     ],
     processor: angular.processInlineTemplates,
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+        },
+      ],
+      '@typescript-eslint/no-empty-function': [
+        'error',
+        {
+          allow: [],
+        },
+      ],
+    },
   },
   {
     files: ['**/*.html'],

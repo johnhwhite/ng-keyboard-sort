@@ -5,7 +5,6 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
@@ -13,9 +12,7 @@ import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-acti
 import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
 
 @Component({
-  standalone: true,
   imports: [
-    CommonModule,
     KeyboardSortListDirective,
     KeyboardSortItemDirective,
     KeyboardSortItemIfFocusedDirective,
@@ -25,7 +22,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
     <a href="#item-0">Start</a>
     <ul
       kbdSortList
-      [kbdSortListData]="data() || []"
+      [(kbdSortListData)]="data"
       [kbdSortListOrientation]="direction()"
       [kbdSortListDisabled]="disabled()"
       (kdbSortDrop)="sortDrop($event)">

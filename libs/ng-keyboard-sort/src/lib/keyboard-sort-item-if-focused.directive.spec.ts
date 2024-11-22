@@ -4,7 +4,6 @@ import { KeyboardSortItemIfFocusedDirective } from 'ng-keyboard-sort';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Component({
-  standalone: true,
   selector: 'kbd-sort-test-component',
   template: ` <div *kbdSortKeyboardSortItemIfFocused></div> `,
   imports: [KeyboardSortItemIfFocusedDirective],
@@ -20,7 +19,7 @@ describe('KeyboardSortItemIfFocusedDirective', () => {
       providers: [
         {
           provide: KeyboardSortItemService,
-          useValue: { item: { focused, isDisabled } },
+          useValue: { item: signal({ focused, isDisabled }) },
         },
       ],
     });
