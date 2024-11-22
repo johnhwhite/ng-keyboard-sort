@@ -7,7 +7,8 @@ import {
 } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import {
-  KeyboardSortItemDirective, KeyboardSortItemIfActiveDirective,
+  KeyboardSortItemDirective,
+  KeyboardSortItemIfActiveDirective,
   KeyboardSortItemIfFocusedDirective,
   KeyboardSortListDirective,
 } from 'ng-keyboard-sort';
@@ -16,7 +17,6 @@ import {
   selector: 'app-example',
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.css'],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDropList,
