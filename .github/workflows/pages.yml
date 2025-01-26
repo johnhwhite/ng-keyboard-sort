@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir _site
           cd repo
-          BRANCHES="$(git branch -r --format='%(refname:lstrip=3)')"
+          BRANCHES="$(git branch -r --format='%(refname:lstrip=3)' | fgrep -v HEAD)"
           echo "Building:"
           echo "${BRANCHES}" | sed 's/^/ 🟢 /g'
           echo ''

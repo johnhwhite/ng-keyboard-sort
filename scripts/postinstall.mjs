@@ -1,25 +1,26 @@
-import { VERSION as ANGULAR_VERSION } from '@angular/core';
-import { minVersion } from 'semver';
+import { minVersion, satisfies } from 'semver';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
-const majorVersion = parseInt(ANGULAR_VERSION.major);
 const packageJsonFile = 'libs/ng-keyboard-sort/package.json';
 
+const dependencies = JSON.parse(execSync('npm ls --json').toString());
 const packageJson = JSON.parse(readFileSync(packageJsonFile, 'utf8'));
-const angularPeerDependencies = Object.keys(
-  packageJson.peerDependencies || {}
-).filter((dependency) => dependency?.startsWith('@angular/'));
+const peerDependencies = Object.keys(packageJson.peerDependencies || {});
 
 if (
-  angularPeerDependencies.some(
+  peerDependencies.some(
     (dependency) =>
-      minVersion(packageJson.peerDependencies[dependency]).major !==
-      majorVersion
+      !satisfies(
+        minVersion(packageJson.peerDependencies[dependency]),
+        `^${dependencies.dependencies[dependency].version}`
+      )
   )
 ) {
-  angularPeerDependencies.forEach((dependency) => {
-    packageJson.peerDependencies[dependency] = `^${majorVersion}.0.0`;
+  peerDependencies.forEach((dependency) => {
+    packageJson.peerDependencies[dependency] =
+      `^${dependencies.dependencies[dependency].version}`;
   });
-  writeFileSync(packageJsonFile, JSON.stringify(packageJson, null, 2));
-  console.info(`🆙 Updated ${packageJsonFile} to Angular ^${majorVersion}.0.0`);
+  writeFileSync(packageJsonFile, JSON.stringify(packageJson, null, 2) + `\n`);
+  console.info(`🆙 Updated ${packageJsonFile} to latest versions`);
 }
