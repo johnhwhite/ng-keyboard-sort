@@ -277,6 +277,40 @@ describe('ListDirective', () => {
         ]);
       });
 
+      it(`should move item up two steps in ${direction} direction`, async () => {
+        setupTest({
+          direction: direction as 'horizontal' | 'vertical',
+        });
+        expect(component.list).toBeTruthy();
+        const lastItem = getItem(2);
+        expect(lastItem).toBeTruthy();
+        lastItem.focus('keyboard');
+        lastItem.onKeydown(
+          new KeyboardEvent('keydown', { key: selectKeys[1] })
+        );
+        expect(lastItem.activated()).toBeTrue();
+        expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
+        lastItem.onKeydown(new KeyboardEvent('keydown', { key: arrows[1] }));
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.data()).toEqual(['Item 1', 'Item 3', 'Item 2']);
+        getItem(1).onKeydown(new KeyboardEvent('keydown', { key: arrows[1] }));
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.data()).toEqual(['Item 3', 'Item 1', 'Item 2']);
+        component.list?.deactivateAll();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(lastItem.activated()).toBeFalse();
+        expect(lastItem.focused()).toBeFalse();
+        expect(component.drops).toEqual([
+          {
+            previousIndex: 2,
+            currentIndex: 0,
+          },
+        ]);
+      });
+
       it(`should move item down in ${direction} direction`, fakeAsync(() => {
         setupTest({
           direction: direction as 'horizontal' | 'vertical',
@@ -403,6 +437,81 @@ describe('ListDirective', () => {
         tick();
         flush();
         expect(component.data()).toEqual(['Item 1', 'Item 3', 'Item 2']);
+      }));
+
+      it(`should move item 3 up two steps in ${direction} direction with arrow keys`, fakeAsync(() => {
+        setupTest({
+          direction: direction as 'horizontal' | 'vertical',
+        });
+        const element = (fixture.nativeElement as HTMLElement).querySelector(
+          'li:nth-child(3)'
+        );
+        expect(element).toBeTruthy();
+        expect(element?.textContent?.trim()).toBe('Item 3');
+        element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        fixture.detectChanges();
+        tick();
+        expect(
+          Array.from(element?.classList ?? []).includes(
+            'kbd-sort-item-activated'
+          )
+        ).toBeTrue();
+        expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
+        element?.dispatchEvent(
+          new KeyboardEvent('keydown', { key: arrows[1] })
+        );
+        fixture.detectChanges();
+        tick();
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('li:nth-child(2)')
+          ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[1] }));
+        fixture.detectChanges();
+        tick();
+        expect(component.data()).toEqual(['Item 3', 'Item 1', 'Item 2']);
+        (fixture.nativeElement as HTMLElement)
+          .querySelector<HTMLElement>('li:nth-child(1)')
+          ?.blur();
+        fixture.detectChanges();
+        tick();
+        expect(getItem(0).activated()).toBeFalse();
+        expect(component.drops).toEqual([
+          {
+            previousIndex: 2,
+            currentIndex: 0,
+          },
+        ]);
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('li:nth-child(1)')
+          ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        fixture.detectChanges();
+        tick();
+        expect(getItem(0).activated()).toBeTrue();
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('li:nth-child(1)')
+          ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[0] }));
+        fixture.detectChanges();
+        tick();
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('li:nth-child(2)')
+          ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[0] }));
+        fixture.detectChanges();
+        tick();
+        expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
+        (fixture.nativeElement as HTMLElement)
+          .querySelector('li:nth-child(3)')
+          ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        fixture.detectChanges();
+        tick();
+        expect(component.drops).toEqual([
+          {
+            previousIndex: 2,
+            currentIndex: 0,
+          },
+          {
+            previousIndex: 0,
+            currentIndex: 2,
+          },
+        ]);
       }));
     });
   });

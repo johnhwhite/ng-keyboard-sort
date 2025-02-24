@@ -54,6 +54,7 @@ export class KeyboardSortListDirective<T extends unknown[]>
   #itemSubscriptions = new Subscription();
   readonly #currentIndex = signal<number | undefined>(undefined);
   readonly #focusIndex = signal<number | undefined>(undefined);
+  readonly #startingIndex = signal<number | undefined>(undefined);
   #midChange = false;
   #listSize = 0;
 
@@ -84,6 +85,20 @@ export class KeyboardSortListDirective<T extends unknown[]>
             item.kbdSortItemActivated.subscribe((isActive) => {
               if (isActive) {
                 this.#currentIndex.set(item.position());
+              } else if (
+                !this.kbdSortListDisabled() &&
+                !item.isDisabled() &&
+                item.position() === this.#currentIndex()
+              ) {
+                const previousIndex = this.#startingIndex();
+                const currentIndex = this.#currentIndex();
+                if (
+                  typeof previousIndex !== 'undefined' &&
+                  typeof currentIndex !== 'undefined'
+                ) {
+                  this.kdbSortDrop.emit({ previousIndex, currentIndex });
+                }
+                this.#startingIndex.set(undefined);
               }
             })
           );
@@ -151,7 +166,12 @@ export class KeyboardSortListDirective<T extends unknown[]>
   @HostListener('keydown.escape')
   public deactivateAll(except?: number): void {
     this.items().forEach((item) => {
-      if (item.position() !== except) {
+      const activate = item.position() === except;
+      if (activate) {
+        if (this.#startingIndex() === undefined) {
+          this.#startingIndex.set(except);
+        }
+      } else {
         item.activated.set(false);
         item.focused.set(false);
         item.elementRef.nativeElement.blur();
@@ -232,10 +252,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
     this.kbdSortListData.set(data as T);
     // Detect changes and finish when the query list is updated.
     this.#changeDetectorRef.detectChanges();
-    this.kdbSortDrop.emit({
-      previousIndex: currentPosition,
-      currentIndex: moveToIndex,
-    });
     return true;
   }
 }
