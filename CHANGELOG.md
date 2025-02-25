@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v6.1.0...v7.0.0) (2025-02-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ng-keyboard-sort:** delay drop event until item deactivated ([#147](https://github.com/johnhwhite/ng-keyboard-sort/issues/147))
+
+### Features
+
+* **ng-keyboard-sort:** delay drop event until item deactivated ([#147](https://github.com/johnhwhite/ng-keyboard-sort/issues/147)) ([5edf29f](https://github.com/johnhwhite/ng-keyboard-sort/commit/5edf29f9f1f8a4e11339b8b3f3eb175432bdb454))
+
 ## [6.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v6.0.0...v6.1.0) (2025-01-26)
 
 
