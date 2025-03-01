@@ -2,8 +2,6 @@ import { Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
   selector: '[kbdSortHandle]',
-  exportAs: 'kbdSortHandle',
-  standalone: true,
   host: {
     '[attr.tabindex]': '"-1"',
   },

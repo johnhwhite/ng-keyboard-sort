@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 
 /**
@@ -6,5 +6,7 @@ import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
  */
 @Injectable()
 export class KeyboardSortListService<T extends unknown[]> {
-  public list: KeyboardSortListDirective<T> | undefined;
+  public readonly list = signal<KeyboardSortListDirective<T> | undefined>(
+    undefined
+  );
 }

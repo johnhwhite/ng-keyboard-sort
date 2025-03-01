@@ -1,5 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { KeyboardSortItemFixtureComponent } from './fixtures/keyboard-sort-item-fixture.component';
+import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 
 describe('ItemDirective', () => {
   let component: KeyboardSortItemFixtureComponent;
@@ -32,13 +34,24 @@ describe('ItemDirective', () => {
       .firstChild as HTMLElement;
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalsy();
     expect(component.active).toBeFalsy();
-    component.item?.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+    component.item?.focus('keyboard');
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeTrue();
     expect(component.item?.activated()).toBeTruthy();
     expect(component.item?.focused()).toBeFalsy();
-    component.item?.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.activated()).toBeFalsy();
@@ -53,21 +66,25 @@ describe('ItemDirective', () => {
       .firstChild as HTMLElement;
     expect(sortItem.matches('.kbd-sort-item')).toBeTrue();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalse();
-    const itemText = sortItem.querySelector('span');
-    expect(itemText).toBeTruthy();
-    itemText?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalse();
-    const handleElement: HTMLElement | undefined =
-      fixture.nativeElement.querySelector('.example-handle');
-    expect(handleElement).toBeTruthy();
-    handleElement?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })
-    );
+    component.item?.focus('keyboard');
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
     fixture.detectChanges();
     await fixture.whenStable();
     expect(sortItem.matches('.kbd-sort-item-activated')).toBeTrue();
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(sortItem.matches('.kbd-sort-item-activated')).toBeFalse();
   });
 
   it('should change handles', async () => {
@@ -110,15 +127,27 @@ describe('ItemDirective', () => {
       await fixture.whenStable();
       expect(item.focused()).toBeFalse();
       expect(item.activated()).toBeTrue();
-      item.deactivate();
+      fixture.debugElement
+        .query(By.directive(KeyboardSortItemDirective))
+        .triggerEventHandler('focusout');
       fixture.detectChanges();
       await fixture.whenStable();
       expect(item.activated()).toBeFalse();
-      item.toggleActivated();
+      fixture.debugElement
+        .query(By.directive(KeyboardSortItemDirective))
+        .triggerEventHandler(
+          'keydown',
+          new KeyboardEvent('keydown', { key: 'Enter' })
+        );
       fixture.detectChanges();
       await fixture.whenStable();
       expect(item.activated()).toBeTrue();
-      item.toggleActivated();
+      fixture.debugElement
+        .query(By.directive(KeyboardSortItemDirective))
+        .triggerEventHandler(
+          'keydown',
+          new KeyboardEvent('keydown', { key: 'Enter' })
+        );
       fixture.detectChanges();
       await fixture.whenStable();
       expect(item.activated()).toBeFalse();
@@ -132,14 +161,21 @@ describe('ItemDirective', () => {
     const item = component.item;
     expect(item).toBeTruthy();
     expect(item?.activated()).toBeFalse();
-    item?.elementRef.nativeElement.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Enter' })
-    );
+    item?.focus('keyboard');
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
     expect(item?.activated()).toBeTrue();
     expect(item?.focused()).toBeFalse();
-    item?.elementRef.nativeElement.dispatchEvent(
-      new KeyboardEvent('keydown', { key: ' ' })
-    );
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: ' ' })
+      );
     expect(item?.activated()).toBeFalse();
     expect(item?.focused()).toBeTrue();
   }));
@@ -148,8 +184,18 @@ describe('ItemDirective', () => {
     setupTest();
     expect(component).toBeTruthy();
     expect(component.item).toBeTruthy();
-    expect(component.item?.moveDown()).toBeFalse();
-    expect(component.item?.moveUp()).toBeFalse();
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'ArrowDown' })
+      );
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'ArrowUp' })
+      );
     expect(component.item).toBeTruthy();
     if (component.item) {
       component.item.activate();
@@ -171,7 +217,12 @@ describe('ItemDirective', () => {
     expect(component.item?.isDisabled()).toBeTrue();
     fixture.detectChanges();
     await fixture.whenStable();
-    component.item?.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler(
+        'keydown',
+        new KeyboardEvent('keydown', { key: 'Enter' })
+      );
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.activated()).toBeFalse();
@@ -185,7 +236,9 @@ describe('ItemDirective', () => {
     expect(component.item).toBeTruthy();
     expect(component.item?.activated()).toBeTrue();
     component.item?.focus();
-    component.item?.onFocusOut();
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler('focusout');
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.activated()).toBeFalse();
@@ -193,7 +246,9 @@ describe('ItemDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.focused()).toBeTrue();
-    component.item?.onFocusOut();
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler('focusout');
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.item?.focused()).toBeFalse();

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
 
 @Component({
@@ -6,6 +6,5 @@ import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
   template: `<ul kbdSortList></ul>`,
 })
 export class KeyboardSortListEmptyFixtureComponent {
-  @ViewChild(KeyboardSortListDirective)
-  public list: KeyboardSortListDirective<string[]> | undefined;
+  public list = viewChild(KeyboardSortListDirective);
 }

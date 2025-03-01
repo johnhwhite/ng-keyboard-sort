@@ -9,7 +9,6 @@ import { KeyboardSortItemService } from './keyboard-sort-item.service';
 
 @Directive({
   selector: '[kbdSortKeyboardSortItemIfActive]',
-  standalone: true,
 })
 export class KeyboardSortItemIfActiveDirective {
   #hasView = false;

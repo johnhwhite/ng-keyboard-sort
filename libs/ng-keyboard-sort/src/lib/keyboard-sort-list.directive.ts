@@ -23,12 +23,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[kbdSortList]',
-  exportAs: 'kbdSortList',
-  standalone: true,
   providers: [KeyboardSortListService],
-  host: {
-    '[attr.tabindex]': 'tabindex()',
-  },
+  host: { '[attr.tabindex]': 'tabindex()' },
 })
 export class KeyboardSortListDirective<T extends unknown[]>
   implements OnChanges, OnDestroy
@@ -57,19 +53,23 @@ export class KeyboardSortListDirective<T extends unknown[]>
   readonly #startingIndex = signal<number | undefined>(undefined);
   #midChange = false;
   #listSize = 0;
+  #scheduledChangeDetection: number | undefined;
 
   constructor() {
-    inject(KeyboardSortListService<T>).list = this;
+    inject(KeyboardSortListService<T>).list.set(this);
     this.#subscriptions.add(
       toObservable(this.items).subscribe((items) => {
         this.#listSize = items.length;
+        this.#itemSubscriptions.unsubscribe();
+        this.#itemSubscriptions = new Subscription();
+        this.#itemSubscriptions.add(() =>
+          this.#cancelScheduledChangeDetection()
+        );
         this.#focusIndex.set(undefined);
-        this.#focusKeyManager?.destroy();
         this.#focusKeyManager = new FocusKeyManager<KeyboardSortItemDirective>(
           items
         ).withWrap();
-        this.#itemSubscriptions.unsubscribe();
-        this.#itemSubscriptions = new Subscription();
+        this.#itemSubscriptions.add(() => this.#focusKeyManager?.destroy());
         this.#itemSubscriptions.add(
           this.#focusKeyManager.change.subscribe((focusedIndex) => {
             this.#focusIndex.set(focusedIndex);
@@ -85,20 +85,23 @@ export class KeyboardSortListDirective<T extends unknown[]>
             item.kbdSortItemActivated.subscribe((isActive) => {
               if (isActive) {
                 this.#currentIndex.set(item.position());
-              } else if (
-                !this.kbdSortListDisabled() &&
-                !item.isDisabled() &&
-                item.position() === this.#currentIndex()
-              ) {
-                const previousIndex = this.#startingIndex();
-                const currentIndex = this.#currentIndex();
+              } else {
+                this.#cancelScheduledChangeDetection();
                 if (
-                  typeof previousIndex !== 'undefined' &&
-                  typeof currentIndex !== 'undefined'
+                  !this.kbdSortListDisabled() &&
+                  !item.isDisabled() &&
+                  item.position() === this.#currentIndex()
                 ) {
-                  this.kdbSortDrop.emit({ previousIndex, currentIndex });
+                  const previousIndex = this.#startingIndex();
+                  const currentIndex = this.#currentIndex();
+                  if (
+                    typeof previousIndex !== 'undefined' &&
+                    typeof currentIndex !== 'undefined'
+                  ) {
+                    this.kdbSortDrop.emit({ previousIndex, currentIndex });
+                  }
+                  this.#startingIndex.set(undefined);
                 }
-                this.#startingIndex.set(undefined);
               }
             })
           );
@@ -206,8 +209,12 @@ export class KeyboardSortListDirective<T extends unknown[]>
     item.activate();
   }
 
-  public focusItem(item: KeyboardSortItemDirective): void {
-    this.#focusKeyManager?.setActiveItem(item);
+  public focusItem(item: KeyboardSortItemDirective | number): void {
+    if (item instanceof KeyboardSortItemDirective) {
+      this.#focusKeyManager?.setActiveItem(item);
+    } else {
+      this.#focusKeyManager?.setActiveItem(item);
+    }
   }
 
   public focusPreviousItem(item: KeyboardSortItemDirective): void {
@@ -222,6 +229,14 @@ export class KeyboardSortListDirective<T extends unknown[]>
     );
   }
 
+  public focusFirstItem(): void {
+    this.#focusKeyManager?.setFirstItemActive();
+  }
+
+  public focusLastItem(): void {
+    this.#focusKeyManager?.setLastItemActive();
+  }
+
   public moveItemUp(item: KeyboardSortItemDirective): boolean {
     return this.#moveItemInDataArray(item.position() - 1, item.position());
   }
@@ -230,9 +245,20 @@ export class KeyboardSortListDirective<T extends unknown[]>
     return this.#moveItemInDataArray(item.position() + 1, item.position());
   }
 
+  public moveItemToStart(item: KeyboardSortItemDirective): boolean {
+    return this.#moveItemInDataArray(0, item.position());
+  }
+
+  public moveItemToEnd(item: KeyboardSortItemDirective): boolean {
+    return this.#moveItemInDataArray(Number.MAX_VALUE, item.position());
+  }
+
   #moveItemInDataArray(moveToIndex: number, currentPosition: number) {
     const item = this.items()[currentPosition];
     const data = (this.kbdSortListData() ?? []).slice();
+    if (moveToIndex === Number.MAX_VALUE) {
+      moveToIndex = data.length - 1;
+    }
     if (
       !item ||
       item.isDisabled() ||
@@ -251,7 +277,17 @@ export class KeyboardSortListDirective<T extends unknown[]>
     this.#currentIndex.set(moveToIndex);
     this.kbdSortListData.set(data as T);
     // Detect changes and finish when the query list is updated.
-    this.#changeDetectorRef.detectChanges();
+    this.#cancelScheduledChangeDetection();
+    this.#scheduledChangeDetection = setTimeout(() => {
+      this.#changeDetectorRef.detectChanges();
+    });
     return true;
+  }
+
+  #cancelScheduledChangeDetection(): void {
+    if (this.#scheduledChangeDetection !== undefined) {
+      clearTimeout(this.#scheduledChangeDetection);
+      this.#scheduledChangeDetection = undefined;
+    }
   }
 }
