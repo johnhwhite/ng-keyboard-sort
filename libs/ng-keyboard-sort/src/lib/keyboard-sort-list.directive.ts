@@ -20,6 +20,7 @@ import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
 import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
   selector: '[kbdSortList]',
@@ -31,6 +32,32 @@ export class KeyboardSortListDirective<T extends unknown[]>
 {
   protected readonly items = contentChildren(KeyboardSortItemDirective);
 
+  /**
+   * Override the default keyboard shortcuts.
+   *
+   * By default, the following keyboard shortcuts are used:
+   *  - Toggle: Space or Enter
+   *  - Stop and remove focus: Escape
+   *
+   *  - In horizontal orientation:
+   *    - MoveUp: ArrowLeft or "a"
+   *    - MoveDown: ArrowRight or "d"
+   *    - MoveStart: Home
+   *    - MoveEnd: End
+   *    - PickUp: ArrowUp, "w", or "e"
+   *    - PutDown: ArrowDown, "s", or "x"
+   *
+   *  - In vertical orientation:
+   *    - MoveUp: ArrowUp or "w"
+   *    - MoveDown: ArrowDown or "s"
+   *    - MoveStart: PageUp
+   *    - MoveEnd: PageDown
+   *    - PickUp: "e"
+   *    - PutDown: "x"
+   */
+  public readonly kbdSortKeyOverrides = input<
+    Partial<KeyboardSortKeysInterface>
+  >({});
   public readonly kbdSortListOrientation = input<'horizontal' | 'vertical'>(
     'horizontal'
   );

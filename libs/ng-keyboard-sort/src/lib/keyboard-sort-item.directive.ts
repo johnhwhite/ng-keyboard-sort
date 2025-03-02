@@ -15,17 +15,7 @@ import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
-
-type KeyCombinations = Record<
-  | 'Toggle'
-  | 'PickUp'
-  | 'PutDown'
-  | 'MoveUp'
-  | 'MoveDown'
-  | 'MoveStart'
-  | 'MoveEnd',
-  string[]
->;
+import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
   selector: '[kbdSortItem]',
@@ -71,9 +61,9 @@ export class KeyboardSortItemDirective implements FocusableOption {
 
   readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
-  readonly #keyCombinations = computed<KeyCombinations>(() => {
+  readonly #keyCombinations = computed<KeyboardSortKeysInterface>(() => {
     const kbdSortListOrientation = this.#list()?.kbdSortListOrientation();
-    const keys: KeyCombinations = {
+    const keys: KeyboardSortKeysInterface = {
       Toggle: ['Enter', ' '],
       PickUp: [],
       PutDown: ['Escape'],
@@ -100,7 +90,10 @@ export class KeyboardSortItemDirective implements FocusableOption {
       keys.PickUp.push('ArrowUp', 'W', 'w', 'E', 'e');
       keys.PutDown.push('ArrowDown', 'S', 's', 'X', 'x');
     }
-    return keys;
+    return {
+      ...keys,
+      ...this.#list()?.kbdSortKeyOverrides(),
+    };
   });
 
   constructor() {
