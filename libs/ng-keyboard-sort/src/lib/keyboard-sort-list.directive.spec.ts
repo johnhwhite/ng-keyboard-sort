@@ -56,9 +56,8 @@ describe('ListDirective', () => {
   it('should change focus', async () => {
     const { fixture, component } = setupTest();
     const list = component.list();
+    list?.activateItem(0);
     const item = component.items()[0];
-    expect(item).toBeTruthy();
-    list?.activateItem(item as KeyboardSortItemDirective);
     expect(item?.activated()).toBeTrue();
     fixture.debugElement
       .query(By.directive(KeyboardSortItemDirective))
@@ -72,15 +71,15 @@ describe('ListDirective', () => {
     fixture.debugElement
       .query(By.directive(KeyboardSortListDirective))
       .triggerEventHandler(
-        'blur',
-        new FocusEvent('blur', {
+        'focusout',
+        new FocusEvent('focusout', {
           relatedTarget: document.body,
         })
       );
     fixture.detectChanges();
     await fixture.whenStable();
     const listElement = fixture.nativeElement.querySelector('ul');
-    expect(listElement.getAttribute('tabindex')).toBe('-1');
+    expect(listElement.getAttribute('tabindex')).toBe('0');
     component.activateLastItem();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -145,12 +144,13 @@ describe('ListDirective', () => {
       fixture.nativeElement.querySelectorAll('[tabindex="0"]').length
     ).toBe(0);
     component.disabled.set(false);
-    (fixture.nativeElement as HTMLElement).ownerDocument.body.focus();
+    expect(getItem(fixture, 0).focused()).toBeTrue();
+    component.list()?.deactivateAll();
     fixture.detectChanges();
     tick();
     expect(getItem(fixture, 0).disabled).toBeFalse();
     expect(getItem(fixture, 0).focused()).toBeFalse();
-    fixture.nativeElement.querySelector('ul')?.focus();
+    component.list()?.focusFirstItem();
     fixture.detectChanges();
     tick();
     expect(getItem(fixture, 0).focused()).toBeTrue();
@@ -560,30 +560,29 @@ describe('ListDirective', () => {
         );
         expect(element).toBeTruthy();
         expect(element?.textContent?.trim()).toBe('Item 3');
-        component.list()?.focusItem(2);
-        element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        component.list()?.activateItem(2);
         fixture.detectChanges();
         tick();
-        expect(
-          Array.from(element?.classList ?? []).includes(
-            'kbd-sort-item-activated'
-          )
-        ).toBeTrue();
+        expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
-        element?.dispatchEvent(
-          new KeyboardEvent('keydown', { key: arrows[1] })
-        );
+        fixture.debugElement
+          .queryAll(By.directive(KeyboardSortItemDirective))[2]
+          .triggerEventHandler(
+            'keydown',
+            new KeyboardEvent('keydown', { key: arrows[1] })
+          );
         fixture.detectChanges();
         tick();
-        (fixture.nativeElement as HTMLElement)
-          .querySelector('li:nth-child(2)')
-          ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[1] }));
+        fixture.debugElement
+          .queryAll(By.directive(KeyboardSortItemDirective))[1]
+          .triggerEventHandler(
+            'keydown',
+            new KeyboardEvent('keydown', { key: arrows[1] })
+          );
         fixture.detectChanges();
         tick();
         expect(component.data()).toEqual(['Item 3', 'Item 1', 'Item 2']);
-        (fixture.nativeElement as HTMLElement)
-          .querySelector<HTMLElement>('li:nth-child(1)')
-          ?.blur();
+        component.list()?.deactivateAll();
         fixture.detectChanges();
         tick();
         expect(getItem(fixture, 0).activated()).toBeFalse();
@@ -593,15 +592,22 @@ describe('ListDirective', () => {
             currentIndex: 0,
           },
         ]);
-        (fixture.nativeElement as HTMLElement)
-          .querySelector('li:nth-child(1)')
-          ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        component.list()?.focusFirstItem();
+        fixture.debugElement
+          .queryAll(By.directive(KeyboardSortItemDirective))[0]
+          .triggerEventHandler(
+            'keydown',
+            new KeyboardEvent('keydown', { key: 'Enter' })
+          );
         fixture.detectChanges();
         tick();
         expect(getItem(fixture, 0).activated()).toBeTrue();
-        (fixture.nativeElement as HTMLElement)
-          .querySelector('li:nth-child(1)')
-          ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[0] }));
+        fixture.debugElement
+          .queryAll(By.directive(KeyboardSortItemDirective))[0]
+          .triggerEventHandler(
+            'keydown',
+            new KeyboardEvent('keydown', { key: arrows[0] })
+          );
         fixture.detectChanges();
         tick();
         (fixture.nativeElement as HTMLElement)
