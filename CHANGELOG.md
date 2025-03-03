@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.0.0...v7.1.0) (2025-03-03)
+
+
+### Features
+
+* **ng-keyboard-sort:** add support for home and end keys ([#150](https://github.com/johnhwhite/ng-keyboard-sort/issues/150)) ([c3dec1c](https://github.com/johnhwhite/ng-keyboard-sort/commit/c3dec1c95e653388ee026a1efd3deb2e3eb4cb82))
+
 ## [7.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v6.1.0...v7.0.0) (2025-02-25)
 
 
