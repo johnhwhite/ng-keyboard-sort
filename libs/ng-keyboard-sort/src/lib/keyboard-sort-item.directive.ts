@@ -19,6 +19,7 @@ import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
   selector: '[kbdSortItem]',
+  exportAs: 'kbdSortItem',
   host: {
     '[attr.tabindex]': '"-1"',
     '[class.kbd-sort-item]': 'true',
@@ -101,7 +102,7 @@ export class KeyboardSortItemDirective implements FocusableOption {
     this.#itemService.item.set(this);
     effect(() => {
       if (this.isDisabled()) {
-        this.activated.set(false);
+        this.deactivate();
       }
     });
     effect(() => {
@@ -129,7 +130,7 @@ export class KeyboardSortItemDirective implements FocusableOption {
   @HostListener('focusout')
   public onFocusOut(): void {
     if (this.activated()) {
-      this.activated.set(false);
+      this.deactivate();
     } else if (this.focused()) {
       this.focused.set(false);
     }
@@ -146,30 +147,30 @@ export class KeyboardSortItemDirective implements FocusableOption {
       $event.preventDefault();
       $event.stopPropagation();
       if (keyCombinations.Toggle.includes($event.key)) {
-        return this.#toggleActivated();
+        return this.toggleActivated();
       }
       const activated = this.activated();
       if (keyCombinations.MoveUp.includes($event.key)) {
         if (activated) {
-          this.#moveUp();
+          this.moveUp();
         } else {
           this.#list()?.focusPreviousItem(this);
         }
       } else if (keyCombinations.MoveDown.includes($event.key)) {
         if (activated) {
-          this.#moveDown();
+          this.moveDown();
         } else {
           this.#list()?.focusNextItem(this);
         }
       } else if (keyCombinations.MoveStart.includes($event.key)) {
         if (activated) {
-          this.#moveToStart();
+          this.moveToStart();
         } else {
           this.#list()?.focusFirstItem();
         }
       } else if (keyCombinations.MoveEnd.includes($event.key)) {
         if (activated) {
-          this.#moveToEnd();
+          this.moveToEnd();
         } else {
           this.#list()?.focusLastItem();
         }
@@ -182,17 +183,10 @@ export class KeyboardSortItemDirective implements FocusableOption {
     }
   }
 
-  public activate() {
-    if (!this.activated() && !this.isDisabled()) {
-      this.#list()?.deactivateAll(this.position());
-      this.activated.set(true);
-    }
-  }
-
-  #toggleActivated() {
+  public toggleActivated() {
     if (this.activated() || this.focused()) {
       if (this.activated()) {
-        this.activated.set(false);
+        this.deactivate();
         this.focused.set(true);
       } else {
         this.activate();
@@ -200,13 +194,24 @@ export class KeyboardSortItemDirective implements FocusableOption {
     }
   }
 
-  #moveUp(): boolean {
+  public activate() {
+    if (!this.activated() && !this.isDisabled()) {
+      this.#list()?.deactivateAll(this.position());
+      this.activated.set(true);
+    }
+  }
+
+  public deactivate() {
+    this.activated.set(false);
+  }
+
+  public moveUp(): boolean {
     return (
       this.activated() && !this.isDisabled() && !!this.#list()?.moveItemUp(this)
     );
   }
 
-  #moveDown(): boolean {
+  public moveDown(): boolean {
     return (
       this.activated() &&
       !this.isDisabled() &&
@@ -214,7 +219,7 @@ export class KeyboardSortItemDirective implements FocusableOption {
     );
   }
 
-  #moveToStart(): boolean {
+  public moveToStart(): boolean {
     return (
       this.activated() &&
       !this.isDisabled() &&
@@ -222,7 +227,7 @@ export class KeyboardSortItemDirective implements FocusableOption {
     );
   }
 
-  #moveToEnd(): boolean {
+  public moveToEnd(): boolean {
     return (
       this.activated() &&
       !this.isDisabled() &&

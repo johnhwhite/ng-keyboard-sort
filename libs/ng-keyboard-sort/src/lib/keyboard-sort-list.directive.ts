@@ -26,8 +26,11 @@ import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
   selector: '[kbdSortList]',
+  exportAs: 'kbdSortList',
   providers: [KeyboardSortListService],
-  host: { '[attr.tabindex]': 'tabindex()' },
+  host: {
+    '[attr.tabindex]': 'tabindex()',
+  },
 })
 export class KeyboardSortListDirective<T extends unknown[]>
   implements OnChanges, OnDestroy
@@ -72,8 +75,8 @@ export class KeyboardSortListDirective<T extends unknown[]>
 
   protected readonly tabindex = linkedSignal<'0' | '-1'>(() => {
     if (
-      this.#elementRef.nativeElement.contains(this.#doc.activeElement) ||
-      this.kbdSortListDisabled()
+      this.kbdSortListDisabled() ||
+      this.#elementRef.nativeElement.contains(this.#doc.activeElement)
     ) {
       return '-1';
     }
@@ -90,7 +93,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
   readonly #startingIndex = signal<number | undefined>(undefined);
   #midChange = false;
   #listSize = 0;
-  #scheduledChangeDetection: number | undefined;
 
   constructor() {
     inject(KeyboardSortListService<T>).list.set(this);
@@ -233,7 +235,7 @@ export class KeyboardSortListDirective<T extends unknown[]>
 
   #moveItemInDataArray(moveToIndex: number, currentPosition: number) {
     const item = this.items()[currentPosition];
-    const data = (this.kbdSortListData() ?? []).slice() as T;
+    const data = (this.kbdSortListData() ?? []).slice();
     if (moveToIndex === Number.MAX_VALUE) {
       moveToIndex = data.length - 1;
     }
@@ -253,12 +255,9 @@ export class KeyboardSortListDirective<T extends unknown[]>
     this.#itemSubscriptions.unsubscribe();
     this.#focusIndex.set(moveToIndex);
     this.#currentIndex.set(moveToIndex);
-    this.kbdSortListData.set(data);
+    this.kbdSortListData.set(data as T);
     // Detect changes and finish when the query list is updated.
-    this.#cancelScheduledChangeDetection();
-    this.#scheduledChangeDetection = setTimeout(() => {
-      this.#changeDetectorRef.detectChanges();
-    });
+    this.#changeDetectorRef.detectChanges();
     return true;
   }
 
@@ -266,7 +265,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
     this.#listSize = items.length;
     this.#itemSubscriptions.unsubscribe();
     this.#itemSubscriptions = new Subscription();
-    this.#itemSubscriptions.add(() => this.#cancelScheduledChangeDetection());
     this.#focusIndex.set(undefined);
     this.#focusKeyManager = new FocusKeyManager<KeyboardSortItemDirective>(
       items
@@ -288,7 +286,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
           if (isActive) {
             this.#currentIndex.set(item.position());
           } else {
-            this.#cancelScheduledChangeDetection();
             if (
               !this.kbdSortListDisabled() &&
               !item.isDisabled() &&
@@ -325,13 +322,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
           this.activateItem(item);
         }
       }
-    }
-  }
-
-  #cancelScheduledChangeDetection(): void {
-    if (this.#scheduledChangeDetection !== undefined) {
-      clearTimeout(this.#scheduledChangeDetection);
-      this.#scheduledChangeDetection = undefined;
     }
   }
 }
