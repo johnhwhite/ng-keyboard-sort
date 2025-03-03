@@ -15,18 +15,11 @@ import { KeyboardSortHandleDirective } from './keyboard-sort-handle.directive';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortItemService } from './keyboard-sort-item.service';
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
-
-const directionalKeys = {
-  up: ['ArrowUp', 'W', 'w'],
-  down: ['ArrowDown', 'S', 's'],
-  left: ['ArrowLeft', 'A', 'a'],
-  right: ['ArrowRight', 'D', 'd'],
-};
+import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
   selector: '[kbdSortItem]',
   exportAs: 'kbdSortItem',
-  standalone: true,
   host: {
     '[attr.tabindex]': '"-1"',
     '[class.kbd-sort-item]': 'true',
@@ -63,19 +56,53 @@ export class KeyboardSortItemDirective implements FocusableOption {
 
   public readonly isDisabled = computed<boolean>(() => {
     const itemDisabled = this.kbdSortItemDisabled();
-    const listDisabled = !!this.#list?.kbdSortListDisabled();
+    const listDisabled = !!this.#list()?.kbdSortListDisabled();
     return itemDisabled || listDisabled;
   });
 
   readonly #list = inject(KeyboardSortListService).list;
   readonly #itemService = inject(KeyboardSortItemService, { self: true });
+  readonly #keyCombinations = computed<KeyboardSortKeysInterface>(() => {
+    const kbdSortListOrientation = this.#list()?.kbdSortListOrientation();
+    const keys: KeyboardSortKeysInterface = {
+      Toggle: ['Enter', ' '],
+      PickUp: [],
+      PutDown: ['Escape'],
+      MoveUp: [],
+      MoveDown: [],
+      MoveStart: [],
+      MoveEnd: [],
+    };
+    if (!kbdSortListOrientation) {
+      return keys;
+    }
+    if (kbdSortListOrientation === 'vertical') {
+      keys.MoveUp.push('ArrowUp', 'W', 'w');
+      keys.MoveDown.push('ArrowDown', 'S', 's');
+      keys.MoveStart.push('PageUp');
+      keys.MoveEnd.push('PageDown');
+      keys.PickUp.push('E', 'e');
+      keys.PutDown.push('X', 'x');
+    } else {
+      keys.MoveUp.push('ArrowLeft', 'A', 'a');
+      keys.MoveDown.push('ArrowRight', 'D', 'd');
+      keys.MoveStart.push('Home');
+      keys.MoveEnd.push('End');
+      keys.PickUp.push('ArrowUp', 'W', 'w', 'E', 'e');
+      keys.PutDown.push('ArrowDown', 'S', 's', 'X', 'x');
+    }
+    return {
+      ...keys,
+      ...this.#list()?.kbdSortKeyOverrides(),
+    };
+  });
 
   constructor() {
     this.focused.set(false);
     this.#itemService.item.set(this);
     effect(() => {
       if (this.isDisabled()) {
-        this.activated.set(false);
+        this.deactivate();
       }
     });
     effect(() => {
@@ -111,86 +138,65 @@ export class KeyboardSortItemDirective implements FocusableOption {
 
   @HostListener('keydown', ['$event'])
   public onKeydown($event: KeyboardEvent): void {
-    if (this.isDisabled()) {
+    if (this.isDisabled() || (!this.activated() && !this.focused())) {
       return;
     }
-    if ($event.key === 'Enter' || $event.key === ' ') {
+    const keyCombinations = this.#keyCombinations();
+    const anyKey = Object.values(keyCombinations).flat();
+    if (anyKey.includes($event.key)) {
       $event.preventDefault();
       $event.stopPropagation();
-      this.toggleActivated();
-      return;
-    }
-    if (
-      [
-        ...directionalKeys.up,
-        ...directionalKeys.down,
-        ...directionalKeys.left,
-        ...directionalKeys.right,
-      ].includes($event.key)
-    ) {
-      $event.preventDefault();
-      $event.stopPropagation();
-
-      const kbdSortListOrientation = this.#list?.kbdSortListOrientation();
-      const directionalCommands = {
-        moveUp:
-          kbdSortListOrientation === 'vertical'
-            ? directionalKeys.up
-            : directionalKeys.left,
-        moveDown:
-          kbdSortListOrientation === 'vertical'
-            ? directionalKeys.down
-            : directionalKeys.right,
-        pickUp:
-          kbdSortListOrientation === 'vertical'
-            ? directionalKeys.left
-            : directionalKeys.up,
-        putDown:
-          kbdSortListOrientation === 'vertical'
-            ? directionalKeys.right
-            : directionalKeys.down,
-      };
-
+      if (keyCombinations.Toggle.includes($event.key)) {
+        return this.toggleActivated();
+      }
       const activated = this.activated();
-      if (directionalCommands.moveUp.includes($event.key)) {
+      if (keyCombinations.MoveUp.includes($event.key)) {
         if (activated) {
           this.moveUp();
         } else {
-          this.#list?.focusPreviousItem(this);
+          this.#list()?.focusPreviousItem(this);
         }
-      } else if (directionalCommands.moveDown.includes($event.key)) {
+      } else if (keyCombinations.MoveDown.includes($event.key)) {
         if (activated) {
           this.moveDown();
         } else {
-          this.#list?.focusNextItem(this);
+          this.#list()?.focusNextItem(this);
         }
-      } else if (
-        !activated &&
-        directionalCommands.pickUp.includes($event.key)
-      ) {
+      } else if (keyCombinations.MoveStart.includes($event.key)) {
+        if (activated) {
+          this.moveToStart();
+        } else {
+          this.#list()?.focusFirstItem();
+        }
+      } else if (keyCombinations.MoveEnd.includes($event.key)) {
+        if (activated) {
+          this.moveToEnd();
+        } else {
+          this.#list()?.focusLastItem();
+        }
+      } else if (!activated && keyCombinations.PickUp.includes($event.key)) {
         this.activate();
-      } else if (
-        activated &&
-        directionalCommands.putDown.includes($event.key)
-      ) {
-        this.deactivate();
+      } else if (activated && keyCombinations.PutDown.includes($event.key)) {
+        this.activated.set(false);
         this.focus('keyboard');
       }
     }
   }
 
   public toggleActivated() {
-    if (this.activated()) {
-      this.deactivate();
-      this.focused.set(true);
-    } else {
-      this.activate();
+    if (this.activated() || this.focused()) {
+      if (this.activated()) {
+        this.deactivate();
+        this.focused.set(true);
+      } else {
+        this.activate();
+      }
     }
   }
 
   public activate() {
     if (!this.activated() && !this.isDisabled()) {
-      this.#list?.deactivateAll(this.position());
+      this.#list()?.deactivateAll(this.position());
       this.activated.set(true);
     }
   }
@@ -200,22 +206,32 @@ export class KeyboardSortItemDirective implements FocusableOption {
   }
 
   public moveUp(): boolean {
-    if (!this.#list) {
-      return false;
-    }
-    if (this.activated() && !this.isDisabled()) {
-      return this.#list.moveItemUp(this);
-    }
-    return false;
+    return (
+      this.activated() && !this.isDisabled() && !!this.#list()?.moveItemUp(this)
+    );
   }
 
   public moveDown(): boolean {
-    if (!this.#list) {
-      return false;
-    }
-    if (this.activated() && !this.isDisabled()) {
-      return this.#list.moveItemDown(this);
-    }
-    return false;
+    return (
+      this.activated() &&
+      !this.isDisabled() &&
+      !!this.#list()?.moveItemDown(this)
+    );
+  }
+
+  public moveToStart(): boolean {
+    return (
+      this.activated() &&
+      !this.isDisabled() &&
+      !!this.#list()?.moveItemToStart(this)
+    );
+  }
+
+  public moveToEnd(): boolean {
+    return (
+      this.activated() &&
+      !this.isDisabled() &&
+      !!this.#list()?.moveItemToEnd(this)
+    );
   }
 }

@@ -1,9 +1,9 @@
 import {
   Component,
+  computed,
   model,
-  QueryList,
-  ViewChild,
-  ViewChildren,
+  viewChild,
+  viewChildren,
 } from '@angular/core';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListDirective } from '../keyboard-sort-list.directive';
@@ -40,11 +40,17 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
   `,
 })
 export class KeyboardSortListFixtureComponent {
-  @ViewChild(KeyboardSortListDirective)
-  public list: KeyboardSortListDirective<string[]> | undefined;
+  public list = viewChild(KeyboardSortListDirective);
 
-  @ViewChildren(KeyboardSortItemDirective)
-  public items: QueryList<KeyboardSortItemDirective> | undefined;
+  public items = viewChildren(KeyboardSortItemDirective);
+
+  public readonly currentFocus = computed<number>(() =>
+    this.items().findIndex((item) => item.focused())
+  );
+
+  public readonly currentActive = computed<number>(() =>
+    this.items().findIndex((item) => item.activated())
+  );
 
   public data = model<string[] | undefined>(['Item 1', 'Item 2', 'Item 3']);
 
@@ -59,6 +65,6 @@ export class KeyboardSortListFixtureComponent {
   }
 
   public activateLastItem() {
-    this.items?.last?.activate();
+    this.items().slice().pop()?.activate();
   }
 }
