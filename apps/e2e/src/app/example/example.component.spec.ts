@@ -46,8 +46,9 @@ describe('ExampleComponent', () => {
     expect(items[1]).toEqual(firstItem);
   });
 
-  it('should reset data', () => {
+  it('should reset data', async () => {
     component.resetData();
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(component.items()).toEqual([
       'A',
       'B',

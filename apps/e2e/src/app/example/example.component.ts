@@ -47,9 +47,13 @@ export class ExampleComponent {
   }
 
   public resetData(): void {
-    this.items.set(
-      [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].slice(0, this.items().length + 1)
-    );
+    this.enabled.set(false);
+    setTimeout(() => {
+      this.items.set(
+        [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].slice(0, this.items().length + 1)
+      );
+      this.enabled.set(true);
+    });
   }
 }
 
