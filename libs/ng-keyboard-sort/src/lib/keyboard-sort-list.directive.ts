@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   contentChildren,
   Directive,
+  effect,
   ElementRef,
   HostListener,
   inject,
@@ -21,7 +22,6 @@ import { Subscription } from 'rxjs';
 import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
 import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 @Directive({
@@ -96,9 +96,7 @@ export class KeyboardSortListDirective<T extends unknown[]>
 
   constructor() {
     inject(KeyboardSortListService<T>).list.set(this);
-    this.#subscriptions.add(
-      toObservable(this.items).subscribe((items) => this.#resetItems(items))
-    );
+    effect(() => this.#resetItems(this.items()));
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
