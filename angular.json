@@ -145,6 +145,21 @@
           "options": {
             "lintFilePatterns": ["apps/e2e/**/*.ts", "apps/e2e/**/*.html"]
           }
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "devServerTarget": "e2e:serve",
+            "config": "apps/e2e/playwright.config.ts",
+            "reporter": "list",
+            "output": "test-results/playwright-report"
+          },
+          "configurations": {
+            "ci": {
+              "headed": false,
+              "workers": 1
+            }
+          }
         }
       }
     }
