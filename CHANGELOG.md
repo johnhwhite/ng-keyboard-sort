@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.1.0...v7.1.1) (2025-04-04)
+
+
+### Bug Fixes
+
+* **ng-keyboard-sort:** update modules 2025-04-04 ([#156](https://github.com/johnhwhite/ng-keyboard-sort/issues/156)) ([7210a47](https://github.com/johnhwhite/ng-keyboard-sort/commit/7210a47bf1bea4da9bf4736070ab23a4d0f8d758))
+
 ## [7.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.0.0...v7.1.0) (2025-03-03)
 
 
