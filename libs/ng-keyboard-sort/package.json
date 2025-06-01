@@ -9,9 +9,9 @@
     "directory": "libs/ng-keyboard-sort"
   },
   "peerDependencies": {
-    "@angular/cdk": "^19.2.8",
-    "@angular/common": "^19.2.5",
-    "@angular/core": "^19.2.5",
+    "@angular/cdk": "^19.2.18 || ^20.0.0",
+    "@angular/common": "^19.2.14 || ^20.0.0",
+    "@angular/core": "^19.2.14 || ^20.0.0",
     "rxjs": "^7.8.2"
   },
   "keywords": [
