@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.2.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.1.1...v7.2.0) (2025-06-02)
+
+
+### Features
+
+* **ng-keyboard-sort:** add Angular 20 support ([#159](https://github.com/johnhwhite/ng-keyboard-sort/issues/159)) ([ce7020e](https://github.com/johnhwhite/ng-keyboard-sort/commit/ce7020e4bb3e2dbb4824a0061b3f04b3ea47b592))
+
 ## [7.1.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.1.0...v7.1.1) (2025-04-04)
 
 
