@@ -1,23 +1,44 @@
+nav {
+  align-items: flex-end;
+  background-color: #333;
+  display: flex;
+  height: 3em;
+  justify-content: space-between;
+}
+
 nav > ul {
+  align-items: center;
+  display: flex;
+  height: 3em;
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
 }
 
 nav > ul > li {
-  display: inline-block;
+  display: contents;
 }
 
 nav > ul > li > a {
-  display: block;
+  align-items: center;
   color: white;
-  text-align: center;
-  padding: 14px 16px;
+  display: flex;
+  height: 100%;
+  padding-inline: 1em;
   text-decoration: none;
 }
 
-nav > ul > li > a:hover {
+a:hover {
   background-color: #111;
+  text-decoration: initial;
+}
+
+a.gh-link {
+  padding: 0.2em 1em;
+}
+
+a.gh-link > svg {
+  aspect-ratio: 96 / 98;
+  height: 2em;
 }
