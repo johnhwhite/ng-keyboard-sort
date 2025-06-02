@@ -1,4 +1,4 @@
-import { minVersion, satisfies } from 'semver';
+import { major, minVersion, satisfies } from 'semver';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
@@ -18,8 +18,11 @@ if (
   )
 ) {
   peerDependencies.forEach((dependency) => {
-    packageJson.peerDependencies[dependency] =
-      `^${dependencies.dependencies[dependency].version}`;
+    let version = `^${dependencies.dependencies[dependency].version}`;
+    if (dependency.startsWith('@angular/')) {
+      version += ` || ^${major(minVersion(dependencies.dependencies[dependency].version)) + 1}.0.0`;
+    }
+    packageJson.peerDependencies[dependency] = version;
   });
   writeFileSync(packageJsonFile, JSON.stringify(packageJson, null, 2) + `\n`);
   console.info(`🆙 Updated ${packageJsonFile} to latest versions`);
