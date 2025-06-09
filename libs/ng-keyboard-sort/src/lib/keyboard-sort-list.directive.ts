@@ -1,21 +1,18 @@
 import {
   ChangeDetectorRef,
   contentChildren,
+  DestroyRef,
   Directive,
   effect,
   ElementRef,
-  HostListener,
   inject,
   input,
   linkedSignal,
   model,
-  OnChanges,
-  OnDestroy,
   output,
   signal,
-  SimpleChanges,
+  DOCUMENT,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 import { Subscription } from 'rxjs';
@@ -30,11 +27,13 @@ import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
   providers: [KeyboardSortListService],
   host: {
     '[attr.tabindex]': 'tabindex()',
+    '(keydown.escape)': 'deactivateAll()',
+    '(focus)': 'onFocus()',
+    '(focusout)': 'onFocusOut()',
+    '(focusin)': 'onFocusIn()',
   },
 })
-export class KeyboardSortListDirective<T extends unknown[]>
-  implements OnChanges, OnDestroy
-{
+export class KeyboardSortListDirective<T extends unknown[]> {
   readonly #elementRef = inject(ElementRef);
   readonly #doc = inject(DOCUMENT);
   protected readonly items = contentChildren(KeyboardSortItemDirective);
@@ -93,48 +92,42 @@ export class KeyboardSortListDirective<T extends unknown[]>
   readonly #startingIndex = signal<number | undefined>(undefined);
   #midChange = false;
   #listSize = 0;
+  readonly #enabledChange = linkedSignal({
+    source: this.kbdSortListDisabled,
+    computation: (_src, prev) => prev?.value !== undefined,
+    equal: () => false,
+  });
 
   constructor() {
     inject(KeyboardSortListService<T>).list.set(this);
     effect(() => this.#resetItems(this.items()));
-  }
-
-  public ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['kbdSortListDisabled'] &&
-      changes['kbdSortListDisabled'].previousValue !==
-        changes['kbdSortListDisabled'].currentValue &&
-      !changes['kbdSortListDisabled'].isFirstChange()
-    ) {
-      if (changes['kbdSortListDisabled'].currentValue) {
-        this.deactivateAll();
+    effect(() => {
+      const enabledChange = this.#enabledChange();
+      const kbdSortListDisabled = this.kbdSortListDisabled();
+      if (enabledChange) {
+        if (kbdSortListDisabled) {
+          this.deactivateAll();
+        }
+        this.kbdSortEnabled.emit(!kbdSortListDisabled);
       }
-      this.kbdSortEnabled.emit(
-        changes['kbdSortListDisabled'].currentValue === false
-      );
-    }
-    if (changes['kbdSortListOrientation'] && this.#focusKeyManager) {
+    });
+    effect(() => {
+      const kbdSortListOrientation = this.kbdSortListOrientation();
       this.#focusKeyManager
-        .withHorizontalOrientation(
-          changes['kbdSortListOrientation'].currentValue === 'horizontal'
-            ? 'ltr'
-            : null
+        ?.withHorizontalOrientation(
+          kbdSortListOrientation === 'horizontal' ? 'ltr' : null
         )
-        .withVerticalOrientation(
-          changes['kbdSortListOrientation'].currentValue === 'vertical'
-        );
-    }
-  }
-
-  public ngOnDestroy(): void {
-    this.#itemSubscriptions.unsubscribe();
-    this.#subscriptions.unsubscribe();
-    this.items().forEach((item) => {
-      this.#focusMonitor.stopMonitoring(item.elementRef);
+        .withVerticalOrientation(kbdSortListOrientation === 'vertical');
+    });
+    inject(DestroyRef).onDestroy(() => {
+      this.#itemSubscriptions.unsubscribe();
+      this.#subscriptions.unsubscribe();
+      this.items().forEach((item) => {
+        this.#focusMonitor.stopMonitoring(item.elementRef);
+      });
     });
   }
 
-  @HostListener('keydown.escape')
   public deactivateAll(except?: number): void {
     this.items().forEach((item) => {
       const activate = item.position() === except;
@@ -152,12 +145,10 @@ export class KeyboardSortListDirective<T extends unknown[]>
     });
   }
 
-  @HostListener('focus')
   public onFocus(): void {
     this.#focusKeyManager?.setActiveItem(this.#focusIndex() ?? 0);
   }
 
-  @HostListener('focusout')
   public onFocusOut(): void {
     if (this.kbdSortListDisabled()) {
       return;
@@ -167,7 +158,6 @@ export class KeyboardSortListDirective<T extends unknown[]>
     }
   }
 
-  @HostListener('focusin')
   public onFocusIn(): void {
     const enabled = !this.kbdSortListDisabled();
     if (!this.#midChange && enabled) {

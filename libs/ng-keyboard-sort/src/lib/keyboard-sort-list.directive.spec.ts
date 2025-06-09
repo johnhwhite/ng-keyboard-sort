@@ -1,10 +1,4 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  flush,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
@@ -128,7 +122,7 @@ describe('ListDirective', () => {
     );
   });
 
-  it('should disable', fakeAsync(() => {
+  it('should disable', async () => {
     const { fixture, component } = setupTest({
       disabled: true,
     });
@@ -147,23 +141,23 @@ describe('ListDirective', () => {
     expect(getItem(fixture, 0).focused()).toBeTrue();
     component.list()?.deactivateAll();
     fixture.detectChanges();
-    tick();
+    await fixture.whenStable();
     expect(getItem(fixture, 0).disabled).toBeFalse();
     expect(getItem(fixture, 0).focused()).toBeFalse();
     component.list()?.focusFirstItem();
     fixture.detectChanges();
-    tick();
+    await fixture.whenStable();
     expect(getItem(fixture, 0).focused()).toBeTrue();
     expect(component.list()?.moveItemUp(getItem(fixture, 0))).toBeFalse();
     expect(component.list()?.moveItemUp(getItem(fixture, 2))).toBeTrue();
     fixture.detectChanges();
-    tick();
+    await fixture.whenStable();
     getItem(fixture, 0).focus('keyboard');
     component.list()?.focusPreviousItem(getItem(fixture, 0));
     fixture.detectChanges();
-    tick();
+    await fixture.whenStable();
     expect(getItem(fixture, 2).focused()).toBeTrue();
-  }));
+  });
 
   it('should move items', async () => {
     const { fixture, component } = setupTest();
@@ -246,7 +240,7 @@ describe('ListDirective', () => {
       direction === 'vertical' ? ['PageUp', 'PageDown'] : ['Home', 'End'];
 
     describe(`with ${direction} orientation`, () => {
-      it(`should move focus in ${direction} direction`, fakeAsync(() => {
+      it(`should move focus in ${direction} direction`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -260,8 +254,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[1] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(getItem(fixture, 2).focused()).toBeFalse();
         expect(getItem(fixture, 1).focused()).toBeTrue();
         fixture.debugElement
@@ -271,12 +264,11 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[0] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(getItem(fixture, 2).focused()).toBeTrue();
-      }));
+      });
 
-      it(`should move focus with arrow keys ${direction}ly`, fakeAsync(() => {
+      it(`should move focus with arrow keys ${direction}ly`, async () => {
         const { fixture } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -286,8 +278,7 @@ describe('ListDirective', () => {
         expect(firstItem?.activated()).toBeFalse();
         expect(firstItem?.focused()).toBeTrue();
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(getItem(fixture, 0).focused()).toBeTrue();
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[0]
@@ -296,8 +287,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[0] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(getItem(fixture, 0).focused()).toBeFalse();
         expect(getItem(fixture, 1).focused()).toBeTrue();
         fixture.debugElement
@@ -307,11 +297,10 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[1] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(getItem(fixture, 1).focused()).toBeFalse();
         expect(getItem(fixture, 0).focused()).toBeTrue();
-      }));
+      });
 
       it(`should move item up in ${direction} direction`, async () => {
         const { fixture, component } = setupTest({
@@ -398,7 +387,7 @@ describe('ListDirective', () => {
         ]);
       });
 
-      it(`should move item down in ${direction} direction`, fakeAsync(() => {
+      it(`should move item down in ${direction} direction`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -408,11 +397,11 @@ describe('ListDirective', () => {
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         component.list()?.moveItemDown(lastItem);
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 2', 'Item 1', 'Item 3']);
-      }));
+      });
 
-      it(`should move item 1 down in ${direction} direction with arrow keys`, fakeAsync(() => {
+      it(`should move item 1 down in ${direction} direction with arrow keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -430,8 +419,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: 'Enter' })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
@@ -441,12 +429,11 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[0] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 2', 'Item 1', 'Item 3']);
-      }));
+      });
 
-      it(`should move item 2 down in ${direction} direction with arrow keys`, fakeAsync(() => {
+      it(`should move item 2 down in ${direction} direction with arrow keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -459,8 +446,7 @@ describe('ListDirective', () => {
         component.list()?.focusItem(1);
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
@@ -470,12 +456,11 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[0] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 1', 'Item 3', 'Item 2']);
-      }));
+      });
 
-      it(`should move item 2 up in ${direction} direction with arrow keys`, fakeAsync(() => {
+      it(`should move item 2 up in ${direction} direction with arrow keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -493,8 +478,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: selectKeys[1] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
@@ -504,12 +488,10 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[1] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 2', 'Item 1', 'Item 3']);
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         const activeElement = (
           fixture.nativeElement as HTMLElement
         ).querySelector('li:nth-child(1)');
@@ -521,12 +503,11 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: selectKeys[0] })
           );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(activeElement).not.toHaveClass('kbd-sort-item-activated');
-      }));
+      });
 
-      it(`should move item 3 up in ${direction} direction with arrow keys`, fakeAsync(() => {
+      it(`should move item 3 up in ${direction} direction with arrow keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -538,20 +519,18 @@ describe('ListDirective', () => {
         component.list()?.focusItem(2);
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         element?.dispatchEvent(
           new KeyboardEvent('keydown', { key: arrows[1] })
         );
         fixture.detectChanges();
-        tick();
-        flush();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 1', 'Item 3', 'Item 2']);
-      }));
+      });
 
-      it(`should move item 3 up two steps in ${direction} direction with arrow keys`, fakeAsync(() => {
+      it(`should move item 3 up two steps in ${direction} direction with arrow keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -562,7 +541,7 @@ describe('ListDirective', () => {
         expect(element?.textContent?.trim()).toBe('Item 3');
         component.list()?.activateItem(2);
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(element).toHaveClass('kbd-sort-item-activated');
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
@@ -572,7 +551,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[1] })
           );
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[1]
           .triggerEventHandler(
@@ -580,11 +559,11 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[1] })
           );
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 3', 'Item 1', 'Item 2']);
         component.list()?.deactivateAll();
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(getItem(fixture, 0).activated()).toBeFalse();
         expect(component.drops).toEqual([
           {
@@ -600,7 +579,7 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: 'Enter' })
           );
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(getItem(fixture, 0).activated()).toBeTrue();
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[0]
@@ -609,18 +588,18 @@ describe('ListDirective', () => {
             new KeyboardEvent('keydown', { key: arrows[0] })
           );
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         (fixture.nativeElement as HTMLElement)
           .querySelector('li:nth-child(2)')
           ?.dispatchEvent(new KeyboardEvent('keydown', { key: arrows[0] }));
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         (fixture.nativeElement as HTMLElement)
           .querySelector('li:nth-child(3)')
           ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
         expect(component.drops).toEqual([
           {
             previousIndex: 2,
@@ -631,9 +610,9 @@ describe('ListDirective', () => {
             currentIndex: 2,
           },
         ]);
-      }));
+      });
 
-      it(`should skip to start and end positions in ${direction} direction with ${startEndKeys.join('/')} keys`, fakeAsync(() => {
+      it(`should skip to start and end positions in ${direction} direction with ${startEndKeys.join('/')} keys`, async () => {
         const { fixture, component } = setupTest({
           direction: direction as 'horizontal' | 'vertical',
         });
@@ -684,7 +663,7 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         expect(component.currentFocus()).toBe(0);
-      }));
+      });
     });
   });
 
