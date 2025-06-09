@@ -49,6 +49,7 @@ jobs:
           echo ''
           set -x
           for b in ${BRANCHES}; do
+            bPath=$(echo ${b} | sed 's|/|-|g')
             echo " ⏳ ${b}"
             git clean -dfX
             git switch ${b}
@@ -57,8 +58,8 @@ jobs:
               npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/"
               mv dist/apps/e2e/browser/* ../_site/
             else
-              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/${b}/"
-              mv dist/apps/e2e/browser ../_site/${b}
+              npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/${bPath}/"
+              mv dist/apps/e2e/browser ../_site/${bPath}
             fi
             echo " ✅ ${b}"
           done
@@ -74,11 +75,12 @@ jobs:
           script: |
             const sbImage = `https://developer.stackblitz.com/img/open_in_stackblitz.svg`;
             const sbPath = `${{ github.repository }}/tree/${{ github.head_ref }}`;
+            const bPath = '${{ github.head_ref }}'.replace(/\//g, '-').toLowerCase();
             const newComment = `
             <!-- ${{ github.workflow }} -->
             [![Open in StackBlitz](${sbImage})](https://stackblitz.com/fork/github/${sbPath})
 
-            [▶️ Run example](https://${context.repo.owner}.github.io/${context.repo.repo}/${{ github.head_ref }}/)
+            [▶️ Run example](https://${context.repo.owner}.github.io/${context.repo.repo}/${bPath}/)
             `;
             github.rest.issues.listComments({
               owner: context.repo.owner,
