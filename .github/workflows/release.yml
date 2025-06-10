@@ -7,7 +7,9 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: 
+    read: true
+    write: true
   packages: write
 
 env:
