@@ -4,7 +4,6 @@ import {
   Directive,
   effect,
   ElementRef,
-  HostListener,
   inject,
   input,
   linkedSignal,
@@ -27,6 +26,8 @@ import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
     '[class.kbd-sort-item-enabled]': '!kbdSortItemDisabled()',
     '[class.kbd-sort-item-activated]': 'activated()',
     '[class.kbd-sort-item-focused]': 'focused()',
+    '(focusout)': 'onFocusOut()',
+    '(keydown)': 'onKeydown($event)',
   },
   providers: [KeyboardSortItemService],
 })
@@ -127,7 +128,6 @@ export class KeyboardSortItemDirective implements FocusableOption {
     }
   }
 
-  @HostListener('focusout')
   public onFocusOut(): void {
     if (this.activated()) {
       this.deactivate();
@@ -136,7 +136,6 @@ export class KeyboardSortItemDirective implements FocusableOption {
     }
   }
 
-  @HostListener('keydown', ['$event'])
   public onKeydown($event: KeyboardEvent): void {
     if (this.isDisabled() || (!this.activated() && !this.focused())) {
       return;

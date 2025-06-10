@@ -19,7 +19,10 @@ if (
 ) {
   peerDependencies.forEach((dependency) => {
     let version = `^${dependencies.dependencies[dependency].version}`;
-    if (dependency.startsWith('@angular/')) {
+    if (
+      dependency.startsWith('@angular/') &&
+      packageJson.peerDependencies[dependency].includes(' || ')
+    ) {
       version += ` || ^${major(minVersion(dependencies.dependencies[dependency].version)) + 1}.0.0`;
     }
     packageJson.peerDependencies[dependency] = version;

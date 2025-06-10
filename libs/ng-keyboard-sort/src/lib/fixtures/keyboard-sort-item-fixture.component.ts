@@ -1,4 +1,4 @@
-import { Component, model, ViewChild } from '@angular/core';
+import { Component, model, viewChild } from '@angular/core';
 import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListService } from '../keyboard-sort-list.service';
@@ -30,19 +30,13 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
   `,
 })
 export class KeyboardSortItemFixtureComponent {
-  @ViewChild('item', { static: true, read: KeyboardSortItemDirective })
-  public item: KeyboardSortItemDirective | undefined;
-
-  @ViewChild('active', {
+  public readonly item = viewChild('item', { read: KeyboardSortItemDirective });
+  public readonly active = viewChild('active', {
     read: KeyboardSortItemIfActiveDirective,
-  })
-  public active: KeyboardSortItemIfActiveDirective | undefined;
-
-  @ViewChild('focus', {
+  });
+  public readonly focus = viewChild('focus', {
     read: KeyboardSortItemIfFocusedDirective,
-  })
-  public focus: KeyboardSortItemIfFocusedDirective | undefined;
-
+  });
   public readonly activated = model<boolean>(false);
   public readonly showHandle = model<boolean>(false);
   public readonly disabled = model<boolean>(false);
