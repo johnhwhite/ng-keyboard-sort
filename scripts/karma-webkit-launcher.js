@@ -26,13 +26,17 @@
 const child_process = require('child_process');
 const os = require('os');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 /**
  * @return {string}
  */
 function getTempDir() {
-  return path.join(os.tmpdir(), uuidv4());
+  return path.join(
+    os.tmpdir(),
+    path.basename(__filename, '.js') +
+      '-' +
+      Math.floor(Math.random() * 1e16).toString(36)
+  );
 }
 
 /**
@@ -103,7 +107,7 @@ const getWebkitExecutable = function () {
     isPlaywrightCoreAvailable()
   ) {
     return getPlaywrightExecutable();
-  } else if (process.platform == 'darwin') {
+  } else if (process.platform === 'darwin') {
     return '/usr/bin/osascript';
   }
   return '';
@@ -113,7 +117,7 @@ const getWebkitExecutable = function () {
  * @return {boolean}
  */
 const hasWebkitEnv = function () {
-  return process.env && process.env.WEBKIT_BIN && process.env.WEBKIT_BIN != '';
+  return process.env && process.env.WEBKIT_BIN && process.env.WEBKIT_BIN !== '';
 };
 
 /**
@@ -123,7 +127,7 @@ const hasWebkitHeadlessEnv = function () {
   return (
     process.env &&
     process.env.WEBKIT_HEADLESS_BIN &&
-    process.env.WEBKIT_HEADLESS_BIN != ''
+    process.env.WEBKIT_HEADLESS_BIN !== ''
   );
 };
 
@@ -194,7 +198,7 @@ WebkitBrowser.$inject = ['baseBrowserDecorator', 'args'];
  */
 const WebkitHeadlessBrowser = function (baseBrowserDecorator, args) {
   const headlessFlags = ['--headless'];
-  if (process.platform == 'darwin' || process.platform == 'win32') {
+  if (process.platform === 'darwin' || process.platform === 'win32') {
     headlessFlags.push('--disable-gpu');
   }
   if (args && args.flags && args.flags.length > 0) {
@@ -237,7 +241,7 @@ const childProcessCleanup = function (task_id, callback) {
   const findChildProcesses = `ps | grep -i "playwright" | grep -i "id=${task_id}"`;
   child_process.exec(findChildProcesses, (error, stdout) => {
     // Ignore error from killed karma processes.
-    if (error && error.signal != 'SIGHUP') {
+    if (error && error.signal !== 'SIGHUP') {
       throw error;
     }
 
@@ -292,7 +296,7 @@ const killChildProcesses = function (childProcessIds, task_id = 'unknown') {
       process.kill(childProcessId, 'SIGHUP');
     } catch (killError) {
       // Ignore errors if process is already killed.
-      if (killError.code != 'ESRCH') {
+      if (killError.code !== 'ESRCH') {
         throw killError;
       }
     }
