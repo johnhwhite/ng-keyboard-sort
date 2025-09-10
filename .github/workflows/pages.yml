@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 env:
-  node_version: 20
+  node_version: 22
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -31,13 +31,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
-      - name: Setup cache
-        uses: actions/cache@v4
-        with:
-          path: '~/.npm'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - name: Build
         shell: bash
         run: |

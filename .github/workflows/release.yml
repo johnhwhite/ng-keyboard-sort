@@ -8,13 +8,15 @@ on:
 
 permissions:
   contents: write
+  id-token: write
   packages: write
 
 env:
-  node_version: 20
+  node_version: 22
 jobs:
   release-please:
     name: Release Please
+    environment: npm
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
@@ -33,28 +35,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
-      - name: Get node cache
-        if: ${{ steps.release.outputs.release_created }}
-        id: get-node-cache
-        run: |
-          ./scripts/node-cache.sh >> $GITHUB_OUTPUT
-      - name: Cache node_modules
-        if: ${{ steps.release.outputs.release_created }}
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}
-          restore-keys: '${{ runner.os }}-node-${{ env.node_version }}-'
+          cache: 'npm'
       - name: Install
-        if: ${{ steps.release.outputs.release_created && steps.cache-node-modules.outputs.cache-hit != 'true' }}
-        run: npm i
+        run: |
+          npm i -g npm@latest
+          npm ci
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
         id: build
         run: |
           npm run build:package
-          echo "::set-output name=version::$(cat version.txt)"
+          echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
       - name: Publish to NPM
         if: ${{ steps.release.outputs.release_created }}
         env:
@@ -65,7 +56,7 @@ jobs:
           npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
           set -x
           npm pkg set "version=${VERSION}"
-          npm publish --access public --tag "v${MAJOR_VERSION}-lts"
+          npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
           if [ "${{ github.ref_name }}" = "main" ]; then
             npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
           fi
