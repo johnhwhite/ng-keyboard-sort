@@ -45,10 +45,12 @@ jobs:
               headers: {
                 'X-GitHub-Api-Version': '2022-11-28'
               }
-            }).then((commits) => commits.map(({sha}) => sha));
+            }).then(({ data }) => data.map(({sha}) => sha));
+            core.group('Commits', () => core.info(commits.join('\n')));
             const commitMessages = await Promise.all(commits.map((sha) =>
-              exec.getExecOutput('git',['log', '-n', '1', '--format=%s', sha])
+              exec.getExecOutput('git',['log', '-n', '1', '--format=%s', sha]).then(({stdout}) => stdout)
             ));
+            core.group('Commit Messages', () => core.info(commitMessages.join('\n')));
             if (!commitMessages.includes(context.payload.pull_request.title)) {
               core.setFailed('❌ PR title must match a commit message');
               process.exit(1);
