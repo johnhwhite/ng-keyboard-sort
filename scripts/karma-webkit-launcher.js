@@ -24,6 +24,7 @@
  */
 
 const child_process = require('child_process');
+const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
@@ -35,7 +36,7 @@ function getTempDir() {
     os.tmpdir(),
     path.basename(__filename, '.js') +
       '-' +
-      Math.floor(Math.random() * 1e16).toString(36)
+      crypto.randomBytes(8).toString('hex')
   );
 }
 

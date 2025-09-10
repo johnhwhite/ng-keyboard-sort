@@ -23,7 +23,9 @@
     "lint": "ng lint ng-keyboard-sort",
     "lint:e2e": "ng lint e2e",
     "lint:all": "ng lint",
+    "// prepare": "Set up git hooks. Does not run in a CI environment.",
     "prepare": "is-ci || husky",
+    "// postinstall": "Postinstall script to update peer dependencies. Does not run in a CI environment.",
     "postinstall": "is-ci || node scripts/postinstall.mjs",
     "commitlint": "commitlint --edit",
     "validate-commit-msg": "commitlint --strict"
