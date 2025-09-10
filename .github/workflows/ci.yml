@@ -38,20 +38,27 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const commits = await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-              }
-            }).then(({ data }) => data.map(({sha}) => sha));
-            core.group('Commits', () => core.info(commits.join('\n')));
-            const commitMessages = await Promise.all(commits.map((sha) =>
-              exec.getExecOutput('git',['log', '-n', '1', '--format=%s', sha]).then(({stdout}) => stdout)
-            ));
-            core.group('Commit Messages', () => core.info(commitMessages.join('\n')));
-            if (!commitMessages.includes(context.payload.pull_request.title)) {
+            const commits = core.group('Commits', async () => {
+              const commits = await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28'
+                }
+              }).then(({ data }) => data.map(({ sha }) => sha));
+              core.info(commits.join('\n'));
+              return commits;
+            });
+            const commitMessages = core.group('Commit Messages', async () => {
+              const commitMessages = await Promise.all(commits.map((sha) =>
+                exec.getExecOutput('git', ['log', '-n', '1', '--format=%s', sha]).then(({ stdout }) => stdout.trim())
+              ));
+              core.info(commitMessages.join('\n'));
+              return commitMessages;
+            });
+            var title = context.payload.pull_request.title.trim();
+            if (!commitMessages.includes(title)) {
               core.setFailed('❌ PR title must match a commit message');
               process.exit(1);
             }
