@@ -48,7 +48,7 @@ jobs:
             }).then((commits) => commits.map(({sha}) => sha));
             const commitMessages = await Promise.all(commits.map((sha) =>
               exec.getExecOutput('git',['log', '-n', '1', '--format=%s', sha])
-            );
+            ));
             if (!commitMessages.includes(context.payload.pull_request.title)) {
               core.setFailed('❌ PR title must match a commit message');
               process.exit(1);
