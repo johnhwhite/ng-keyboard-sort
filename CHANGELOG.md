@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.0.0...v8.1.0) (2025-09-10)
+
+
+### Features
+
+* **ng-keyboard-sort:** add Angular 20.2 support and use trusted publisher ([#168](https://github.com/johnhwhite/ng-keyboard-sort/issues/168)) ([7992b9e](https://github.com/johnhwhite/ng-keyboard-sort/commit/7992b9e6185c0a4eaf7c709fed95dd914d35507c))
+
 ## [8.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v7.2.0...v8.0.0) (2025-06-10)
 
 
