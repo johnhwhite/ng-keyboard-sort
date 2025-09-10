@@ -38,25 +38,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const commits = core.group('Commits', async () => {
-              const commits = await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                headers: {
-                  'X-GitHub-Api-Version': '2022-11-28'
-                }
-              }).then(({ data }) => data.map(({ sha }) => sha));
-              core.info(JSON.stringify(commits, undefined, 2));
-              return commits;
-            });
-            const commitMessages = core.group('Commit Messages', async () => {
-              const commitMessages = await Promise.all(commits.map((sha) =>
-                exec.getExecOutput('git', ['log', '-n', '1', '--format=%s', sha]).then(({ stdout }) => stdout.trim())
-              ));
-              core.info(JSON.stringify(commitMessages, undefined, 2));
-              return commitMessages;
-            });
+            const commits = await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            }).then(({ data }) => data.map(({ sha }) => sha));
+            const commitMessages = await Promise.all(commits.map((sha) =>
+              exec.getExecOutput('git', ['log', '-n', '1', '--format=%s', sha]).then(({ stdout }) => stdout.trim())
+            ));
+            core.group('Commits', () =>
+              Promise.resolve(core.info(JSON.stringify(commits, undefined, 2)))
+            );
+            core.group('Commit Messages', async () =>
+              Promise.resolve(core.info(JSON.stringify(commitMessages, undefined, 2)))
+            );
             var title = context.payload.pull_request.title.trim();
             if (!commitMessages.includes(title)) {
               core.setFailed('❌ PR title must match a commit message');
