@@ -30,39 +30,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
-      - name: Get node cache
-        id: get-node-cache
-        run: |
-          sh ./scripts/node-cache.sh >> $GITHUB_OUTPUT
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ env.node_version }}-${{ steps.get-node-cache.outputs.node-cache }}
-          restore-keys: '${{ runner.os }}-node-${{ env.node_version }}-'
+          cache: 'npm'
       - name: Install
-        run: npm i
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Validate commit message
         if: github.event_name == 'pull_request'
-        run: |
-          set -exo pipefail
-          PR_NUM=${{ github.event.pull_request.number }}
-          PR_COMMIT=$(gh pr view --json commits --jq '.commits[0].messageHeadline' $PR_NUM)
-          PR_TITLE=$(gh pr view --json title --jq '.title' $PR_NUM)
-          if [[ $PR_COMMIT != $PR_TITLE ]]; then
-            echo "❌ PR title and commit message must match"
-            exit 1
-          fi
-          echo $PR_COMMIT | npx commitlint --strict
-          if [[ $? != 0 ]]; then
-            echo "❌ Commit message validation failed"
-            exit 1
-          fi
-          echo "✅ Commit message validation passed"
-        env:
-          GH_TOKEN: ${{ github.token }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits = await github.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            }).then((commits) => commits.map(({sha}) => sha));
+            const commitMessages = await Promise.all(commits.map((sha) =>
+              exec.getExecOutput('git',['log', '-n', '1', '--format=%s', sha])
+            );
+            if (!commitMessages.includes(context.payload.pull_request.title)) {
+              core.setFailed('❌ PR title must match a commit message');
+              process.exit(1);
+            }
+            await exec.exec('sh', [
+              '-c',
+              `jq -r .pull_request.title ${process.env.GITHUB_EVENT_PATH} | npx commitlint --strict`
+            ])
+              .then(() => {
+                core.info('✅ Commit message validation passed');
+              })
+              .catch(() => {
+                core.setFailed('❌ Commit message validation failed');
+                process.exit(1);
+              });
       - name: Prep
         run: npx playwright install --with-deps webkit
       - name: Lint

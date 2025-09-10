@@ -35,6 +35,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node_version }}
+          cache: 'npm'
       - name: Install
         run: |
           npm i -g npm@latest
