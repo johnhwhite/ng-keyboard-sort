@@ -83,7 +83,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-webkit-launcher": "^2.6.0",
-    "ng-packagr": "20.2.0",
+    "ng-packagr": "20.3.0",
     "playwright-ng-schematics": "^2.1.0",
     "playwright-webkit": "^1.55.0",
     "postcss": "^8.5.6",
