@@ -27,10 +27,9 @@ jobs:
             -d '{extends: default, rules: {document-start: disable, line-length: {max: 120}, truthy: disable}}' \
             $(git ls-files '*.yaml' '*.yml')
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.node_version }}
-          cache: 'npm'
       - name: Install
         run: npm ci
       - name: Validate commit message
