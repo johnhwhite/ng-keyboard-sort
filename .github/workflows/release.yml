@@ -38,7 +38,7 @@ jobs:
           cache: 'npm'
       - name: Install
         run: |
-          npm i -g npm@latest
+          npm i -g --ignore-scripts npm@latest
           npm ci
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
