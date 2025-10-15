@@ -35,6 +35,7 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
       - name: Install
+        if: ${{ steps.release.outputs.release_created }}
         run: npm ci
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
