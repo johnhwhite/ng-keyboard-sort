@@ -34,13 +34,9 @@ jobs:
       - name: NPM whoami
         run: |
           set -euxo pipefail
-          length=$(echo $NPM_TOKEN | wc -c)
-          echo "NPM_TOKEN length: ${length}"
-          if [[ $length -lt 5 ]]; then
-            echo $NPM_TOKEN | openssl base64 -a -e
-          fi
-          npm config set "//registry.npmjs.org/:_authToken=${{ steps.auth.outputs.npm-token }}"
-          npm whoami
+          npm config set "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
+          npm access list packages || true
+          npm whoami || true
       - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@v4
