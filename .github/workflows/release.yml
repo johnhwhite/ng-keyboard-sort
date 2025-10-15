@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - '[0-9]+.x.x'
 
 permissions:
   contents: read
@@ -20,10 +21,21 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
+        if: ${{ github.event_name == 'push' || github.ref_name == 'main' || endsWith(github.ref_name, '.x.x') }}
         with:
           release-type: 'simple'
           target-branch: '${{ github.ref_name }}'
           token: '${{ secrets.GH_TOKEN }}'
+      - name: Get OIDC token
+        id: auth
+        uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
+        with:
+          package-name: ng-keyboard-sort
+      - name: NPM whoami
+        run: |
+          set -euxo pipefail
+          npm config set "//registry.npmjs.org/:_authToken=${{ steps.auth.outputs.npm-token }}"
+          npm whoami
       - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@v4
@@ -53,12 +65,6 @@ jobs:
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
-      - name: Get OIDC token
-        id: auth
-        if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
-        uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
-        with:
-          package-name: ng-keyboard-sort
       - name: Add dist-tag on NPM
         if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
         run: |
@@ -66,5 +72,4 @@ jobs:
           set -x
           name=$(jq -r .name package.json)
           version=$(jq -r .version package.json)
-          npm config set "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
           npm dist-tag add "$name@$version" latest
