@@ -16,7 +16,7 @@ env:
 jobs:
   release-please:
     name: Release Please
-    environment: npm
+    environment: ${{ (github.event_name == 'push' || github.ref_name == 'main' || endsWith(github.ref_name, '.x.x')) && 'npm' || '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
