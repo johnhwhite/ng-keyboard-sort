@@ -63,4 +63,6 @@ jobs:
         run: |
           cd dist/ng-keyboard-sort
           set -x
-          npm dist-tag add "$(jq -r .name package.json)@$(jq -r .version package.json)" latest
+          name=$(jq -r .name package.json)
+          version=$(jq -r .version package.json)
+          npm dist-tag add "$name@$version" latest
