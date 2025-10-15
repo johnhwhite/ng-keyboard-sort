@@ -50,10 +50,10 @@ jobs:
           MAJOR_VERSION: ${{ steps.release.outputs.major }}
         run: |
           cd dist/ng-keyboard-sort
-          ~/npm-latest/bin/npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
+          npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
           set -x
-          ~/npm-latest/bin/npm pkg set "version=${VERSION}"
-          ~/npm-latest/bin/npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
+          npm pkg set "version=${VERSION}"
+          npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
           if [ "${{ github.ref_name }}" = "main" ]; then
-            ~/npm-latest/bin/npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
+            npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
           fi
