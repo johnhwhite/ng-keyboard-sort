@@ -7,9 +7,8 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
-  packages: write
 
 env:
   node_version: 24
@@ -50,7 +49,6 @@ jobs:
           MAJOR_VERSION: ${{ steps.release.outputs.major }}
         run: |
           cd dist/ng-keyboard-sort
-          npm config set '//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}'
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
