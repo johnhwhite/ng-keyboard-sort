@@ -53,6 +53,16 @@ jobs:
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            npm dist-tag add "$(jq -r .name package.json)@${VERSION}" latest
-          fi
+      - name: Get OIDC token
+        if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
+        uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
+        with:
+          package-name: ng-keyboard-sort
+      - name: Add dist-tag on NPM
+        if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
+        run: |
+          cd dist/ng-keyboard-sort
+          set -x
+          name=$(jq -r .name package.json)
+          version=$(jq -r .version package.json)
+          npm dist-tag add "$name@$version" latest
