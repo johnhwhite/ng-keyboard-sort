@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.1.1](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.0...v8.1.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* **ng-keyboard-sort:** apply update for the dev server ([#170](https://github.com/johnhwhite/ng-keyboard-sort/issues/170)) ([320e836](https://github.com/johnhwhite/ng-keyboard-sort/commit/320e83624dd12a455869560e1fc3540feaebb139))
+* **ng-keyboard-sort:** update to Angular 20.3.5 ([#174](https://github.com/johnhwhite/ng-keyboard-sort/issues/174)) ([aab4571](https://github.com/johnhwhite/ng-keyboard-sort/commit/aab457168a49ade27dfccdbac2cc8b6278d84ed7))
+
 ## [8.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.0.0...v8.1.0) (2025-09-10)
 
 
