@@ -54,6 +54,7 @@ jobs:
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
       - name: Get OIDC token
+        id: auth
         if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
         uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
         with:
@@ -65,4 +66,5 @@ jobs:
           set -x
           name=$(jq -r .name package.json)
           version=$(jq -r .version package.json)
+          npm config set "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
           npm dist-tag add "$name@$version" latest
