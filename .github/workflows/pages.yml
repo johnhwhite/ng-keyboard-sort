@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 env:
-  node_version: 22
+  node_version: 24
 concurrency:
   group: pages
   cancel-in-progress: true

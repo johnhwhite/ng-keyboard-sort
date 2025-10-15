@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  node_version: 22
+  node_version: 24
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:

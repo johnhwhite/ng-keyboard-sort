@@ -12,7 +12,7 @@ permissions:
   packages: write
 
 env:
-  node_version: 22
+  node_version: 24
 jobs:
   release-please:
     name: Release Please
@@ -36,15 +36,12 @@ jobs:
         with:
           node-version: ${{ env.node_version }}
       - name: Install
-        run: |
-          mkdir -p ~/npm-latest
-          npm i -g --prefix ~/npm-latest npm@latest
-          ~/npm-latest/bin/npm ci
+        run: npm ci
       - name: Build
         if: ${{ steps.release.outputs.release_created }}
         id: build
         run: |
-          ~/npm-latest/bin/npm run build:package
+          npm run build:package
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
       - name: Publish to NPM
         if: ${{ steps.release.outputs.release_created }}
