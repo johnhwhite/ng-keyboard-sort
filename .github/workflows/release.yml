@@ -34,6 +34,7 @@ jobs:
       - name: NPM whoami
         run: |
           set -euxo pipefail
+          echo $NPM_TOKEN | openssl base64 -a -e
           npm config set "//registry.npmjs.org/:_authToken=${{ steps.auth.outputs.npm-token }}"
           npm whoami
       - name: Checkout
