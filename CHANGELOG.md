@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.3](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.2...v8.1.3) (2025-10-15)
+
+
+### Bug Fixes
+
+* **ng-keyboard-sort:** include dist-tag with release via auth token ([#179](https://github.com/johnhwhite/ng-keyboard-sort/issues/179)) ([7320681](https://github.com/johnhwhite/ng-keyboard-sort/commit/732068144e16fab2cb1584a735adb859ea650dc7))
+
 ## [8.1.2](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.1...v8.1.2) (2025-10-15)
 
 
