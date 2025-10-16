@@ -26,17 +26,6 @@ jobs:
           release-type: 'simple'
           target-branch: '${{ github.ref_name }}'
           token: '${{ secrets.GH_TOKEN }}'
-      - name: Get OIDC token
-        id: auth
-        uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
-        with:
-          package-name: ng-keyboard-sort
-      - name: NPM whoami
-        run: |
-          set -euxo pipefail
-          npm config set "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
-          npm access list packages || true
-          npm whoami || true
       - name: Checkout
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@v4
@@ -56,8 +45,8 @@ jobs:
         run: |
           npm run build:package
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
-      - name: Publish to NPM
-        if: ${{ steps.release.outputs.release_created }}
+      - name: Publish LTS to NPM
+        if: ${{ steps.release.outputs.release_created && github.ref_name != 'main' }}
         env:
           VERSION: ${{ steps.build.outputs.version }}
           MAJOR_VERSION: ${{ steps.release.outputs.major }}
@@ -66,11 +55,13 @@ jobs:
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
-      - name: Add dist-tag on NPM
+      - name: Publish latest to NPM
         if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
+        env:
+          VERSION: ${{ steps.build.outputs.version }}
+          MAJOR_VERSION: ${{ steps.release.outputs.major }}
         run: |
           cd dist/ng-keyboard-sort
           set -x
-          name=$(jq -r .name package.json)
-          version=$(jq -r .version package.json)
-          npm dist-tag add "$name@$version" latest
+          npm pkg set "version=${VERSION}"
+          npm publish --provenance --access public --tag latest
