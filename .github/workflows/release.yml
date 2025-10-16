@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - '[0-9]+.x.x'
 
 permissions:
   contents: read
@@ -15,11 +16,12 @@ env:
 jobs:
   release-please:
     name: Release Please
-    environment: npm
+    environment: 'npm'
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
+        if: ${{ github.ref_name == 'main' || endsWith(github.ref_name, '.x.x') }}
         with:
           release-type: 'simple'
           target-branch: '${{ github.ref_name }}'
@@ -43,8 +45,8 @@ jobs:
         run: |
           npm run build:package
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
-      - name: Publish to NPM
-        if: ${{ steps.release.outputs.release_created }}
+      - name: Publish LTS to NPM
+        if: ${{ steps.release.outputs.release_created && endsWith(github.ref_name, '.x.x') }}
         env:
           VERSION: ${{ steps.build.outputs.version }}
           MAJOR_VERSION: ${{ steps.release.outputs.major }}
@@ -53,18 +55,13 @@ jobs:
           set -x
           npm pkg set "version=${VERSION}"
           npm publish --provenance --access public --tag "v${MAJOR_VERSION}-lts"
-      - name: Get OIDC token
-        id: auth
+      - name: Publish latest to NPM
         if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
-        uses: electron/npm-trusted-auth-action@418d14975a3ff06683cc4580a4eba437f0f017f1
-        with:
-          package-name: ng-keyboard-sort
-      - name: Add dist-tag on NPM
-        if: ${{ steps.release.outputs.release_created && github.ref_name == 'main' }}
+        env:
+          VERSION: ${{ steps.build.outputs.version }}
+          MAJOR_VERSION: ${{ steps.release.outputs.major }}
         run: |
           cd dist/ng-keyboard-sort
           set -x
-          name=$(jq -r .name package.json)
-          version=$(jq -r .version package.json)
-          npm config set "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
-          npm dist-tag add "$name@$version" latest
+          npm pkg set "version=${VERSION}"
+          npm publish --provenance --access public
