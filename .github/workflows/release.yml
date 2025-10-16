@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
-        if: ${{ github.event_name == 'push' || github.ref_name == 'main' || endsWith(github.ref_name, '.x.x') }}
+        if: ${{ github.ref_name == 'main' || endsWith(github.ref_name, '.x.x') }}
         with:
           release-type: 'simple'
           target-branch: '${{ github.ref_name }}'
@@ -46,7 +46,7 @@ jobs:
           npm run build:package
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
       - name: Publish LTS to NPM
-        if: ${{ steps.release.outputs.release_created && github.ref_name != 'main' }}
+        if: ${{ steps.release.outputs.release_created && endsWith(github.ref_name, '.x.x') }}
         env:
           VERSION: ${{ steps.build.outputs.version }}
           MAJOR_VERSION: ${{ steps.release.outputs.major }}
@@ -64,4 +64,4 @@ jobs:
           cd dist/ng-keyboard-sort
           set -x
           npm pkg set "version=${VERSION}"
-          npm publish --provenance --access public --tag latest
+          npm publish --provenance --access public
