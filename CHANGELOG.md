@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.4](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.3...v8.1.4) (2025-10-16)
+
+
+### Bug Fixes
+
+* **ng-keyboard-sort:** remove lts tag from publishing step ([#181](https://github.com/johnhwhite/ng-keyboard-sort/issues/181)) ([7da13c6](https://github.com/johnhwhite/ng-keyboard-sort/commit/7da13c663fe8e0503c235d5537607db6404bfe38))
+
 ## [8.1.3](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.2...v8.1.3) (2025-10-15)
 
 
