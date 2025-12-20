@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   model,
@@ -38,6 +39,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
       <button (click)="activateLastItem()">Activate last item</button>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KeyboardSortListFixtureComponent {
   public list = viewChild(KeyboardSortListDirective);

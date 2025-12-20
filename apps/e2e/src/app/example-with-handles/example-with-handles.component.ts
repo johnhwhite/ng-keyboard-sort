@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -31,6 +31,7 @@ export interface Item {
     KeyboardSortItemIfFocusedDirective,
     KeyboardSortListDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleWithHandlesComponent {
   public items: Item[] = [
