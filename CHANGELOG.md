@@ -1,5 +1,16 @@
 # Changelog
 
+## [9.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.5...v9.0.0) (2025-12-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ng-keyboard-sort:** Remove support for Angular 20, switch to zoneless change detection, and replace Karma Jasmine with Vitest for testing.
+
+### Features
+
+* **ng-keyboard-sort:** upgrade to Angular 21 ([#188](https://github.com/johnhwhite/ng-keyboard-sort/issues/188)) ([8a50d7a](https://github.com/johnhwhite/ng-keyboard-sort/commit/8a50d7a9f32e1e16403318c3c20f128f4409a513))
+
 ## [8.1.5](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.4...v8.1.5) (2025-12-21)
 
 
