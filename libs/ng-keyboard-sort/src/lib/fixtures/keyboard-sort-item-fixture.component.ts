@@ -1,4 +1,9 @@
-import { Component, model, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  model,
+  viewChild,
+} from '@angular/core';
 import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
 import { KeyboardSortListService } from '../keyboard-sort-list.service';
@@ -28,6 +33,7 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
       <span *kbdSortKeyboardSortItemIfFocused #focus>Focused</span>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KeyboardSortItemFixtureComponent {
   public readonly item = viewChild('item', { read: KeyboardSortItemDirective });

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
@@ -52,7 +53,7 @@ describe('ListDirective', () => {
     const list = component.list();
     list?.activateItem(0);
     const item = component.items()[0];
-    expect(item?.activated()).toBeTrue();
+    expect(item?.activated()).toBe(true);
     fixture.debugElement
       .query(By.directive(KeyboardSortItemDirective))
       .triggerEventHandler(
@@ -61,7 +62,7 @@ describe('ListDirective', () => {
       );
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(item?.activated()).toBeFalse();
+    expect(item?.activated()).toBe(false);
     fixture.debugElement
       .query(By.directive(KeyboardSortListDirective))
       .triggerEventHandler(
@@ -79,8 +80,8 @@ describe('ListDirective', () => {
     await fixture.whenStable();
     const last = component.items().slice().pop();
     expect(last).toBeTruthy();
-    expect(last?.activated()).toBeTrue();
-    expect(last?.focused()).toBeFalse();
+    expect(last?.activated()).toBe(true);
+    expect(last?.focused()).toBe(false);
   });
 
   it('should change orientation', async () => {
@@ -102,7 +103,7 @@ describe('ListDirective', () => {
       );
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 1).activated()).toBeTrue();
+    expect(getItem(fixture, 1).activated()).toBe(true);
     fixture.debugElement
       .queryAll(By.directive(KeyboardSortItemDirective))[1]
       .triggerEventHandler(
@@ -111,15 +112,17 @@ describe('ListDirective', () => {
       );
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 1).activated()).toBeFalse();
-    expect(getItem(fixture, 1).focused()).toBeTrue();
+    expect(getItem(fixture, 1).activated()).toBe(false);
+    expect(getItem(fixture, 1).focused()).toBe(true);
     expect(component.data()).toEqual(['Item 1', 'Item 3', 'Item 2']);
     component.list()?.focusNextItem(getItem(fixture, 2));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('li')).toHaveClass(
-      'kbd-sort-item-focused'
-    );
+    expect(
+      fixture.nativeElement
+        .querySelector('li')
+        .classList.contains('kbd-sort-item-focused')
+    ).toBe(true);
   });
 
   it('should disable', async () => {
@@ -130,7 +133,7 @@ describe('ListDirective', () => {
     const item = component.items()[0];
     expect(item).toBeTruthy();
     list?.activateItem(item as KeyboardSortItemDirective);
-    expect(item?.activated()).toBeFalse();
+    expect(item?.activated()).toBe(false);
     expect(
       fixture.nativeElement.querySelectorAll('[tabindex="-1"]').length
     ).toBe(4);
@@ -138,25 +141,25 @@ describe('ListDirective', () => {
       fixture.nativeElement.querySelectorAll('[tabindex="0"]').length
     ).toBe(0);
     component.disabled.set(false);
-    expect(getItem(fixture, 0).focused()).toBeTrue();
+    expect(getItem(fixture, 0).focused()).toBe(true);
     component.list()?.deactivateAll();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 0).disabled).toBeFalse();
-    expect(getItem(fixture, 0).focused()).toBeFalse();
+    expect(getItem(fixture, 0).disabled).toBe(false);
+    expect(getItem(fixture, 0).focused()).toBe(false);
     component.list()?.focusFirstItem();
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 0).focused()).toBeTrue();
-    expect(component.list()?.moveItemUp(getItem(fixture, 0))).toBeFalse();
-    expect(component.list()?.moveItemUp(getItem(fixture, 2))).toBeTrue();
+    expect(getItem(fixture, 0).focused()).toBe(true);
+    expect(component.list()?.moveItemUp(getItem(fixture, 0))).toBe(false);
+    expect(component.list()?.moveItemUp(getItem(fixture, 2))).toBe(true);
     fixture.detectChanges();
     await fixture.whenStable();
     getItem(fixture, 0).focus('keyboard');
     component.list()?.focusPreviousItem(getItem(fixture, 0));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 2).focused()).toBeTrue();
+    expect(getItem(fixture, 2).focused()).toBe(true);
   });
 
   it('should move items', async () => {
@@ -182,7 +185,7 @@ describe('ListDirective', () => {
     component.list()?.activateItem(getItem(fixture, 0));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 0).activated()).toBeTrue();
+    expect(getItem(fixture, 0).activated()).toBe(true);
     expect(
       getItem(fixture, 0).elementRef.nativeElement.textContent?.trim()
     ).toBe('Item 1  Active');
@@ -194,7 +197,7 @@ describe('ListDirective', () => {
       );
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(getItem(fixture, 1).activated()).toBeTrue();
+    expect(getItem(fixture, 1).activated()).toBe(true);
     component.list()?.deactivateAll();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -223,10 +226,10 @@ describe('ListDirective', () => {
     expect(
       getItem(fixture, 2).elementRef.nativeElement.textContent?.trim()
     ).toBe('Item 3');
-    expect(getItem(fixture, 0).activated()).toBeFalse();
+    expect(getItem(fixture, 0).activated()).toBe(false);
     fixture.componentInstance.disabled.set(true);
     fixture.detectChanges();
-    expect(getItem(fixture, 0).isDisabled()).toBeTrue();
+    expect(getItem(fixture, 0).isDisabled()).toBe(true);
   });
 
   ['horizontal', 'vertical'].forEach((direction) => {
@@ -246,7 +249,7 @@ describe('ListDirective', () => {
         });
         expect(component.list()).toBeTruthy();
         getItem(fixture, 2).focus('keyboard');
-        expect(getItem(fixture, 2).focused()).toBeTrue();
+        expect(getItem(fixture, 2).focused()).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[2]
           .triggerEventHandler(
@@ -255,8 +258,8 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 2).focused()).toBeFalse();
-        expect(getItem(fixture, 1).focused()).toBeTrue();
+        expect(getItem(fixture, 2).focused()).toBe(false);
+        expect(getItem(fixture, 1).focused()).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[1]
           .triggerEventHandler(
@@ -265,7 +268,7 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 2).focused()).toBeTrue();
+        expect(getItem(fixture, 2).focused()).toBe(true);
       });
 
       it(`should move focus with arrow keys ${direction}ly`, async () => {
@@ -275,11 +278,11 @@ describe('ListDirective', () => {
         const firstItem = fixture.componentInstance.items()[0];
         expect(firstItem).toBeTruthy();
         firstItem?.focus('keyboard');
-        expect(firstItem?.activated()).toBeFalse();
-        expect(firstItem?.focused()).toBeTrue();
+        expect(firstItem?.activated()).toBe(false);
+        expect(firstItem?.focused()).toBe(true);
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 0).focused()).toBeTrue();
+        expect(getItem(fixture, 0).focused()).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[0]
           .triggerEventHandler(
@@ -288,8 +291,8 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 0).focused()).toBeFalse();
-        expect(getItem(fixture, 1).focused()).toBeTrue();
+        expect(getItem(fixture, 0).focused()).toBe(false);
+        expect(getItem(fixture, 1).focused()).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[1]
           .triggerEventHandler(
@@ -298,8 +301,8 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 1).focused()).toBeFalse();
-        expect(getItem(fixture, 0).focused()).toBeTrue();
+        expect(getItem(fixture, 1).focused()).toBe(false);
+        expect(getItem(fixture, 0).focused()).toBe(true);
       });
 
       it(`should move item up in ${direction} direction`, async () => {
@@ -354,7 +357,7 @@ describe('ListDirective', () => {
             'keydown',
             new KeyboardEvent('keydown', { key: selectKeys[1] })
           );
-        expect(lastItem.activated()).toBeTrue();
+        expect(lastItem.activated()).toBe(true);
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[2]
@@ -377,8 +380,8 @@ describe('ListDirective', () => {
         component.list()?.deactivateAll();
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(lastItem.activated()).toBeFalse();
-        expect(lastItem.focused()).toBeFalse();
+        expect(lastItem.activated()).toBe(false);
+        expect(lastItem.focused()).toBe(false);
         expect(component.drops).toEqual([
           {
             previousIndex: 2,
@@ -410,7 +413,7 @@ describe('ListDirective', () => {
         );
         expect(element).toBeTruthy();
         expect(element?.textContent?.trim()).toBe('Item 1');
-        expect(element).toHaveClass('kbd-sort-item');
+        expect(element?.classList.contains('kbd-sort-item')).toBe(true);
         component.list()?.focusFirstItem();
         fixture.debugElement
           .query(By.directive(KeyboardSortItemDirective))
@@ -420,7 +423,9 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(element).toHaveClass('kbd-sort-item-activated');
+        expect(element?.classList.contains('kbd-sort-item-activated')).toBe(
+          true
+        );
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
           .query(By.directive(KeyboardSortItemDirective))
@@ -442,12 +447,14 @@ describe('ListDirective', () => {
         );
         expect(element).toBeTruthy();
         expect(element?.textContent?.trim()).toBe('Item 2');
-        expect(element).toHaveClass('kbd-sort-item');
+        expect(element?.classList.contains('kbd-sort-item')).toBe(true);
         component.list()?.focusItem(1);
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(element).toHaveClass('kbd-sort-item-activated');
+        expect(element?.classList.contains('kbd-sort-item-activated')).toBe(
+          true
+        );
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[1]
@@ -479,7 +486,9 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(element).toHaveClass('kbd-sort-item-activated');
+        expect(element?.classList.contains('kbd-sort-item-activated')).toBe(
+          true
+        );
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[1]
@@ -495,7 +504,9 @@ describe('ListDirective', () => {
         const activeElement = (
           fixture.nativeElement as HTMLElement
         ).querySelector('li:nth-child(1)');
-        expect(activeElement).toHaveClass('kbd-sort-item-activated');
+        expect(
+          activeElement?.classList.contains('kbd-sort-item-activated')
+        ).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[0]
           .triggerEventHandler(
@@ -504,7 +515,9 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(activeElement).not.toHaveClass('kbd-sort-item-activated');
+        expect(
+          activeElement?.classList.contains('kbd-sort-item-activated')
+        ).toBe(false);
       });
 
       it(`should move item 3 up in ${direction} direction with arrow keys`, async () => {
@@ -520,7 +533,9 @@ describe('ListDirective', () => {
         element?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(element).toHaveClass('kbd-sort-item-activated');
+        expect(element?.classList.contains('kbd-sort-item-activated')).toBe(
+          true
+        );
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         element?.dispatchEvent(
           new KeyboardEvent('keydown', { key: arrows[1] })
@@ -542,7 +557,9 @@ describe('ListDirective', () => {
         component.list()?.activateItem(2);
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(element).toHaveClass('kbd-sort-item-activated');
+        expect(element?.classList.contains('kbd-sort-item-activated')).toBe(
+          true
+        );
         expect(component.data()).toEqual(['Item 1', 'Item 2', 'Item 3']);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[2]
@@ -564,7 +581,7 @@ describe('ListDirective', () => {
         component.list()?.deactivateAll();
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 0).activated()).toBeFalse();
+        expect(getItem(fixture, 0).activated()).toBe(false);
         expect(component.drops).toEqual([
           {
             previousIndex: 2,
@@ -580,7 +597,7 @@ describe('ListDirective', () => {
           );
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(getItem(fixture, 0).activated()).toBeTrue();
+        expect(getItem(fixture, 0).activated()).toBe(true);
         fixture.debugElement
           .queryAll(By.directive(KeyboardSortItemDirective))[0]
           .triggerEventHandler(
@@ -676,12 +693,12 @@ describe('ListDirective', () => {
       component.list()?.moveItemDown({
         position: signal(1),
       } as unknown as KeyboardSortItemDirective)
-    ).toBeFalse();
+    ).toBe(false);
     expect(
       component.list()?.moveItemUp({
         position: signal(1),
       } as unknown as KeyboardSortItemDirective)
-    ).toBeFalse();
+    ).toBe(false);
     component.data.set(['One']);
     fixture.detectChanges();
   });
@@ -704,11 +721,11 @@ describe('ListDirective', () => {
       component.list()?.moveItemDown({
         position: signal(1),
       } as unknown as KeyboardSortItemDirective)
-    ).toBeFalse();
+    ).toBe(false);
     expect(
       component.list()?.moveItemUp({
         position: signal(1),
       } as unknown as KeyboardSortItemDirective)
-    ).toBeFalse();
+    ).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-import { Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -26,6 +26,7 @@ import {
     KeyboardSortItemIfActiveDirective,
     KeyboardSortItemIfFocusedDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleComponent {
   public readonly items = model<string[]>([
