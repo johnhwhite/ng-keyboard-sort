@@ -46,7 +46,7 @@ jobs:
             echo " ⏳ ${b}"
             git clean -dfX
             git switch ${b}
-            npm ci
+            npm i
             if [ "${b}" == "main" ]; then
               npx ng build e2e --base-href="/$(basename $GITHUB_REPOSITORY)/"
               mv dist/apps/e2e/browser/* ../_site/
