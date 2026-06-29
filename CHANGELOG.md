@@ -1,5 +1,16 @@
 # Changelog
 
+## [10.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v9.0.0...v10.0.0) (2026-06-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ng-keyboard-sort:** upgrade to Angular 22 ([#192](https://github.com/johnhwhite/ng-keyboard-sort/issues/192))
+
+### Features
+
+* **ng-keyboard-sort:** upgrade to Angular 22 ([#192](https://github.com/johnhwhite/ng-keyboard-sort/issues/192)) ([4ca27e3](https://github.com/johnhwhite/ng-keyboard-sort/commit/4ca27e3edb9fc369d34abe0ecf955d513a654009))
+
 ## [9.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v8.1.5...v9.0.0) (2025-12-21)
 
 
