@@ -1,41 +1,40 @@
 import {
-  ChangeDetectorRef,
+  booleanAttribute,
+  computed,
   contentChildren,
-  DestroyRef,
   Directive,
   effect,
-  ElementRef,
   inject,
   input,
   linkedSignal,
   model,
   output,
   signal,
+  untracked,
   DOCUMENT,
 } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
-import { Subscription } from 'rxjs';
-import { KeyboardSortListService } from './keyboard-sort-list.service';
+import { KeyboardSortListContext } from './keyboard-sort-list-context';
 import { KeyboardSortEventDrop } from './keyboard-sort-event-drop';
-import { FocusKeyManager, FocusMonitor } from '@angular/cdk/a11y';
 import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
+import { KEYBOARD_SORT_A11Y_MESSAGES } from './keyboard-sort-a11y-messages';
 
 @Directive({
   selector: '[kbdSortList]',
   exportAs: 'kbdSortList',
-  providers: [KeyboardSortListService],
+  providers: [KeyboardSortListContext],
   host: {
-    '[attr.tabindex]': 'tabindex()',
-    '(keydown.escape)': 'deactivateAll()',
+    '[attr.tabindex]': '"-1"',
     '(focus)': 'onFocus()',
-    '(focusout)': 'onFocusOut()',
-    '(focusin)': 'onFocusIn()',
+    '(keydown.escape)': 'deactivateAll()',
   },
 })
 export class KeyboardSortListDirective<T extends unknown[]> {
-  readonly #elementRef = inject(ElementRef);
   readonly #doc = inject(DOCUMENT);
+  readonly #liveAnnouncer = inject(LiveAnnouncer);
+  readonly #messages = inject(KEYBOARD_SORT_A11Y_MESSAGES);
   protected readonly items = contentChildren(KeyboardSortItemDirective);
 
   /**
@@ -67,31 +66,44 @@ export class KeyboardSortListDirective<T extends unknown[]> {
   public readonly kbdSortListOrientation = input<'horizontal' | 'vertical'>(
     'horizontal'
   );
-  public readonly kbdSortListDisabled = input<boolean>(false);
+  public readonly kbdSortListDisabled = input(false, {
+    transform: booleanAttribute,
+  });
+  /**
+   * Id of an element (owned by the consumer) describing the list's keyboard
+   * controls. Reflected as `aria-describedby` on every item.
+   */
+  public readonly kbdSortListDescribedBy = input<string>('');
   public readonly kbdSortListData = model<T>();
   public readonly kbdSortEnabled = output<boolean>();
-  public readonly kdbSortDrop = output<KeyboardSortEventDrop>();
+  public readonly kbdSortDrop = output<KeyboardSortEventDrop>();
 
-  protected readonly tabindex = linkedSignal<'0' | '-1'>(() => {
-    if (
-      this.kbdSortListDisabled() ||
-      this.#elementRef.nativeElement.contains(this.#doc.activeElement)
-    ) {
-      return '-1';
-    }
-    return '0';
-  });
+  /**
+   * Index of the item that is the current roving tab stop.
+   * @internal
+   */
+  readonly #activeIndex = signal(0);
+  public readonly activeIndex = this.#activeIndex.asReadonly();
 
-  readonly #changeDetectorRef = inject(ChangeDetectorRef);
-  #focusKeyManager: FocusKeyManager<KeyboardSortItemDirective> | undefined;
-  readonly #focusMonitor = inject(FocusMonitor);
-  readonly #subscriptions = new Subscription();
-  #itemSubscriptions = new Subscription();
-  readonly #currentIndex = signal<number | undefined>(undefined);
-  readonly #focusIndex = signal<number | undefined>(undefined);
-  readonly #startingIndex = signal<number | undefined>(undefined);
-  #midChange = false;
-  #listSize = 0;
+  /**
+   * Index to restore native focus to once `items()` reflects a reorder.
+   * Angular's `@for` reconciliation swaps adjacent items by detaching
+   * whichever one currently sits at the higher index and reattaching it at
+   * the lower index; if that's the item the user is moving, the detach
+   * blurs it. This re-asserts focus once the DOM has settled.
+   * @internal
+   */
+  readonly #pendingFocusIndex = signal<number | undefined>(undefined);
+
+  readonly #activatedItem = computed(() =>
+    this.items().find((item) => item.activated())
+  );
+  readonly #focusedItem = computed(() =>
+    this.items().find((item) => item.focused())
+  );
+  #trackedActivatedItem: KeyboardSortItemDirective | undefined;
+  #startingIndex: number | undefined;
+
   readonly #enabledChange = linkedSignal({
     source: this.kbdSortListDisabled,
     computation: (_src, prev) => prev?.value !== undefined,
@@ -99,8 +111,7 @@ export class KeyboardSortListDirective<T extends unknown[]> {
   });
 
   constructor() {
-    inject(KeyboardSortListService<T>).list.set(this);
-    effect(() => this.#resetItems(this.items()));
+    inject(KeyboardSortListContext).list.set(this);
     effect(() => {
       const enabledChange = this.#enabledChange();
       const kbdSortListDisabled = this.kbdSortListDisabled();
@@ -111,29 +122,95 @@ export class KeyboardSortListDirective<T extends unknown[]> {
         this.kbdSortEnabled.emit(!kbdSortListDisabled);
       }
     });
+    // Emits `kbdSortDrop` and announces pick up/put down when the activated
+    // item transitions to and from deactivated.
     effect(() => {
-      const kbdSortListOrientation = this.kbdSortListOrientation();
-      this.#focusKeyManager
-        ?.withHorizontalOrientation(
-          kbdSortListOrientation === 'horizontal' ? 'ltr' : null
-        )
-        .withVerticalOrientation(kbdSortListOrientation === 'vertical');
+      const activatedItem = this.#activatedItem();
+      if (activatedItem) {
+        if (this.#trackedActivatedItem !== activatedItem) {
+          this.#trackedActivatedItem = activatedItem;
+          this.#announce(
+            this.#messages.grabbed(
+              activatedItem.label(),
+              activatedItem.position(),
+              this.items().length
+            )
+          );
+        }
+        return;
+      }
+      const item = this.#trackedActivatedItem;
+      this.#trackedActivatedItem = undefined;
+      const previousIndex = this.#startingIndex;
+      this.#startingIndex = undefined;
+      if (
+        item &&
+        previousIndex !== undefined &&
+        !this.kbdSortListDisabled() &&
+        !item.isDisabled()
+      ) {
+        this.kbdSortDrop.emit({
+          previousIndex,
+          currentIndex: item.position(),
+        });
+        this.#announce(
+          this.#messages.dropped(
+            item.label(),
+            item.position(),
+            this.items().length
+          )
+        );
+      }
     });
-    inject(DestroyRef).onDestroy(() => {
-      this.#itemSubscriptions.unsubscribe();
-      this.#subscriptions.unsubscribe();
-      this.items().forEach((item) => {
-        this.#focusMonitor.stopMonitoring(item.elementRef);
-      });
+    // Keeps the roving tab stop in sync when an item is focused by means
+    // other than this directive's own navigation methods (e.g. a consumer
+    // calling `item.focus()` directly).
+    effect(() => {
+      const focusedItem = this.#focusedItem();
+      if (
+        focusedItem &&
+        untracked(this.#activeIndex) !== focusedItem.position()
+      ) {
+        this.#activeIndex.set(focusedItem.position());
+      }
     });
+    // Restores native focus after a reorder; see #pendingFocusIndex.
+    effect(() => {
+      const items = this.items();
+      const pending = untracked(this.#pendingFocusIndex);
+      if (pending === undefined) {
+        return;
+      }
+      this.#pendingFocusIndex.set(undefined);
+      items[pending]?.focus('program');
+    });
+  }
+
+  /**
+   * The host itself is never a stop in the natural tab order (only the
+   * roving item is), but it stays focusable so a consumer can call
+   * `list.focus()` to move keyboard focus straight into the list.
+   */
+  public onFocus(): void {
+    this.#setActiveIndex(this.#activeIndex());
+  }
+
+  /**
+   * Whether a reorder is between the DOM update that may have blurred the
+   * moving item and this directive re-asserting its focus. Items consult
+   * this to ignore that blur instead of treating it as a real focus-out.
+   * @internal
+   */
+  public hasPendingFocusRestore(): boolean {
+    return this.#pendingFocusIndex() !== undefined;
   }
 
   public deactivateAll(except?: number): void {
     this.items().forEach((item) => {
       const activate = item.position() === except;
       if (activate) {
-        if (this.#startingIndex() === undefined) {
-          this.#startingIndex.set(except);
+        if (this.#startingIndex === undefined) {
+          this.#startingIndex = except;
         }
       } else {
         item.activated.set(false);
@@ -143,26 +220,6 @@ export class KeyboardSortListDirective<T extends unknown[]> {
         }
       }
     });
-  }
-
-  public onFocus(): void {
-    this.#focusKeyManager?.setActiveItem(this.#focusIndex() ?? 0);
-  }
-
-  public onFocusOut(): void {
-    if (this.kbdSortListDisabled()) {
-      return;
-    }
-    if (!this.#midChange) {
-      this.tabindex.set('0');
-    }
-  }
-
-  public onFocusIn(): void {
-    const enabled = !this.kbdSortListDisabled();
-    if (!this.#midChange && enabled) {
-      this.tabindex.set('-1');
-    }
   }
 
   public activateItem(item: KeyboardSortItemDirective | number): void {
@@ -178,31 +235,27 @@ export class KeyboardSortListDirective<T extends unknown[]> {
   }
 
   public focusItem(item: KeyboardSortItemDirective | number): void {
-    if (item instanceof KeyboardSortItemDirective) {
-      this.#focusKeyManager?.setActiveItem(item);
-    } else {
-      this.#focusKeyManager?.setActiveItem(item);
-    }
+    const items = this.items();
+    const index = typeof item === 'number' ? item : items.indexOf(item);
+    this.#setActiveIndex(index);
   }
 
   public focusPreviousItem(item: KeyboardSortItemDirective): void {
-    this.#focusKeyManager?.setActiveItem(
-      item.position() > 0 ? item.position() - 1 : this.#listSize - 1
-    );
+    const size = this.items().length;
+    this.#setActiveIndex(item.position() > 0 ? item.position() - 1 : size - 1);
   }
 
   public focusNextItem(item: KeyboardSortItemDirective): void {
-    this.#focusKeyManager?.setActiveItem(
-      item.position() < this.#listSize - 1 ? item.position() + 1 : 0
-    );
+    const size = this.items().length;
+    this.#setActiveIndex(item.position() < size - 1 ? item.position() + 1 : 0);
   }
 
   public focusFirstItem(): void {
-    this.#focusKeyManager?.setFirstItemActive();
+    this.#setActiveIndexSkippingDisabled(0, 1);
   }
 
   public focusLastItem(): void {
-    this.#focusKeyManager?.setLastItemActive();
+    this.#setActiveIndexSkippingDisabled(this.items().length - 1, -1);
   }
 
   public moveItemUp(item: KeyboardSortItemDirective): boolean {
@@ -221,7 +274,36 @@ export class KeyboardSortListDirective<T extends unknown[]> {
     return this.#moveItemInDataArray(Number.MAX_VALUE, item.position());
   }
 
-  #moveItemInDataArray(moveToIndex: number, currentPosition: number) {
+  #setActiveIndex(index: number): void {
+    const items = this.items();
+    const item = items[index];
+    if (!item) {
+      return;
+    }
+    this.#activeIndex.set(index);
+    items.forEach((other, otherIndex) => {
+      if (otherIndex !== index && other.focused()) {
+        other.focused.set(false);
+      }
+    });
+    item.focus('program');
+  }
+
+  #setActiveIndexSkippingDisabled(index: number, fallbackDelta: number): void {
+    const items = this.items();
+    if (!items[index]) {
+      return;
+    }
+    while (items[index]?.disabled) {
+      index += fallbackDelta;
+      if (!items[index]) {
+        return;
+      }
+    }
+    this.#setActiveIndex(index);
+  }
+
+  #moveItemInDataArray(moveToIndex: number, currentPosition: number): boolean {
     const item = this.items()[currentPosition];
     const data = (this.kbdSortListData() ?? []).slice();
     if (moveToIndex === Number.MAX_VALUE) {
@@ -238,78 +320,17 @@ export class KeyboardSortListDirective<T extends unknown[]> {
       return false;
     }
     item.activate();
-    this.#midChange = true;
+    this.#activeIndex.set(moveToIndex);
+    this.#pendingFocusIndex.set(moveToIndex);
     moveItemInArray(data, currentPosition, moveToIndex);
-    this.#itemSubscriptions.unsubscribe();
-    this.#focusIndex.set(moveToIndex);
-    this.#currentIndex.set(moveToIndex);
     this.kbdSortListData.set(data as T);
-    // Detect changes and finish when the query list is updated.
-    this.#changeDetectorRef.detectChanges();
+    this.#announce(
+      this.#messages.moved(item.label(), moveToIndex, data.length)
+    );
     return true;
   }
 
-  #resetItems(items: readonly KeyboardSortItemDirective[]): void {
-    this.#listSize = items.length;
-    this.#itemSubscriptions.unsubscribe();
-    this.#itemSubscriptions = new Subscription();
-    this.#focusIndex.set(undefined);
-    this.#focusKeyManager = new FocusKeyManager<KeyboardSortItemDirective>(
-      items
-    ).withWrap();
-    this.#itemSubscriptions.add(() => this.#focusKeyManager?.destroy());
-    this.#itemSubscriptions.add(
-      this.#focusKeyManager.change.subscribe((focusedIndex) => {
-        this.#focusIndex.set(focusedIndex);
-        items.forEach((item, index) => {
-          if (index !== focusedIndex && item.focused()) {
-            item.focused.set(false);
-          }
-        });
-      })
-    );
-    items.forEach((item) => {
-      this.#itemSubscriptions.add(
-        item.kbdSortItemActivated.subscribe((isActive) => {
-          if (isActive) {
-            this.#currentIndex.set(item.position());
-          } else {
-            if (
-              !this.kbdSortListDisabled() &&
-              !item.isDisabled() &&
-              item.position() === this.#currentIndex()
-            ) {
-              const previousIndex = this.#startingIndex();
-              const currentIndex = this.#currentIndex();
-              if (
-                typeof previousIndex !== 'undefined' &&
-                typeof currentIndex !== 'undefined'
-              ) {
-                this.kdbSortDrop.emit({ previousIndex, currentIndex });
-              }
-              this.#startingIndex.set(undefined);
-            }
-          }
-        })
-      );
-      this.#itemSubscriptions.add(
-        item.kbdSortItemFocused.subscribe((isFocused) => {
-          if (isFocused && this.#focusIndex() !== item.position()) {
-            this.focusItem(item);
-          }
-        })
-      );
-    });
-    if (this.#midChange) {
-      this.#midChange = false;
-      const currentIndex = this.#currentIndex();
-      if (typeof currentIndex !== 'undefined') {
-        const item = items[currentIndex];
-        if (item) {
-          this.focusItem(item);
-          this.activateItem(item);
-        }
-      }
-    }
+  #announce(message: string): void {
+    void this.#liveAnnouncer.announce(message);
   }
 }

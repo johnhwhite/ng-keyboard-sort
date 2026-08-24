@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { KeyboardSortHandleDirective } from '../keyboard-sort-handle.directive';
 import { KeyboardSortItemDirective } from '../keyboard-sort-item.directive';
-import { KeyboardSortListService } from '../keyboard-sort-list.service';
+import { KeyboardSortListContext } from '../keyboard-sort-list-context';
 import { KeyboardSortItemIfActiveDirective } from '../keyboard-sort-item-if-active.directive';
 import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-focused.directive';
 
@@ -17,7 +17,7 @@ import { KeyboardSortItemIfFocusedDirective } from '../keyboard-sort-item-if-foc
     KeyboardSortItemIfActiveDirective,
     KeyboardSortItemIfFocusedDirective,
   ],
-  providers: [KeyboardSortListService],
+  providers: [KeyboardSortListContext],
   template: `
     <div
       [kbdSortItem]="0"

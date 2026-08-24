@@ -26,7 +26,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
       [(kbdSortListData)]="data"
       [kbdSortListOrientation]="direction()"
       [kbdSortListDisabled]="disabled()"
-      (kdbSortDrop)="sortDrop($event)">
+      (kbdSortDrop)="sortDrop($event)">
       @for (item of data() || []; track item; let i = $index) {
         <li [kbdSortItem]="i" [attr.id]="'item-' + i">
           {{ item }}

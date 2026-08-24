@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { KeyboardSortItemIfActiveDirective } from 'ng-keyboard-sort';
-import { KeyboardSortItemService } from './keyboard-sort-item.service';
+import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 
 @Component({
   selector: 'kbd-sort-test-component',
@@ -19,8 +19,8 @@ describe('KeyboardSortItemIfActiveDirective', () => {
       imports: [TestComponent],
       providers: [
         {
-          provide: KeyboardSortItemService,
-          useValue: { item: signal({ activated, isDisabled }) },
+          provide: KeyboardSortItemDirective,
+          useValue: { activated, isDisabled },
         },
       ],
     });

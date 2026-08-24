@@ -5,20 +5,20 @@ import {
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
-import { KeyboardSortItemService } from './keyboard-sort-item.service';
+import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 
 @Directive({
   selector: '[kbdSortKeyboardSortItemIfActive]',
 })
 export class KeyboardSortItemIfActiveDirective {
   #hasView = false;
-  readonly #item = inject(KeyboardSortItemService).item;
+  readonly #item = inject(KeyboardSortItemDirective);
   readonly #templateRef = inject(TemplateRef) as TemplateRef<unknown>;
   readonly #viewContainer = inject(ViewContainerRef);
 
   constructor() {
     effect(() => {
-      const shouldShow = !!this.#item()?.activated();
+      const shouldShow = this.#item.activated();
       if (shouldShow && !this.#hasView) {
         this.#viewContainer.createEmbeddedView(this.#templateRef);
         this.#hasView = true;

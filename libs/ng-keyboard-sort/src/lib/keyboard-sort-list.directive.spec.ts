@@ -3,9 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
-import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
-import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { signal } from '@angular/core';
 
 describe('ListDirective', () => {
@@ -30,7 +28,6 @@ describe('ListDirective', () => {
   } {
     TestBed.configureTestingModule({
       imports: [KeyboardSortListFixtureComponent],
-      providers: [KeyboardSortListService],
     });
 
     const fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
@@ -63,18 +60,6 @@ describe('ListDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(item?.activated()).toBe(false);
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler(
-        'focusout',
-        new FocusEvent('focusout', {
-          relatedTarget: document.body,
-        })
-      );
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const listElement = fixture.nativeElement.querySelector('ul');
-    expect(listElement.getAttribute('tabindex')).toBe('0');
     component.activateLastItem();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -169,19 +154,9 @@ describe('ListDirective', () => {
     expect(
       getItem(fixture, 0).elementRef.nativeElement.textContent?.trim()
     ).toBe('Item 1');
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler('focusin');
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler('focus');
-    fixture.detectChanges();
-    await fixture.whenStable();
     expect(
-      (fixture.nativeElement as HTMLElement)
-        .querySelector('ul')
-        ?.getAttribute('tabindex')
-    ).toBe('-1');
+      getItem(fixture, 0).elementRef.nativeElement.getAttribute('tabindex')
+    ).toBe('0');
     component.list()?.activateItem(getItem(fixture, 0));
     fixture.detectChanges();
     await fixture.whenStable();
