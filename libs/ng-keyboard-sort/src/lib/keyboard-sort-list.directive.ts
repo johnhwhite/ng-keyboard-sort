@@ -241,13 +241,11 @@ export class KeyboardSortListDirective<T extends unknown[]> {
   }
 
   public focusPreviousItem(item: KeyboardSortItemDirective): void {
-    const size = this.items().length;
-    this.#setActiveIndex(item.position() > 0 ? item.position() - 1 : size - 1);
+    this.#setActiveIndexWrapping(item.position() - 1, -1);
   }
 
   public focusNextItem(item: KeyboardSortItemDirective): void {
-    const size = this.items().length;
-    this.#setActiveIndex(item.position() < size - 1 ? item.position() + 1 : 0);
+    this.#setActiveIndexWrapping(item.position() + 1, 1);
   }
 
   public focusFirstItem(): void {
@@ -277,7 +275,7 @@ export class KeyboardSortListDirective<T extends unknown[]> {
   #setActiveIndex(index: number): void {
     const items = this.items();
     const item = items[index];
-    if (!item) {
+    if (!item || item.isDisabled()) {
       return;
     }
     this.#activeIndex.set(index);
@@ -301,6 +299,27 @@ export class KeyboardSortListDirective<T extends unknown[]> {
       }
     }
     this.#setActiveIndex(index);
+  }
+
+  /**
+   * Like `#setActiveIndex`, but wraps around the ends of the list and
+   * skips disabled items, so the roving tab stop never lands on one.
+   * No-ops if every item is disabled.
+   */
+  #setActiveIndexWrapping(startIndex: number, delta: number): void {
+    const items = this.items();
+    const size = items.length;
+    if (!size) {
+      return;
+    }
+    let index = ((startIndex % size) + size) % size;
+    for (let attempt = 0; attempt < size; attempt++) {
+      if (!items[index]?.disabled) {
+        this.#setActiveIndex(index);
+        return;
+      }
+      index = (((index + delta) % size) + size) % size;
+    }
   }
 
   #moveItemInDataArray(moveToIndex: number, currentPosition: number): boolean {

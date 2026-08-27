@@ -2,6 +2,7 @@ import {
   computed,
   contentChildren,
   Directive,
+  DOCUMENT,
   effect,
   ElementRef,
   inject,
@@ -46,7 +47,7 @@ const ACTION_PRIORITY: readonly KeyboardSortAction[] = [
     '[attr.aria-describedby]': 'describedBy()',
     '[attr.aria-roledescription]': 'kbdSortItemRoleDescription() || null',
     '(focus)': 'onFocus()',
-    '(focusout)': 'onFocusOut()',
+    '(focusout)': 'onFocusOut($event)',
     '(keydown)': 'onKeydown($event)',
   },
 })
@@ -123,6 +124,7 @@ export class KeyboardSortItemDirective implements FocusableOption {
   );
 
   readonly #list = inject(KeyboardSortListContext).list;
+  readonly #doc = inject(DOCUMENT);
   readonly #keyCombinations = computed<KeyboardSortKeysInterface>(() => {
     const kbdSortListOrientation = this.#list()?.kbdSortListOrientation();
     const keys: KeyboardSortKeysInterface = {
@@ -210,8 +212,8 @@ export class KeyboardSortItemDirective implements FocusableOption {
     }
   }
 
-  public onFocusOut(): void {
-    if (this.#list()?.hasPendingFocusRestore()) {
+  public onFocusOut($event?: FocusEvent): void {
+    if (this.#isPendingFocusRestoreBlur($event)) {
       // The reorder this item just performed may have blurred it as a side
       // effect of Angular's DOM reconciliation, not a real focus-out.
       return;
@@ -221,6 +223,23 @@ export class KeyboardSortItemDirective implements FocusableOption {
     } else if (this.focused()) {
       this.focused.set(false);
     }
+  }
+
+  /**
+   * While a reorder's focus restoration is pending, a native `focusout`
+   * with no `relatedTarget` (or one of `document.body`) is Angular
+   * detaching and reattaching this item's DOM node, not a real focus
+   * change — the browser parks focus on `<body>` when a focused node is
+   * removed. A `relatedTarget` naming another element is a genuine
+   * focus-out (e.g. Tab, or a click elsewhere) and must still be handled,
+   * even mid-restore.
+   */
+  #isPendingFocusRestoreBlur($event?: FocusEvent): boolean {
+    if (!this.#list()?.hasPendingFocusRestore()) {
+      return false;
+    }
+    const relatedTarget = $event?.relatedTarget as Node | null | undefined;
+    return !relatedTarget || relatedTarget === this.#doc.body;
   }
 
   public onKeydown($event: KeyboardEvent): void {
