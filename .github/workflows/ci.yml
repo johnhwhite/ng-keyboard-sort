@@ -49,6 +49,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Test
-        run: node ./scripts/test.js
+        run: npx ng test -c ci
       - name: End to End Tests
         run: npm run e2e

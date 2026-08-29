@@ -3,6 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyboardSortItemFixtureComponent } from './fixtures/keyboard-sort-item-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
+import {
+  KeyboardSortListContext,
+  KeyboardSortListHandle,
+} from './keyboard-sort-list-context';
 
 describe('ItemDirective', () => {
   let component: KeyboardSortItemFixtureComponent;
@@ -264,5 +268,61 @@ describe('ItemDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(item?.isDisabled()).toBe(true);
+  });
+
+  // A minimal stand-in for the list directive's handle, with every reactive
+  // getter the item directive reads (isDisabled, isActiveTabStop, etc.)
+  // stubbed to inert defaults, so only `hasPendingFocusRestore` matters.
+  const stubListHandle = (): KeyboardSortListHandle =>
+    ({
+      kbdSortListOrientation: () => 'horizontal',
+      kbdSortListDisabled: () => false,
+      kbdSortKeyOverrides: () => ({}),
+      kbdSortListDescribedBy: () => '',
+      activeIndex: () => 0,
+      hasPendingFocusRestore: () => true,
+      deactivateAll: () => undefined,
+      focusItem: () => undefined,
+      focusPreviousItem: () => undefined,
+      focusNextItem: () => undefined,
+      focusFirstItem: () => undefined,
+      focusLastItem: () => undefined,
+      moveItemUp: () => false,
+      moveItemDown: () => false,
+      moveItemToStart: () => false,
+      moveItemToEnd: () => false,
+    }) as unknown as KeyboardSortListHandle;
+
+  it('ignores a focusout with no real relatedTarget during a pending focus restore', async () => {
+    setupTest({ activated: true });
+    const item = component.item();
+    fixture.debugElement.injector
+      .get(KeyboardSortListContext)
+      .list.set(stubListHandle());
+
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler('focusout', { relatedTarget: null });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(item?.activated()).toBe(true);
+  });
+
+  it('still treats a focusout to another element as real during a pending focus restore', async () => {
+    setupTest({ activated: true });
+    const item = component.item();
+    fixture.debugElement.injector
+      .get(KeyboardSortListContext)
+      .list.set(stubListHandle());
+    const other = document.createElement('button');
+
+    fixture.debugElement
+      .query(By.directive(KeyboardSortItemDirective))
+      .triggerEventHandler('focusout', { relatedTarget: other });
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(item?.activated()).toBe(false);
   });
 });

@@ -134,7 +134,7 @@
           },
           "configurations": {
             "ci": {
-              "headed": false,
+              "devServerTarget": "e2e:serve:production",
               "workers": 1
             }
           }

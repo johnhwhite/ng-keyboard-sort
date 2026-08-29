@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { KeyboardSortItemIfFocusedDirective } from 'ng-keyboard-sort';
-import { KeyboardSortItemService } from './keyboard-sort-item.service';
+import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
 
 @Component({
   selector: 'kbd-sort-test-component',
@@ -19,8 +19,13 @@ describe('KeyboardSortItemIfFocusedDirective', () => {
       imports: [TestComponent],
       providers: [
         {
-          provide: KeyboardSortItemService,
-          useValue: { item: signal({ focused, isDisabled }) },
+          provide: KeyboardSortItemDirective,
+          useValue: {
+            focused,
+            isDisabled,
+            registerProjectedView: () => undefined,
+            unregisterProjectedView: () => undefined,
+          },
         },
       ],
     });

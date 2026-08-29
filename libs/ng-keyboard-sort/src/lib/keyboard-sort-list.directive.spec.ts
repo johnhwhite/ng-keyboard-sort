@@ -3,9 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyboardSortListFixtureComponent } from './fixtures/keyboard-sort-list-fixture.component';
 import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
-import { KeyboardSortListDirective } from './keyboard-sort-list.directive';
 import { KeyboardSortListEmptyFixtureComponent } from './fixtures/keyboard-sort-list-empty-fixture.component';
-import { KeyboardSortListService } from './keyboard-sort-list.service';
 import { signal } from '@angular/core';
 
 describe('ListDirective', () => {
@@ -30,7 +28,6 @@ describe('ListDirective', () => {
   } {
     TestBed.configureTestingModule({
       imports: [KeyboardSortListFixtureComponent],
-      providers: [KeyboardSortListService],
     });
 
     const fixture = TestBed.createComponent(KeyboardSortListFixtureComponent);
@@ -63,18 +60,6 @@ describe('ListDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(item?.activated()).toBe(false);
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler(
-        'focusout',
-        new FocusEvent('focusout', {
-          relatedTarget: document.body,
-        })
-      );
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const listElement = fixture.nativeElement.querySelector('ul');
-    expect(listElement.getAttribute('tabindex')).toBe('0');
     component.activateLastItem();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -134,6 +119,9 @@ describe('ListDirective', () => {
     expect(item).toBeTruthy();
     list?.activateItem(item as KeyboardSortItemDirective);
     expect(item?.activated()).toBe(false);
+    // The roving tab stop never moves into a disabled widget, so
+    // activating a disabled item leaves it unfocused.
+    expect(item?.focused()).toBe(false);
     expect(
       fixture.nativeElement.querySelectorAll('[tabindex="-1"]').length
     ).toBe(4);
@@ -141,7 +129,7 @@ describe('ListDirective', () => {
       fixture.nativeElement.querySelectorAll('[tabindex="0"]').length
     ).toBe(0);
     component.disabled.set(false);
-    expect(getItem(fixture, 0).focused()).toBe(true);
+    expect(getItem(fixture, 0).focused()).toBe(false);
     component.list()?.deactivateAll();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -162,6 +150,47 @@ describe('ListDirective', () => {
     expect(getItem(fixture, 2).focused()).toBe(true);
   });
 
+  it('skips disabled items and wraps in focusPreviousItem/focusNextItem', async () => {
+    const { fixture, component } = setupTest();
+    getItem(fixture, 1).kbdSortItemDisabled.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.list()?.focusNextItem(getItem(fixture, 0));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(getItem(fixture, 2).focused()).toBe(true);
+
+    component.list()?.focusPreviousItem(getItem(fixture, 2));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(getItem(fixture, 0).focused()).toBe(true);
+  });
+
+  it('no-ops focusPreviousItem/focusNextItem when every item is disabled', async () => {
+    const { fixture, component } = setupTest();
+    component.items().forEach((item) => item.kbdSortItemDisabled.set(true));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.list()?.focusNextItem(getItem(fixture, 0));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.items().some((item) => item.focused())).toBe(false);
+  });
+
+  it('does not move the roving tab stop onto a disabled item via focusItem', async () => {
+    const { fixture, component } = setupTest();
+    getItem(fixture, 1).kbdSortItemDisabled.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.list()?.focusItem(1);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(getItem(fixture, 1).focused()).toBe(false);
+  });
+
   it('should move items', async () => {
     const { fixture, component } = setupTest();
     expect(component.items()?.length).toBe(3);
@@ -169,19 +198,9 @@ describe('ListDirective', () => {
     expect(
       getItem(fixture, 0).elementRef.nativeElement.textContent?.trim()
     ).toBe('Item 1');
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler('focusin');
-    fixture.debugElement
-      .query(By.directive(KeyboardSortListDirective))
-      .triggerEventHandler('focus');
-    fixture.detectChanges();
-    await fixture.whenStable();
     expect(
-      (fixture.nativeElement as HTMLElement)
-        .querySelector('ul')
-        ?.getAttribute('tabindex')
-    ).toBe('-1');
+      getItem(fixture, 0).elementRef.nativeElement.getAttribute('tabindex')
+    ).toBe('0');
     component.list()?.activateItem(getItem(fixture, 0));
     fixture.detectChanges();
     await fixture.whenStable();
