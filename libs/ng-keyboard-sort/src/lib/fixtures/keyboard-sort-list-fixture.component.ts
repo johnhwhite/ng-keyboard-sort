@@ -29,7 +29,7 @@ import { KeyboardSortEventDrop } from '../keyboard-sort-event-drop';
       (kbdSortDrop)="sortDrop($event)">
       @for (item of data() || []; track item; let i = $index) {
         <li [kbdSortItem]="i" [attr.id]="'item-' + i">
-          {{ item }}
+          {{ item }}{{ suffix() }}
           <span *kbdSortKeyboardSortItemIfActive>{{ ' ' }}Active</span>
           <span *kbdSortKeyboardSortItemIfFocused>{{ ' ' }}Focused</span>
         </li>
@@ -55,6 +55,12 @@ export class KeyboardSortListFixtureComponent {
   );
 
   public data = model<string[] | undefined>(['Item 1', 'Item 2', 'Item 3']);
+
+  /**
+   * Appended after each item's text without recreating the `<li>`, so
+   * tests can mutate an item's rendered text in place.
+   */
+  public suffix = model<string>('');
 
   public direction = model<'horizontal' | 'vertical'>('horizontal');
 

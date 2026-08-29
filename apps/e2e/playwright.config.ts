@@ -32,4 +32,10 @@ export default defineConfig({
       use: { ...devices['iPhone 12'] },
     },
   ],
+  webServer: {
+    command: 'npm run start',
+    cwd: '../..',
+    url: 'http://localhost:4200',
+    reuseExistingServer: true,
+  },
 });

@@ -20,7 +20,12 @@ describe('KeyboardSortItemIfActiveDirective', () => {
       providers: [
         {
           provide: KeyboardSortItemDirective,
-          useValue: { activated, isDisabled },
+          useValue: {
+            activated,
+            isDisabled,
+            registerProjectedView: () => undefined,
+            unregisterProjectedView: () => undefined,
+          },
         },
       ],
     });

@@ -76,6 +76,37 @@ describe('ListDirective a11y', () => {
     ]);
   });
 
+  it('reads an item label fresh, reflecting in-place text changes', async () => {
+    const { fixture, announce } = setupTest();
+    getItem(fixture, 0).activate();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(announce).toEqual(['Item 1. Grabbed. Position 1 of 3.']);
+
+    fixture.componentInstance.suffix.set(' (edited)');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.componentInstance.list()?.moveItemDown(getItem(fixture, 0));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(announce).toEqual([
+      'Item 1. Grabbed. Position 1 of 3.',
+      'Item 1 (edited). Position 2 of 3.',
+    ]);
+  });
+
+  it("excludes an item's own Active/Focused indicators from its label", async () => {
+    const { fixture, announce } = setupTest();
+    fixture.componentInstance.list()?.focusFirstItem();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    getItem(fixture, 0).activate();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(announce).toEqual(['Item 1. Grabbed. Position 1 of 3.']);
+  });
+
   it('uses a custom KEYBOARD_SORT_A11Y_MESSAGES provider', async () => {
     const { fixture, announce } = setupTest({
       grabbed: () => 'custom grabbed',

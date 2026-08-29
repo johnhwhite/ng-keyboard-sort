@@ -119,8 +119,8 @@ describe('ListDirective', () => {
     expect(item).toBeTruthy();
     list?.activateItem(item as KeyboardSortItemDirective);
     expect(item?.activated()).toBe(false);
-    // Focusing while disabled is a no-op (finding: #setActiveIndex must
-    // not move focus into a disabled widget).
+    // The roving tab stop never moves into a disabled widget, so
+    // activating a disabled item leaves it unfocused.
     expect(item?.focused()).toBe(false);
     expect(
       fixture.nativeElement.querySelectorAll('[tabindex="-1"]').length

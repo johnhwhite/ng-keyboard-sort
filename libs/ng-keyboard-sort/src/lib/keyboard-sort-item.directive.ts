@@ -5,6 +5,7 @@ import {
   DOCUMENT,
   effect,
   ElementRef,
+  EmbeddedViewRef,
   inject,
   input,
   linkedSignal,
@@ -18,6 +19,8 @@ import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
 import { KeyboardSortKeysInterface } from './keyboard-sort-keys.interface';
 
 type KeyboardSortAction = keyof KeyboardSortKeysInterface;
+
+const TEXT_NODE = 3;
 
 /**
  * Resolution order when `kbdSortKeyOverrides` maps the same key to more
@@ -107,14 +110,66 @@ export class KeyboardSortItemDirective implements FocusableOption {
   });
 
   /**
-   * Label announced for this item. Falls back to the item's text content
-   * when `kbdSortItemLabel` isn't set.
+   * Root nodes of embedded views this item's own structural directives
+   * (`kbdSortKeyboardSortItemIfActive`/`...IfFocused`) have projected into
+   * the item element, e.g. an "Active"/"Focused" indicator. Excluded from
+   * the text-content fallback in `label()` so those indicators are never
+   * announced as part of the item's own label.
+   */
+  readonly #projectedViews = new Set<EmbeddedViewRef<unknown>>();
+
+  /**
+   * Registers an embedded view this item's own structural directives
+   * projected into the item element, so `label()` can exclude it.
    * @internal
    */
-  public readonly label = computed<string>(() => {
+  public registerProjectedView(view: EmbeddedViewRef<unknown>): void {
+    this.#projectedViews.add(view);
+  }
+
+  /**
+   * Unregisters a view previously passed to `registerProjectedView`.
+   * @internal
+   */
+  public unregisterProjectedView(view: EmbeddedViewRef<unknown>): void {
+    this.#projectedViews.delete(view);
+  }
+
+  /**
+   * Label announced for this item. Falls back to the item's text content
+   * when `kbdSortItemLabel` isn't set, read fresh on every call and
+   * excluding anything projected by this item's own structural directives
+   * (e.g. an "Active"/"Focused" indicator).
+   * @internal
+   */
+  public label(): string {
     const explicit = this.kbdSortItemLabel();
-    return explicit || this.elementRef.nativeElement.textContent?.trim() || '';
-  });
+    if (explicit) {
+      return explicit;
+    }
+    const excluded = new Set<Node>();
+    for (const view of this.#projectedViews) {
+      for (const node of view.rootNodes) {
+        excluded.add(node);
+      }
+    }
+    const text = this.#collectText(this.elementRef.nativeElement, excluded);
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
+  #collectText(node: Node, excluded: ReadonlySet<Node>): string {
+    if (excluded.has(node)) {
+      return '';
+    }
+    if (node.nodeType === TEXT_NODE) {
+      return node.textContent || '';
+    }
+    let text = '';
+    for (const child of Array.from(node.childNodes)) {
+      text += this.#collectText(child, excluded);
+    }
+    return text;
+  }
 
   /**
    * @internal

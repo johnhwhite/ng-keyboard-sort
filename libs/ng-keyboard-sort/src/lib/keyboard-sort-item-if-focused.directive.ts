@@ -1,6 +1,7 @@
 import {
   Directive,
   effect,
+  EmbeddedViewRef,
   inject,
   TemplateRef,
   ViewContainerRef,
@@ -11,7 +12,7 @@ import { KeyboardSortItemDirective } from './keyboard-sort-item.directive';
   selector: '[kbdSortKeyboardSortItemIfFocused]',
 })
 export class KeyboardSortItemIfFocusedDirective {
-  #hasView = false;
+  #view: EmbeddedViewRef<unknown> | undefined;
   readonly #item = inject(KeyboardSortItemDirective);
   readonly #templateRef = inject(TemplateRef) as TemplateRef<unknown>;
   readonly #viewContainer = inject(ViewContainerRef);
@@ -19,12 +20,13 @@ export class KeyboardSortItemIfFocusedDirective {
   constructor() {
     effect(() => {
       const shouldShow = this.#item.focused();
-      if (shouldShow && !this.#hasView) {
-        this.#viewContainer.createEmbeddedView(this.#templateRef);
-        this.#hasView = true;
-      } else if (!shouldShow && this.#hasView) {
+      if (shouldShow && !this.#view) {
+        this.#view = this.#viewContainer.createEmbeddedView(this.#templateRef);
+        this.#item.registerProjectedView(this.#view);
+      } else if (!shouldShow && this.#view) {
+        this.#item.unregisterProjectedView(this.#view);
         this.#viewContainer.clear();
-        this.#hasView = false;
+        this.#view = undefined;
       }
     });
   }

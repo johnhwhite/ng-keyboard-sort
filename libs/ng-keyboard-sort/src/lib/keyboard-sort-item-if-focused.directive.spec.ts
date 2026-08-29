@@ -20,7 +20,12 @@ describe('KeyboardSortItemIfFocusedDirective', () => {
       providers: [
         {
           provide: KeyboardSortItemDirective,
-          useValue: { focused, isDisabled },
+          useValue: {
+            focused,
+            isDisabled,
+            registerProjectedView: () => undefined,
+            unregisterProjectedView: () => undefined,
+          },
         },
       ],
     });
