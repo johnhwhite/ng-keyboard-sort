@@ -1,5 +1,16 @@
 # Changelog
 
+## [11.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v10.0.0...v11.0.0) (2026-08-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ng-keyboard-sort:** modernize architecture and add accessibility support ([#195](https://github.com/johnhwhite/ng-keyboard-sort/issues/195))
+
+### Features
+
+* **ng-keyboard-sort:** modernize architecture and add accessibility support ([#195](https://github.com/johnhwhite/ng-keyboard-sort/issues/195)) ([fafa33f](https://github.com/johnhwhite/ng-keyboard-sort/commit/fafa33fa182f910c66fcb8b74313a786e48bd0fa))
+
 ## [10.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v9.0.0...v10.0.0) (2026-06-29)
 
 
