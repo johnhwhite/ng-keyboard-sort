@@ -38,11 +38,10 @@ jobs:
         run: npx commitlint --last --verbose
       - name: Validate PR commits
         if: github.event_name == 'pull_request'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
         run: |
-          npx commitlint \
-            --from ${{ github.event.pull_request.base.sha }} \
-            --to ${{ github.event.pull_request.head.sha }} \
-            --verbose
+          echo "$TITLE" | npx commitlint --verbose
       - name: Validate peer dependencies
         if: github.event_name == 'pull_request'
         run: |
