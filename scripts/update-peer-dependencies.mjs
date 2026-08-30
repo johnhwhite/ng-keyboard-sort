@@ -24,9 +24,8 @@ needsUpdate ||=
         inc(
           dependencies.dependencies[dependency].version,
           'premajor',
-          null,
           'alpha',
-          '0'
+          0
         ),
         packageJson.peerDependencies[dependency]
       )

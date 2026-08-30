@@ -47,7 +47,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           node ./scripts/update-peer-dependencies.mjs
-          if [[ -n "$(git st --porcelain -- libs/ng-keyboard-sort/package.json)" ]]; then
+          if [[ -n "$(git status --porcelain -- libs/ng-keyboard-sort/package.json)" ]]; then
             echo "Peer dependencies not up to date:"
             git diff --patch -- libs/ng-keyboard-sort/package.json
             exit 1
