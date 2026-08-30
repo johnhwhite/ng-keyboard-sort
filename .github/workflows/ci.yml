@@ -7,7 +7,8 @@ on:
   pull_request:
 
 env:
-  node_version: 24
+  node_version: 26
+  npm_config_ignore_scripts: true
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -42,8 +43,17 @@ jobs:
             --from ${{ github.event.pull_request.base.sha }} \
             --to ${{ github.event.pull_request.head.sha }} \
             --verbose
+      - name: Validate peer dependencies
+        if: github.event_name == 'pull_request'
+        run: |
+          node ./scripts/update-peer-dependencies.mjs
+          if [[ -n "$(git st --porcelain -- libs/ng-keyboard-sort/package.json)" ]]; then
+            echo "Peer dependencies not up to date:"
+            git diff --patch -- libs/ng-keyboard-sort/package.json
+            exit 1
+          fi
       - name: Prep
-        run: npx playwright install --with-deps webkit
+        run: npx playwright install --with-deps
       - name: Lint
         run: npm run lint:all
       - name: Build

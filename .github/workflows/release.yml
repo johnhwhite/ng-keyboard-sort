@@ -12,7 +12,8 @@ permissions:
   id-token: write
 
 env:
-  node_version: 24
+  node_version: 26
+  npm_config_ignore_scripts: true
 jobs:
   release-please:
     name: Release Please

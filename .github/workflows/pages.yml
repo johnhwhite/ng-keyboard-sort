@@ -5,7 +5,8 @@ on:
   pull_request:
     types: [opened, synchronize]
 env:
-  node_version: 24
+  node_version: 26
+  npm_config_ignore_scripts: true
 concurrency:
   group: pages
   cancel-in-progress: true
