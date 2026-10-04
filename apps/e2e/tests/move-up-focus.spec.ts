@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('moving an item up keeps it activated and focused, and further keyboard commands still move it', async ({
   page,
