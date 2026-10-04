@@ -1,36 +1,49 @@
 nav {
   align-items: flex-end;
-  background-color: #333;
+  background-color: var(--nav-background);
   display: flex;
   height: 3em;
   justify-content: space-between;
+  position: relative;
 }
 
-nav > ul {
+nav > ul,
+nav > div {
   align-items: center;
   display: flex;
   height: 3em;
   list-style-type: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 
 nav > ul > li {
   display: contents;
 }
 
-nav > ul > li > a {
+.menu-toggle,
+nav > ul > li > a,
+nav > ul > li > button {
   align-items: center;
-  color: white;
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--nav-color);
   display: flex;
   height: 100%;
   padding-inline: 1em;
   text-decoration: none;
 }
 
-a:hover {
-  background-color: #111;
+.menu-toggle:hover,
+.menu-toggle:focus-visible,
+nav > ul > li > a:hover,
+nav > ul > li > button:hover {
+  background-color: color-mix(
+    in oklch,
+    var(--nav-background) 93%,
+    var(--nav-color) 7%
+  );
   text-decoration: initial;
 }
 
@@ -41,4 +54,36 @@ a.gh-link {
 a.gh-link > svg {
   aspect-ratio: 96 / 98;
   height: 2em;
+  fill: var(--nav-color);
+}
+
+.menu-toggle {
+  display: none;
+}
+
+@media (max-width: 500px) {
+  .menu-toggle {
+    display: flex;
+    font-size: 185%;
+    padding-inline: 0.5em;
+  }
+
+  nav > .menu {
+    display: none;
+    position: absolute;
+    top: 3em;
+    left: 0;
+    height: max-content;
+    width: max-content;
+    background-color: var(--nav-background);
+    z-index: 1;
+  }
+
+  nav > .menu.open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5em;
+    padding-block: 0.5em;
+  }
 }
