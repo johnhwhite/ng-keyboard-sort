@@ -5,8 +5,6 @@ type Violation = Awaited<
   ReturnType<AxeBuilder['analyze']>
 >['violations'][number];
 
-const BLOCKING_IMPACTS = ['serious', 'critical'];
-
 function formatViolations(violations: Violation[]): string {
   return violations
     .map((violation) => {
@@ -30,8 +28,8 @@ function formatViolations(violations: Violation[]): string {
 
 /**
  * Extends the Playwright `test` with an automatic accessibility check that
- * runs axe against the page's final state after every test and fails on
- * serious or critical violations.
+ * runs axe against the page's final state after every test and fails on any
+ * violation.
  */
 export const test = base.extend<{ axe: void }>({
   axe: [
@@ -44,11 +42,8 @@ export const test = base.extend<{ axe: void }>({
         return;
       }
       const { violations } = await new AxeBuilder({ page }).analyze();
-      const blocking = violations.filter(
-        (v) => !!v.impact && BLOCKING_IMPACTS.includes(v.impact)
-      );
-      const report = formatViolations(blocking);
-      if (blocking.length) {
+      const report = formatViolations(violations);
+      if (violations.length) {
         console.error(report);
         await testInfo.attach('axe-violations', {
           body: report,
@@ -56,7 +51,7 @@ export const test = base.extend<{ axe: void }>({
         });
       }
       expect(
-        blocking.map((v) => v.id),
+        violations.map((v) => v.id),
         report
       ).toEqual([]);
     },
