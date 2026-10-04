@@ -12,15 +12,24 @@
   </ul>
   <ul>
     <li>
-      <button type="button" title="Light mode" (click)="theme.set('light')">
+      <button
+        type="button"
+        title="Light mode"
+        aria-label="Light mode"
+        (click)="theme.set('light')">
         ☀︎
       </button>
-      <button type="button" title="Dark mode" (click)="theme.set('dark')">
+      <button
+        type="button"
+        title="Dark mode"
+        aria-label="Dark mode"
+        (click)="theme.set('dark')">
         ☽
       </button>
       <button
         type="button"
         title="System light/dark mode"
+        aria-label="System light/dark mode"
         (click)="theme.set(undefined)">
         💻
       </button>
