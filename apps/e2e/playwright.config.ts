@@ -13,7 +13,17 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--deny-permission-prompts',
+            '--disable-infobars',
+          ],
+        },
+      },
     },
     {
       name: 'firefox',
