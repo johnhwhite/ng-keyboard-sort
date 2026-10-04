@@ -1,7 +1,47 @@
+:root {
+  --nav-background: oklch(30% 3% 240deg);
+
+  --nav-color-light: white;
+  --page-background-light: white;
+  --page-color-light: black;
+
+  --nav-color-dark: oklch(88% 11% 241deg);
+  --page-background-dark: oklch(38% 2% 100deg);
+  --page-color-dark: oklch(78% 16% 104deg);
+
+  --highlight-color: color-mix(in oklch, var(--page-background) 96%, var(--page-color) 4%);
+  --highlight-shadow: color-mix(in oklch, var(--page-background) 93%, var(--page-color) 7%);
+}
+
+html:not(:has(app-root.theme-light), :has(app-root.theme-dark)) {
+  color-scheme: light dark;
+  --nav-color: light-dark(var(--nav-color-light), var(--nav-color-dark));
+  --page-background: light-dark(var(--page-background-light), var(--page-background-dark));
+  --page-color: light-dark(var(--page-color-light), var(--page-color-dark));
+}
+
+html:has(app-root.theme-light) {
+  color-scheme: light;
+  --nav-color: var(--nav-color-light);
+  --page-background: var(--page-background-light);
+  --page-color: var(--page-color-light);
+}
+
+html:has(app-root.theme-dark) {
+  color-scheme: dark;
+  --nav-color: var(--nav-color-dark);
+  --page-background: var(--page-background-dark);
+  --page-color: var(--page-color-dark);
+}
+
 *,
 :before,
 :after {
   box-sizing: border-box;
+}
+
+:focus-visible {
+  outline-color: currentColor;
 }
 
 html {
@@ -16,6 +56,8 @@ html {
     sans-serif;
   line-height: 1.5;
   font-size: 16px;
+  color: var(--page-color);
+  background: var(--page-background);
 }
 
 .cdk-drag {
