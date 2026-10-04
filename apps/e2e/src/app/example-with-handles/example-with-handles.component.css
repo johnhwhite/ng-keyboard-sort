@@ -14,8 +14,8 @@ li {
 }
 
 .kbd-sort-item-activated {
-  background-color: #eee;
-  box-shadow: 0 2px 4px 2px #b2b2b2;
+  background-color: var(--highlight-color);
+  box-shadow: 0 2px 4px 2px var(--highlight-shadow);
   top: -2px;
 }
 
