@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.1.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v11.0.0...v11.1.0) (2026-10-04)
+
+
+### Features
+
+* **e2e:** dark mode ([#199](https://github.com/johnhwhite/ng-keyboard-sort/issues/199)) ([741feda](https://github.com/johnhwhite/ng-keyboard-sort/commit/741feda15f6233e354e2190175a5a8f8125c695c))
+* **ng-keyboard-sort:** add Angular 22.2 support ([#201](https://github.com/johnhwhite/ng-keyboard-sort/issues/201)) ([931bfa2](https://github.com/johnhwhite/ng-keyboard-sort/commit/931bfa28cab9523a568a1a117c7aa0b498bb70f9))
+
 ## [11.0.0](https://github.com/johnhwhite/ng-keyboard-sort/compare/v10.0.0...v11.0.0) (2026-08-30)
 
 
