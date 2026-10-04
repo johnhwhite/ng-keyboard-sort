@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test.describe('narrow viewport nav menu', () => {
   test.use({ viewport: { width: 400, height: 800 } });
