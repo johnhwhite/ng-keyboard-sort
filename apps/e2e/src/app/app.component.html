@@ -1,10 +1,21 @@
 <nav>
-  <ul>
+  <button
+    type="button"
+    class="menu-toggle"
+    aria-label="Menu"
+    aria-controls="nav-menu"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="menuOpen.update((open) => !open)">
+    <span aria-hidden="true">≡</span>
+  </button>
+  <ul id="nav-menu" class="menu" [class.open]="menuOpen()">
     @for (rootRoutes of routes; track rootRoutes) {
       @for (route of rootRoutes; track route.path) {
         @if (route.title) {
           <li>
-            <a routerLink="{{ route.path }}">{{ route.title }}</a>
+            <a routerLink="{{ route.path }}" (click)="menuOpen.set(false)">{{
+              route.title
+            }}</a>
           </li>
         }
       }
